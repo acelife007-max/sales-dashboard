@@ -25,12 +25,13 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // 환경변수 토큰 자동 전달
+  // 환경변수 자동 전달
   if (urlObj.pathname === '/config') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
       slackToken: process.env.SLACK_TOKEN || '',
       claudeKey: process.env.CLAUDE_KEY || '',
+      channels: ['0-02업무보고','0-04발주','0-06입찰공고','2-02세인비에스-발주'],
     }));
     return;
   }

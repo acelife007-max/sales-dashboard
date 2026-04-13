@@ -1241,6 +1241,21 @@ function resolveTextMentions(text, userMap) {
   });
 }
 
+function setChannelTags(channels) {
+  const grid = document.getElementById('chGrid');
+  const input = document.getElementById('chInput');
+  if(!grid||!input) return;
+  grid.querySelectorAll('.ch-tag').forEach(t => t.remove());
+  channels.forEach(ch => {
+    const tag = document.createElement('span');
+    tag.className = 'ch-tag on';
+    tag.dataset.ch = ch;
+    tag.textContent = '#' + ch;
+    tag.onclick = () => tag.classList.toggle('on');
+    grid.insertBefore(tag, input);
+  });
+}
+
 function loadSettings() {
   const token = localStorage.getItem('slackToken');
   if (token) document.getElementById('slackToken').value = token;
@@ -1253,39 +1268,33 @@ function loadSettings() {
   const ck = localStorage.getItem('claudeKey');
   if (ck) document.getElementById('claudeKey').value = ck;
 
-  // Railway 환경변수 토큰 자동 로드
+  // 저장된 채널 복원
+  const chs = JSON.parse(localStorage.getItem('channels') || '[]');
+  if (chs.length > 0) setChannelTags(chs);
+
+  // Railway 서버에서 토큰+채널 자동 로드 (항상 실행)
+  const DEFAULT_CHANNELS = ['0-02업무보고','0-04발주','0-06입찰공고','2-02세인비에스-발주'];
   fetch(`${PROXY}/config`).then(r=>r.json()).then(cfg=>{
-    if(cfg.slackToken && !document.getElementById('slackToken').value) {
+    if(cfg.slackToken) {
       document.getElementById('slackToken').value = cfg.slackToken;
       localStorage.setItem('slackToken', cfg.slackToken);
     }
-    if(cfg.claudeKey && !document.getElementById('claudeKey').value) {
+    if(cfg.claudeKey) {
       document.getElementById('claudeKey').value = cfg.claudeKey;
       localStorage.setItem('claudeKey', cfg.claudeKey);
     }
-    // 토큰 있으면 자동 연결
+    // 채널: 서버값 우선, 없으면 기본값
+    const chList = (cfg.channels && cfg.channels.length>0) ? cfg.channels : DEFAULT_CHANNELS;
+    setChannelTags(chList);
+    localStorage.setItem('channels', JSON.stringify(chList));
+    // 자동 연결
     if(cfg.slackToken) {
-      setTimeout(()=>{ if(typeof connectSlack==='function') connectSlack(); }, 500);
+      setTimeout(()=>{ if(typeof connectSlack==='function') connectSlack(); }, 800);
     }
-  }).catch(()=>{});
-
-  // 채널 태그 복원 — 저장된 채널명으로 태그 새로 생성
-  const chs = JSON.parse(localStorage.getItem('channels') || '[]');
-  if (chs.length > 0) {
-    const grid = document.getElementById('chGrid');
-    const input = document.getElementById('chInput');
-    // 기존 태그 모두 제거
-    grid.querySelectorAll('.ch-tag').forEach(t => t.remove());
-    // 저장된 채널명으로 태그 재생성
-    chs.forEach(ch => {
-      const tag = document.createElement('span');
-      tag.className = 'ch-tag on';
-      tag.dataset.ch = ch;
-      tag.textContent = '#' + ch;
-      tag.onclick = () => tag.classList.toggle('on');
-      grid.insertBefore(tag, input);
-    });
-  }
+  }).catch(()=>{
+    // 서버 없으면 기본 채널 설정
+    if(chs.length === 0) setChannelTags(DEFAULT_CHANNELS);
+  });
 }
 
 
