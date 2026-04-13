@@ -382,9 +382,10 @@ td.bold { color: var(--text); font-weight: 500; }
 
 <!-- LAYOUT -->
 <div class="layout">
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-label">메뉴</div>
       <div class="nav-item active" onclick="showPage('dashboard'); setNav(this)">
