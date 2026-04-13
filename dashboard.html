@@ -1253,6 +1253,22 @@ function loadSettings() {
   const ck = localStorage.getItem('claudeKey');
   if (ck) document.getElementById('claudeKey').value = ck;
 
+  // Railway 환경변수 토큰 자동 로드
+  fetch(`${PROXY}/config`).then(r=>r.json()).then(cfg=>{
+    if(cfg.slackToken && !document.getElementById('slackToken').value) {
+      document.getElementById('slackToken').value = cfg.slackToken;
+      localStorage.setItem('slackToken', cfg.slackToken);
+    }
+    if(cfg.claudeKey && !document.getElementById('claudeKey').value) {
+      document.getElementById('claudeKey').value = cfg.claudeKey;
+      localStorage.setItem('claudeKey', cfg.claudeKey);
+    }
+    // 토큰 있으면 자동 연결
+    if(cfg.slackToken) {
+      setTimeout(()=>{ if(typeof connectSlack==='function') connectSlack(); }, 500);
+    }
+  }).catch(()=>{});
+
   // 채널 태그 복원 — 저장된 채널명으로 태그 새로 생성
   const chs = JSON.parse(localStorage.getItem('channels') || '[]');
   if (chs.length > 0) {

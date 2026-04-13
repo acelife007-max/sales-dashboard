@@ -25,6 +25,16 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // 환경변수 토큰 자동 전달
+  if (urlObj.pathname === '/config') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      slackToken: process.env.SLACK_TOKEN || '',
+      claudeKey: process.env.CLAUDE_KEY || '',
+    }));
+    return;
+  }
+
   // 대시보드 HTML
   if (urlObj.pathname === '/' || urlObj.pathname === '/index.html') {
     const htmlPath = path.join(__dirname, 'dashboard.html');
