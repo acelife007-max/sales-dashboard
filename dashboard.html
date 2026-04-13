@@ -835,11 +835,12 @@ function renderPrice() {
   parsePriceDirect(msgs);
 }
 
-function classifyLysine(line) {
-  if(!/라이신/i.test(line)) return '';
-  if(/황산염.{0,5}라이신|라이신.{0,5}황산염|황산라이신/i.test(line)) return '황산염라이신';
-  if(/염산염.{0,5}라이신|라이신.{0,5}염산염|염산라이신/i.test(line)) return '염산염라이신';
-  return '염산염라이신';
+function classifyLysine(ctx) {
+  // 반드시 "라이신" 단어가 있어야만 분류
+  if(!/라이신/i.test(ctx)) return '';
+  if (/황산염.{0,5}라이신|라이신.{0,5}황산염|황산라이신/i.test(ctx)) return '황산염라이신';
+  if (/염산염.{0,5}라이신|라이신.{0,5}염산염|염산라이신/i.test(ctx)) return '염산염라이신';
+  return '염산염라이신'; // 단독 라이신 = 염산염
 }
 
 function parsePriceDirect(msgs) {
@@ -896,19 +897,28 @@ function parsePriceDirect(msgs) {
       const qtyM = line.match(/([\d,]+(?:\.\d+)?)\s*(MT|톤|KG|kg)\b/i);
       const qty = qtyM ? parseFloat(qtyM[1].replace(/,/g,'')).toLocaleString()+qtyM[2].toUpperCase() : '';
 
-      // 원료명: 현재 줄에서만
+      // 원료명 - 현재줄 + 앞 5줄
+      const ctx = lines.slice(Math.max(0,li-5), li+1).join(' ') + ' ' + line;
+
       let mat = '';
-      if(/라이신/i.test(line)) {
-        mat = classifyLysine(line);
+      if(/라이신/i.test(ctx)) {
+        mat = classifyLysine(ctx);
       } else {
-        for(const [kw,label] of MAT_LIST) {
+        // 현재 줄 먼저
+        for(const [kw, label] of MAT_LIST) {
           if(line.includes(kw)||line.toLowerCase().includes(kw.toLowerCase())) { mat=label; break; }
+        }
+        // 없으면 컨텍스트
+        if(!mat) {
+          for(const [kw, label] of MAT_LIST) {
+            if(ctx.includes(kw)||ctx.toLowerCase().includes(kw.toLowerCase())) { mat=label; break; }
+          }
         }
       }
       if(!mat) return;
 
       const priceStr = '$'+price.toLocaleString()+(unit?'/'+unit:'');
-      const k = m.date+'_'+mat+'_'+price;
+      const k = m.date+'_'+mat+'_'+price+'_'+qty;
       if(seen.has(k)) return; seen.add(k);
 
       window._priceRows.push({
@@ -956,14 +966,9 @@ function queryPrice(keyword) {
     rows.forEach(r=>{if(!matGroups[r.mat])matGroups[r.mat]=[];matGroups[r.mat].push(r);});
     let bHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:20px;">';
     Object.entries(matGroups).forEach(([mat,mrows])=>{
-      const sorted=[...mrows].sort((a,b)=>a.date.localeCompare(b.date));
-      const prevRows=sorted.filter(r=>r.date.startsWith(prevMonth));
-      const currRows=sorted.filter(r=>r.date.startsWith(thisMonth));
-      let prevP=null,currP=null,prevLabel='전월 ('+prevMonth+')',currLabel='당월 ('+thisMonth+')';
-      if(currRows.length>0)currP=currRows[currRows.length-1].price;
-      if(prevRows.length>0)prevP=prevRows[prevRows.length-1].price;
-      if(!currP&&sorted.length>=2){currP=sorted[sorted.length-1].price;prevP=sorted[sorted.length-2].price;currLabel='최근 ('+sorted[sorted.length-1].date+')';prevLabel='이전 ('+sorted[sorted.length-2].date+')';}
-      const diff=(currP&&prevP)?currP-prevP:null;
+      const prevP=mrows.filter(r=>r.date.startsWith(prevMonth))[0]?.price||null;
+      const currP=mrows.filter(r=>r.date.startsWith(thisMonth))[0]?.price||null;
+      const diff=currP&&prevP?currP-prevP:null;
       const isUp=diff>0,isDn=diff<0;
       const col=isUp?'#e03e3e':isDn?'#0fa87a':'#8891aa';
       const arrow=isUp?'↑':isDn?'↓':'→';
@@ -971,11 +976,22 @@ function queryPrice(keyword) {
         <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${col};border-radius:12px 12px 0 0;"></div>
         <div style="font-size:14px;font-weight:700;color:#1a1d2e;margin-bottom:12px;">${mat}</div>
         <div style="display:flex;align-items:center;gap:6px;">
-          ${prevP!==null?`<div style="flex:1;text-align:center;padding:8px;background:#f4f6fb;border-radius:8px;"><div style="font-size:10px;color:#8891aa;margin-bottom:2px;">${prevLabel}</div><div style="font-size:17px;font-weight:700;color:#4a5068;">$${prevP.toLocaleString()}</div></div><div style="font-size:18px;color:${col};font-weight:700;">${arrow}</div>`:''}
-          <div style="flex:1;text-align:center;padding:8px;background:${col}11;border-radius:8px;border:1px solid ${col}33;"><div style="font-size:10px;color:#8891aa;margin-bottom:2px;">${currLabel}</div><div style="font-size:19px;font-weight:800;color:${col};">${currP?'$'+currP.toLocaleString():'-'}</div></div>
-          ${diff!==null?`<div style="flex:1;text-align:center;padding:8px;background:#f4f6fb;border-radius:8px;"><div style="font-size:10px;color:#8891aa;margin-bottom:2px;">변동</div><div style="font-size:14px;font-weight:700;color:${col};">${isUp?'+':''}$${Math.abs(diff).toLocaleString()}</div><div style="font-size:11px;color:${col};">${isUp?'+':''}${prevP?((diff/prevP)*100).toFixed(1)+'%':''}</div></div>`:''}
+          <div style="flex:1;text-align:center;padding:8px;background:#f4f6fb;border-radius:8px;">
+            <div style="font-size:10px;color:#8891aa;margin-bottom:2px;">전월 (${prevMonth})</div>
+            <div style="font-size:17px;font-weight:700;color:#4a5068;">${prevP?'$'+prevP.toLocaleString():'-'}</div>
+          </div>
+          <div style="font-size:18px;color:${col};font-weight:700;">${arrow}</div>
+          <div style="flex:1;text-align:center;padding:8px;background:${col}11;border-radius:8px;border:1px solid ${col}33;">
+            <div style="font-size:10px;color:#8891aa;margin-bottom:2px;">당월 (${thisMonth})</div>
+            <div style="font-size:17px;font-weight:700;color:${col};">${currP?'$'+currP.toLocaleString():'-'}</div>
+          </div>
+          ${diff!==null?`<div style="flex:1;text-align:center;padding:8px;background:#f4f6fb;border-radius:8px;">
+            <div style="font-size:10px;color:#8891aa;margin-bottom:2px;">변동</div>
+            <div style="font-size:14px;font-weight:700;color:${col};">${isUp?'+':''}${arrow}$${Math.abs(diff).toLocaleString()}</div>
+            <div style="font-size:11px;color:${col};">${isUp?'+':''}${((diff/prevP)*100).toFixed(1)}%</div>
+          </div>`:''}
         </div>
-        <div style="margin-top:6px;font-size:10px;color:#8891aa;text-align:right;">${mrows.length}건 · 최근 ${sorted[sorted.length-1].date}</div>
+        <div style="margin-top:6px;font-size:10px;color:#8891aa;text-align:right;">${mrows.length}건 · 최근 ${mrows[0].date}</div>
       </div>`;
     });
     bHTML+='</div>';
@@ -1334,11 +1350,10 @@ function loadSample() {
   currentData = { price: [...PRICE_DATA], vendor: [...VENDOR_DATA], staff: [...STAFF_DATA] };
   document.getElementById('samplePill').classList.add('show');
   renderAll();
-  setTimeout(analyzeOrderCycles, 200);
 }
 
 // ── 프록시 서버 연결 확인 ──────────────────────────────────
-const PROXY = 'http://localhost:3000';
+const PROXY = window.location.hostname === 'localhost' ? 'http://localhost:3000' : window.location.origin;
 let proxyOk = false;
 
 async function checkProxy() {
@@ -1794,12 +1809,16 @@ function renderVendor() {
 // 박제영 업무보고에서 방문지 추출
 function extractVisits(text) {
   const visits = [];
-  text.split('\n').forEach(line => {
+  const lines = text.split('\n');
+  lines.forEach(line => {
+    // "1) 어디어디" or "1. 어디어디" 패턴
     const m = line.match(/^\s*[\d]+[)\.]\s*(.+)/);
     if(m) {
-      const raw = m[1].replace(/\*[^*]+\*/g,'').replace(/@\S+/g,'').trim();
-      const v = raw.split('/')[0].split(' /')[0].trim();
-      if(v.length>1 && v.length<20 && !/http|www|#/.test(v)) visits.push(v);
+      const place = m[1].replace(/\*[^*]+\*/g,'').replace(/@\S+/g,'').trim();
+      // 너무 짧거나 일반 텍스트 제외
+      if(place.length > 2 && place.length < 30 && !/http|www|#/.test(place)) {
+        visits.push(place);
+      }
     }
   });
   return visits;
@@ -1833,17 +1852,22 @@ function renderCalendar() {
   const mStr = calYear+'-'+String(calMonth+1).padStart(2,'0');
 
   // 방문: 업무보고에서 추출
-  function getEffDate(m){const dm=(m.text||'').match(/^(\d{4}-\d{2}-\d{2})/m);return dm?dm[1]:(m.date||'');}
-  const reportMsgs = getMyReportMsgs().filter(m=>getEffDate(m).startsWith(mStr));
+  const reportMsgs = getMyReportMsgs().filter(m=>(m.date||'').startsWith(mStr));
+  // 발주: 발주채널에서
   const orderMsgs = getMyOrderMsgs().filter(m=>(m.date||'').startsWith(mStr));
-  const visitMap = {};
-  const orderMap = {};
+
+  // 날짜별 방문지/발주 매핑
+  const visitMap = {}; // {day: [place, place, ...]}
+  const orderMap = {}; // {day: [msg, ...]}
+
   reportMsgs.forEach(m => {
-    const d = parseInt(getEffDate(m).split('-')[2]||0);
+    const d = parseInt((m.date||'').split('-')[2]||0);
     if(!visitMap[d]) visitMap[d] = {places:[], msgs:[]};
-    visitMap[d].places.push(...extractVisits(m.text||''));
+    const places = extractVisits(m.text||'');
+    visitMap[d].places.push(...places);
     visitMap[d].msgs.push(m);
   });
+
   orderMsgs.forEach(m => {
     const d = parseInt((m.date||'').split('-')[2]||0);
     if(!orderMap[d]) orderMap[d] = [];
@@ -1862,7 +1886,7 @@ function renderCalendar() {
   const firstDow = new Date(calYear,calMonth,1).getDay(); // JS: 0=일,1=월,...,6=토
   const monOffset = firstDow === 0 ? 6 : firstDow - 1; // 월 기준 offset
 
-  for(let i=0;i<monOffset;i++) cells += '<div style="height:110px;border-right:1px solid #dde2ee;border-bottom:1px solid #dde2ee;background:#f8f9fc;"></div>';
+  for(let i=0;i<monOffset;i++) cells += '<div style="min-height:90px;border-right:1px solid #dde2ee;border-bottom:1px solid #dde2ee;background:#f8f9fc;"></div>';
 
   for(let d=1;d<=lastDate;d++) {
     const dow = new Date(calYear,calMonth,d).getDay(); // 0=일,6=토
@@ -1872,7 +1896,7 @@ function renderCalendar() {
 
     if(isWeekend) {
       // 토/일: 회색 공란
-      cells += `<div style="height:110px;border-right:1px solid #dde2ee;border-bottom:1px solid #dde2ee;padding:5px;background:#f8f9fc;">
+      cells += `<div style="min-height:90px;border-right:1px solid #dde2ee;border-bottom:1px solid #dde2ee;padding:5px;background:#f8f9fc;">
         <div style="font-size:12px;color:#dde2ee;">${d}</div>
       </div>`;
       continue;
@@ -1889,7 +1913,7 @@ function renderCalendar() {
     if(orders.length > 0) {
       dots += `<div style="font-size:10px;color:#6c4fc2;background:rgba(108,79,194,0.1);border-radius:3px;padding:1px 4px;margin-top:2px;cursor:pointer;" onclick="showCalDetail('${dateStr}','order',event)">발주 ${orders.length}건</div>`;
     }
-    cells += `<div style="height:110px;overflow:hidden;border-right:1px solid #dde2ee;border-bottom:1px solid #dde2ee;padding:5px;${isToday?'background:rgba(108,79,194,0.05);':''}">
+    cells += `<div style="min-height:90px;border-right:1px solid #dde2ee;border-bottom:1px solid #dde2ee;padding:5px;${isToday?'background:rgba(108,79,194,0.05);':''}">
       <div style="font-size:12px;font-weight:${isToday?700:500};color:${isToday?'#6c4fc2':'#4a5068'};margin-bottom:2px;">${d}</div>
       ${dots}
     </div>`;
@@ -2011,18 +2035,29 @@ function buildVendorIndex() {
   myMsgs.forEach(m => {
     const text = m.text||'';
     // 알려진 거래처 목록에서 찾기
-    const normMap={'합천':'합천돼지자가','합천돼지':'합천돼지자가','조양':'조양수산','정우':'정우수산','우일':'우일가축약품'};
-    const knownVendors=['합천돼지자가','합천돼지','합천','가림특수사료','프라임사료','부경양돈','오앤티','대한가축약품',
-      '김해축협','삼민목장','우일축산약품','우일가축약품','대구축협','수협','수협사료','합천축협',
-      '조양수산','조양','정우수산','정우','경주TMF','장유수산','충무수산','에이스파마텍','부산사료','시현축산',
+    const knownVendors = ['가림특수사료','프라임사료','부경양돈','오앤티','대한가축약품',
+      '김해축협','삼민목장','우일축산약품','대구축협','수협','수협사료','합천축협',
       'SUNCHEM','ALCHEM','WENGFU','XINLIN','DSM','NHU','CJ바이오','CJ',
       'BK&CO','운천화','세인바이오','Evonik','Ajinomoto','Balchem','한국씸벨'];
-    const exLine=/출고요청|발주|입고|선적|CIF|FOB|부탁|확인|완료|예정|#|\$|\d+\s*(kg|MT|톤|원)/i;
-    function addV(v,m){const n=normMap[v]||v;if(!vendorMap[n])vendorMap[n]=[];if(!vendorMap[n].find(x=>x.date===m.date&&x.text===m.text))vendorMap[n].push(m);}
-    const isOrdCh=(m.channel||'').includes('0-04')||(m.channel||'').includes('2-02');
-    for(const v of knownVendors){if(text.includes(v))addV(v,m);}
-    if(isOrdCh){text.split('\n').forEach(line=>{const c=line.replace(/@\S+/g,'').replace(/\*[^*]+\*/g,'').trim();if(exLine.test(c))return;if(/^[가-힣]{2,10}$/.test(c))addV(c,m);});}
-    if(!isOrdCh){text.split('\n').forEach(line=>{const vm=line.match(/^\s*[\d]+[)\.\s]\s*([가-힣]{2,10}(?:축협|농협|목장|축산|약품|사료|바이오|병원|수의|동물|수산)?)/);if(vm){const r=vm[1].trim();if(r.length>=3&&!['일반보고','업무내용','방문기록','오늘은','이번주','기본사항'].includes(r))addV(r,m);}});}
+    
+    knownVendors.forEach(v => {
+      if(text.includes(v)) {
+        if(!vendorMap[v]) vendorMap[v] = [];
+        vendorMap[v].push(m);
+      }
+    });
+
+    // 방문 패턴에서도 추출
+    text.split('\n').forEach(line => {
+      const visitM = line.match(/^\s*[\d]+[)\.\s]\s*([가-힣]{2,10}(?:축협|농협|목장|축산|약품|사료|바이오|병원|수의|동물)?)/);
+      if(visitM) {
+        const v = visitM[1].trim();
+        if(v.length>=3 && !['일반보고','업무내용','방문기록','오늘은','이번주'].includes(v)) {
+          if(!vendorMap[v]) vendorMap[v] = [];
+          if(!vendorMap[v].find(x=>x.date===m.date)) vendorMap[v].push(m);
+        }
+      }
+    });
   });
 
   window._vendorIndex = vendorMap;
@@ -2070,94 +2105,40 @@ function searchVendorAll(kw) {
 }
 
 function showVendorDetail(vendor) {
-  const vendorMap=window._vendorIndex||{};
-  const allMsgs=(vendorMap[vendor]||[]).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-  const resultEl=document.getElementById('vendorSearchResult');
-  const contentEl=document.getElementById('vendorSearchContent');
-  if(!resultEl||!contentEl)return;
+  const vendorMap = window._vendorIndex||{};
+  const msgs = (vendorMap[vendor]||[]).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const resultEl = document.getElementById('vendorSearchResult');
+  const contentEl = document.getElementById('vendorSearchContent');
+  if(!resultEl||!contentEl) return;
 
-  const chOrderMsgs=allMsgs.filter(m=>(m.channel||'').includes('0-04')||(m.channel||'').includes('2-02'));
-  const visitMsgs=allMsgs.filter(m=>!((m.channel||'').includes('0-04')||(m.channel||'').includes('2-02')));
+  let html = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+    <div style="font-size:15px;font-weight:700;color:#1a1d2e;">🏢 ${vendor}</div>
+    <span style="font-size:12px;color:#8891aa;">${msgs.length}건</span>
+  </div>`;
 
-  const matKws=['황산염라이신','염산염라이신','라이신','DL-메치오닌','메치오닌','L-트레오닌','트레오닌',
-    '트립토판','발린','MDCP','MCP','DCP','TCP','비타민D3','비타민E','비타민A','비타민C',
-    '염화콜린','콜린','코코넛','ECM','보호지방','BHT','DDGS','대두박','대두유',
-    '나노비타믹스','나노비타블럭','VM프리믹스','비테인','하우린','인산칼슘'];
+  html += msgs.map(m => {
+    const ch = m.channel||'';
+    const isOrder = ch.includes('0-04')||ch.includes('2-02');
+    const icon = isOrder ? '📦' : '📝';
+    const borderColor = isOrder ? '#6c4fc2' : '#0fa87a';
+    const bg = isOrder ? '#f5f3ff' : '#f0faf6';
+    const typeLabel = isOrder ? '발주' : '방문/보고';
 
-  // 업무보고에서 발주 관련 줄 추출
-  // 메시지에 업체명 포함 → 주문/발송/출고/발주/입고/kg/톤 키워드 줄 전체 추출
-  const orderKw=/주문|발송|출고|발주|입고|요청|배송/i;
-  const qtyKw=/\d+\s*(kg|KG|MT|톤|g)/i;
-  const reportExtracted=[];
-  const seenReport=new Set();
-  visitMsgs.forEach(m=>{
-    const text=(m.text||'').replace(/@\S+/g,'').replace(/\*[^*]+\*/g,'');
-    if(!text.includes(vendor)) return;
-    const bodyDate=text.match(/^(\d{4}-\d{2}-\d{2})/m);
-    const effDate=bodyDate?bodyDate[1]:(m.date||'');
-    text.split('\n').forEach(line=>{
-      const l=line.trim();
-      if(l.length<3) return;
-      if(!(orderKw.test(l)||qtyKw.test(l))) return;
-      const k=effDate+'_'+l.substring(0,30);
-      if(seenReport.has(k)) return; seenReport.add(k);
-      // 원료명 찾기 - 없으면 줄 내용 그대로
-      let mat='-';
-      if(/라이신/i.test(l)){mat=/황산염|황산/i.test(l)?'황산염라이신':'염산염라이신';}
-      else{const f=matKws.find(k=>l.toLowerCase().includes(k.toLowerCase()));if(f)mat=f;}
-      const qM=l.match(/([\d,]+(?:\.\d+)?)\s*(MT|톤|KG|kg)\b/i);
-      const qty=qM?Number(qM[1].replace(/,/g,'')).toLocaleString()+' '+qM[2].toUpperCase():'-';
-      const pM=l.match(/\$\s*([\d,]+)/);
-      const price=pM?'$'+Number(pM[1].replace(/,/g,'')).toLocaleString():'-';
-      reportExtracted.push({date:effDate,mat,qty,price,summary:l.substring(0,60)});
-    });
-  });
-  // 날짜 내림차순 정렬
-  reportExtracted.sort((a,b)=>b.date.localeCompare(a.date));
+    const text = (m.text||'').replace(/\*[^*]+\*/g,'').replace(/@\S+/g,'').trim();
+    const lines = text.split('\n').filter(l=>l.trim().length>2).slice(0,8);
 
-  const totalOrderCount=chOrderMsgs.length+reportExtracted.length;
-  let html=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;"><div style="font-size:15px;font-weight:700;color:#1a1d2e;">🏢 ${vendor}</div><span style="font-size:12px;color:#8891aa;">발주 ${totalOrderCount}건 · 방문 ${visitMsgs.length}건</span></div>`;
-  html+=`<div style="margin-bottom:20px;"><div style="font-size:13px;font-weight:700;color:#6c4fc2;margin-bottom:10px;">📦 발주 내역</div>`;
+    return `<div style="background:${bg};border-radius:8px;padding:12px;margin-bottom:8px;border-left:3px solid ${borderColor};">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span style="font-size:11px;font-family:monospace;color:#8891aa;">${m.date}</span>
+        <span style="font-size:10px;padding:1px 6px;border-radius:10px;background:${borderColor}22;color:${borderColor};font-weight:700;">${typeLabel}</span>
+      </div>
+      <div style="font-size:12px;color:#4a5068;line-height:1.8;">${lines.join('<br>')}</div>
+    </div>`;
+  }).join('');
 
-  if(totalOrderCount>0){
-    html+=`<div style="border:1px solid #dde2ee;border-radius:10px;overflow:hidden;"><table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="background:#f5f3ff;border-bottom:2px solid #dde2ee;"><th style="padding:10px 12px;text-align:left;color:#6c4fc2;font-weight:700;white-space:nowrap;">날짜</th><th style="padding:10px 12px;text-align:left;color:#6c4fc2;font-weight:700;white-space:nowrap;">원료</th><th style="padding:10px 12px;text-align:right;color:#6c4fc2;font-weight:700;white-space:nowrap;">수량</th><th style="padding:10px 12px;text-align:right;color:#6c4fc2;font-weight:700;white-space:nowrap;">단가</th><th style="padding:10px 12px;text-align:left;color:#6c4fc2;font-weight:700;">내용</th></tr></thead><tbody>`;
-    chOrderMsgs.forEach((m,i)=>{
-      const text=(m.text||'').replace(/@\S+/g,'').replace(/\*[^*]+\*/g,'').trim();
-      const lines=text.split('\n');
-      let mat='-';
-      for(const line of lines){
-        if(/라이신/i.test(line)){mat=/황산염.{0,5}라이신|라이신.{0,5}황산염|황산라이신/i.test(line)?'황산염라이신':'염산염라이신';break;}
-        const f=matKws.find(k=>line.toLowerCase().includes(k.toLowerCase()));
-        if(f){mat=f;break;}
-      }
-      const qM=text.match(/([\d,]+(?:\.\d+)?)\s*(MT|톤|KG|kg)\b/i);
-      const qty=qM?Number(qM[1].replace(/,/g,'')).toLocaleString()+' '+qM[2].toUpperCase():'-';
-      const pM=text.match(/\$\s*([\d,]+)/);
-      const price=pM?'$'+Number(pM[1].replace(/,/g,'')).toLocaleString():'-';
-      const summary=lines.filter(l=>l.trim().length>2).slice(0,2).join(' ').substring(0,50);
-      html+=`<tr style="background:${i%2===0?'#fff':'#fafbff'};border-bottom:1px solid #eef1f7;"><td style="padding:10px 12px;white-space:nowrap;color:#8891aa;font-family:monospace;font-size:11px;">${m.date}</td><td style="padding:10px 12px;white-space:nowrap;font-weight:600;color:#1a1d2e;">${mat}</td><td style="padding:10px 12px;white-space:nowrap;text-align:right;color:#4a5068;">${qty}</td><td style="padding:10px 12px;white-space:nowrap;text-align:right;font-weight:700;color:#d97706;">${price}</td><td style="padding:10px 12px;color:#4a5068;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${summary}</td></tr>`;
-    });
-    reportExtracted.forEach((r,i)=>{
-      const bg=(chOrderMsgs.length+i)%2===0?'#fff':'#fafbff';
-      html+=`<tr style="background:${bg};border-bottom:1px solid #eef1f7;"><td style="padding:10px 12px;white-space:nowrap;color:#8891aa;font-family:monospace;font-size:11px;">${r.date}<span style="font-size:9px;color:#9d7de8;margin-left:3px;">보고</span></td><td style="padding:10px 12px;white-space:nowrap;font-weight:600;color:#1a1d2e;">${r.mat}</td><td style="padding:10px 12px;white-space:nowrap;text-align:right;color:#4a5068;">${r.qty}</td><td style="padding:10px 12px;white-space:nowrap;text-align:right;font-weight:700;color:#d97706;">${r.price}</td><td style="padding:10px 12px;color:#4a5068;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</td></tr>`;
-    });
-    html+=`</tbody></table></div>`;
-  }else{html+=`<div style="padding:16px;background:#f5f3ff;border-radius:8px;color:#8891aa;font-size:13px;text-align:center;">발주 내역 없음</div>`;}
-  html+='</div>';
-
-  if(visitMsgs.length){
-    html+=`<div style="font-size:13px;font-weight:700;color:#0fa87a;margin-bottom:10px;">📝 방문/보고 내역</div>`;
-    html+=visitMsgs.slice(0,5).map(m=>{
-      const raw=(m.text||'').replace(/@\S+/g,'').replace(/\*[^*]+\*/g,'').trim();
-      const lines=raw.split('\n');
-      const vIdx=lines.findIndex(l=>l.includes(vendor));
-      const relevant=vIdx>=0?lines.slice(Math.max(0,vIdx-1),vIdx+6).filter(l=>l.trim().length>0):lines.filter(l=>l.trim().length>0).slice(0,5);
-      return `<div style="background:#f0faf6;border-radius:8px;padding:10px 12px;margin-bottom:6px;border-left:3px solid #0fa87a;"><div style="font-size:11px;font-family:monospace;color:#8891aa;margin-bottom:4px;">${m.date}</div><div style="font-size:12px;color:#4a5068;line-height:1.8;">${relevant.join('<br>')}</div></div>`;
-    }).join('');
-  }
-  contentEl.innerHTML=html;
-  resultEl.style.display='block';
-  resultEl.scrollIntoView({behavior:'smooth',block:'nearest'});
+  contentEl.innerHTML = html;
+  resultEl.style.display = 'block';
+  resultEl.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 
@@ -2190,21 +2171,21 @@ function analyzeOrderCycles() {
     const date = m.date||'';
     if(!date) return;
 
-    const nm={'합천':'합천돼지자가','합천돼지':'합천돼지자가','조양':'조양수산','정우':'정우수산','우일':'우일가축약품'};
-    const kl=['합천돼지자가','합천돼지','합천','시현축산','SUNCHEM','ALCHEM','WENGFU','XINLIN','DSM','NHU','CJ바이오','CJ','BK&CO','운천화','세인바이오','Evonik','Ajinomoto','Balchem','가림특수사료','프라임사료','부경양돈','오앤티','대한가축약품','김해축협','삼민목장','우일축산약품','우일가축약품','합천축협','수협','대구축협','조양수산','조양','정우수산','정우','경주TMF','장유수산','충무수산','에이스파마텍','부산사료'];
-    const exL=/출고요청|발주|입고|선적|CIF|FOB|부탁|확인|완료|예정|#|\$|\d+\s*(kg|MT|톤|원)/i;
-    let rv='';
-    for(const v of [...kl].sort((a,b)=>b.length-a.length)){if(text.includes(v)){rv=v;break;}}
-    if(!rv){for(const l of text.split('\n').map(x=>x.replace(/@\S+/g,'').trim())){if(exL.test(l))continue;if(/^[가-힣]{2,10}$/.test(l)){rv=l;break;}}}
-    const vendor=nm[rv]||rv;
-    if(!vendor)return;
-    const mat=matKws.find(k=>text.toLowerCase().includes(k.toLowerCase()))||'';
-    if(!mat)return;
-    const key=vendor+'_'+mat;
-    if(!orderHistory[key])orderHistory[key]={vendor,mat,dates:[]};
-    if(!orderHistory[key].dates.includes(date))orderHistory[key].dates.push(date);
+    // 업체명
+    const vM = text.match(/(SUNCHEM|ALCHEM|WENGFU|XINLIN|DSM|NHU|CJ바이오|CJ|BK&?CO|운천화|세인바이오|Evonik|Ajinomoto|Balchem|가림특수사료|프라임사료|부경양돈|오앤티|대한가축약품|김해축협|삼민목장|우일축산약품|합천축협|합천|수협|대구축협|[가-힣]{2,8}(?:축협|농협|목장|축산|약품|사료)?)/i);
+    const vendor = vM ? vM[1].trim() : '';
+    if(!vendor) return;
+
+    // 원료명
+    const mat = matKws.find(k=>text.toLowerCase().includes(k.toLowerCase()))||'';
+    if(!mat) return;
+
+    const key = vendor+'_'+mat;
+    if(!orderHistory[key]) orderHistory[key] = {vendor, mat, dates:[]};
+    if(!orderHistory[key].dates.includes(date)) {
+      orderHistory[key].dates.push(date);
+    }
   });
-  window._orderHistory=orderHistory;
 
   // 각 조합별 평균 발주 주기 계산
   const today = new Date();
