@@ -1,0 +1,2352 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>영업 인텔리전스 대시보드</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f6fb;
+  --bg2: #ffffff;
+  --bg3: #eef1f7;
+  --border: #dde2ee;
+  --border2: #c8d0e0;
+  --purple: #7c5cbf;
+  --purple-light: #9d7de8;
+  --purple-glow: rgba(124,92,191,0.15);
+  --teal: #2dd4a0;
+  --teal-dim: rgba(45,212,160,0.12);
+  --red: #f87171;
+  --red-dim: rgba(248,113,113,0.12);
+  --amber: #fbbf24;
+  --amber-dim: rgba(251,191,36,0.12);
+  --blue: #60a5fa;
+  --blue-dim: rgba(96,165,250,0.12);
+  --text: #1a1d2e;
+  --text2: #4a5068;
+  --text3: #8891aa;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  min-height: 100vh;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(244,246,251,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  display: flex; align-items: center; height: 52px; gap: 16px;
+}
+.topbar-logo {
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-mark {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: linear-gradient(135deg, var(--purple) 0%, var(--purple-light) 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-mark svg { width: 16px; height: 16px; }
+.logo-text { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+.logo-text span { color: var(--purple-light); }
+.topbar-center { flex: 1; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.status-badge {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--text2);
+  background: var(--bg3); border: 1px solid var(--border);
+  padding: 4px 10px; border-radius: 20px;
+}
+.pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--text3); }
+.pulse.live { background: var(--teal); box-shadow: 0 0 0 3px rgba(45,212,160,0.2); animation: pulse 2s infinite; }
+.pulse.warn { background: var(--amber); }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 3px rgba(45,212,160,0.2)} 50%{box-shadow:0 0 0 6px rgba(45,212,160,0.05)} }
+.btn {
+  padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 500;
+  font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+  border: 1px solid var(--border2); background: var(--bg3); color: var(--text);
+  transition: all .15s; display: inline-flex; align-items: center; gap: 5px;
+}
+.btn:hover { border-color: var(--purple); color: var(--purple-light); }
+.btn-primary { background: var(--purple); border-color: var(--purple); color: white; }
+.btn-primary:hover { background: var(--purple-light); border-color: var(--purple-light); color: white; }
+.btn-teal { background: var(--teal-dim); border-color: var(--teal); color: var(--teal); }
+.btn-teal:hover { background: rgba(45,212,160,0.2); }
+
+/* ── LAYOUT ── */
+.layout { display: flex; min-height: calc(100vh - 52px); }
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  position: sticky; top: 52px; height: calc(100vh - 52px); overflow-y: auto;
+}
+.sidebar-section { padding: 0 12px; margin-bottom: 20px; }
+.sidebar-label { font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; padding: 0 8px; margin-bottom: 6px; }
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 8px; cursor: pointer;
+  font-size: 13px; color: var(--text2); transition: all .12s;
+  border: 1px solid transparent;
+}
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active { background: var(--purple-glow); border-color: rgba(124,92,191,0.3); color: var(--purple-light); font-weight: 500; }
+.nav-icon { width: 16px; height: 16px; opacity: 0.7; font-size: 14px; text-align: center; }
+.nav-count { margin-left: auto; font-size: 10px; background: var(--bg3); border: 1px solid var(--border); padding: 1px 6px; border-radius: 10px; color: var(--text3); }
+.main { flex: 1; padding: 24px; overflow-x: hidden; }
+
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── SETUP PAGE ── */
+.setup-hero {
+  text-align: center; padding: 40px 20px 32px;
+  max-width: 560px; margin: 0 auto;
+}
+.setup-hero h2 { font-size: 26px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.5px; }
+.setup-hero h2 span { color: var(--purple-light); }
+.setup-hero p { font-size: 14px; color: var(--text2); line-height: 1.7; }
+.setup-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden; max-width: 700px; margin: 0 auto 20px;
+}
+.setup-card-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+}
+.setup-card-header h3 { font-size: 14px; font-weight: 600; }
+.setup-card-header p { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.card-num {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--purple-glow); border: 1px solid rgba(124,92,191,0.4);
+  color: var(--purple-light); font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.setup-body { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.setup-body.single { grid-template-columns: 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.span2 { grid-column: 1/-1; }
+.form-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+.form-input {
+  padding: 9px 12px; border-radius: 8px;
+  border: 1px solid var(--border2); background: var(--bg3);
+  color: var(--text); font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
+  transition: border-color .15s;
+}
+.form-input:focus { outline: none; border-color: var(--purple); }
+.form-input.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+.form-hint { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.channel-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.ch-tag {
+  font-size: 12px; padding: 5px 11px; border-radius: 20px;
+  border: 1px solid var(--border2); background: var(--bg3);
+  color: var(--text2); cursor: pointer; transition: all .12s; user-select: none;
+}
+.ch-tag:hover { border-color: var(--purple); color: var(--text); }
+.ch-tag.on { background: var(--purple-glow); border-color: rgba(124,92,191,0.5); color: var(--purple-light); font-weight: 500; }
+.ch-input {
+  font-size: 12px; padding: 5px 10px; border-radius: 20px;
+  border: 1px dashed var(--border2); background: transparent; color: var(--text2);
+  width: 110px; font-family: 'Noto Sans KR', sans-serif;
+}
+.ch-input:focus { outline: none; border-color: var(--purple); color: var(--text); }
+.setup-footer {
+  padding: 14px 20px; background: var(--bg3); border-top: 1px solid var(--border);
+  display: flex; gap: 10px; align-items: center;
+}
+.info-box {
+  background: var(--blue-dim); border: 1px solid rgba(96,165,250,0.25);
+  border-radius: 8px; padding: 10px 12px; font-size: 12px; color: var(--blue);
+  display: flex; gap: 8px; line-height: 1.6;
+  max-width: 700px; margin: 0 auto 20px;
+}
+.warn-box {
+  background: var(--amber-dim); border: 1px solid rgba(251,191,36,0.25);
+  border-radius: 8px; padding: 10px 12px; font-size: 12px; color: var(--amber);
+  display: flex; gap: 8px; line-height: 1.6;
+  max-width: 700px; margin: 0 auto 16px;
+}
+
+/* ── PROGRESS ── */
+.progress-wrap {
+  max-width: 700px; margin: 0 auto 20px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 20px; display: none;
+}
+.progress-wrap.show { display: block; }
+.progress-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.prog-step { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text2); }
+.prog-icon {
+  width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;
+  border: 1px solid var(--border2); background: var(--bg3); color: var(--text3);
+}
+.prog-icon.run { background: var(--amber-dim); border-color: rgba(251,191,36,0.4); color: var(--amber); animation: spin 1s linear infinite; }
+.prog-icon.done { background: var(--teal-dim); border-color: rgba(45,212,160,0.4); color: var(--teal); }
+.prog-icon.err { background: var(--red-dim); border-color: rgba(248,113,113,0.4); color: var(--red); }
+@keyframes spin { to { transform: rotate(360deg); } }
+.prog-bar { height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, var(--purple) 0%, var(--purple-light) 100%); transition: width .5s ease; border-radius: 2px; }
+.prog-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); margin-bottom: 6px; }
+
+/* ── KPI CARDS ── */
+.kpi-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+.kpi-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px; position: relative; overflow: hidden;
+  transition: border-color .15s;
+}
+.kpi-card:hover { border-color: var(--border2); }
+.kpi-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent, var(--purple)), transparent);
+}
+.kpi-card.c-teal { --accent: var(--teal); }
+.kpi-card.c-red { --accent: var(--red); }
+.kpi-card.c-amber { --accent: var(--amber); }
+.kpi-label { font-size: 11px; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+.kpi-val { font-size: 30px; font-weight: 700; line-height: 1; letter-spacing: -1px; margin-bottom: 6px; }
+.kpi-change { font-size: 12px; display: flex; align-items: center; gap: 4px; }
+.kpi-change.up { color: var(--red); }
+.kpi-change.dn { color: var(--teal); }
+.kpi-change.flat { color: var(--text3); }
+
+/* ── SECTION HEADERS ── */
+.sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.sec-title { font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px; }
+.sec-title::before { content: ''; width: 3px; height: 14px; background: var(--purple); border-radius: 2px; }
+.sec-sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+/* ── AI SUMMARY ── */
+.ai-box {
+  background: var(--bg2); border: 1px solid rgba(124,92,191,0.3);
+  border-radius: 12px; padding: 16px; margin-bottom: 20px;
+  position: relative; overflow: hidden;
+}
+.ai-box::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--purple-light), transparent);
+}
+.ai-badge { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+.ai-badge-text { font-size: 11px; font-weight: 700; color: var(--purple-light); text-transform: uppercase; letter-spacing: 0.08em; }
+.ai-content { font-size: 13px; color: var(--text2); line-height: 1.8; }
+.ai-content.loading { color: var(--text3); font-style: italic; }
+.typing-dot { display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: var(--purple-light); margin: 0 2px; animation: blink 1.2s infinite; }
+.typing-dot:nth-child(2) { animation-delay: .2s; }
+.typing-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+
+/* ── TABLE ── */
+.tbl-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+.tbl-toolbar {
+  padding: 12px 14px; border-bottom: 1px solid var(--border);
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+}
+.tbl-search {
+  padding: 6px 10px; border-radius: 7px; font-size: 12px;
+  border: 1px solid var(--border2); background: var(--bg3); color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif; width: 180px;
+}
+.tbl-search:focus { outline: none; border-color: var(--purple); }
+.tbl-filter {
+  padding: 6px 8px; border-radius: 7px; font-size: 12px;
+  border: 1px solid var(--border2); background: var(--bg3); color: var(--text2);
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.tbl-count { margin-left: auto; font-size: 11px; color: var(--text3); }
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th {
+  font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase;
+  letter-spacing: 0.06em; padding: 10px 12px; text-align: left;
+  border-bottom: 1px solid var(--border); white-space: nowrap; background: var(--bg3);
+}
+td { padding: 11px 12px; border-bottom: 1px solid var(--border); color: var(--text2); font-size: 13px; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(124,92,191,0.04); color: var(--text); }
+.tag { font-size: 11px; padding: 3px 8px; border-radius: 5px; font-weight: 600; white-space: nowrap; display: inline-block; }
+.tag-up { background: var(--red-dim); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+.tag-dn { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(45,212,160,0.2); }
+.tag-warn { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
+.tag-info { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(96,165,250,0.2); }
+.tag-done { background: var(--teal-dim); color: var(--teal); border: 1px solid rgba(45,212,160,0.2); }
+.tag-flat { background: var(--bg3); color: var(--text3); border: 1px solid var(--border2); }
+.tag-purple { background: var(--purple-glow); color: var(--purple-light); border: 1px solid rgba(124,92,191,0.3); }
+td.bold { color: var(--text); font-weight: 500; }
+
+/* ── ALERTS ── */
+.alert-list { display: flex; flex-direction: column; gap: 8px; }
+.alert-item {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px;
+  display: flex; gap: 10px; align-items: flex-start;
+  border-left: 3px solid;
+}
+.alert-item.danger { border-left-color: var(--red); }
+.alert-item.warn { border-left-color: var(--amber); }
+.alert-item.info { border-left-color: var(--blue); }
+.alert-item.ok { border-left-color: var(--teal); }
+.alert-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+.alert-body { font-size: 12px; color: var(--text2); line-height: 1.6; }
+.alert-time { font-size: 11px; color: var(--text3); white-space: nowrap; margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+
+/* ── CHAT ── */
+.chat-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.chat-msgs { height: 300px; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.msg { max-width: 82%; }
+.msg.bot { align-self: flex-start; }
+.msg.user { align-self: flex-end; }
+.msg-bubble { padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.7; }
+.msg.bot .msg-bubble { background: var(--bg3); border: 1px solid var(--border2); border-bottom-left-radius: 3px; }
+.msg.user .msg-bubble { background: var(--purple); color: white; border-bottom-right-radius: 3px; }
+.chat-bar { display: flex; border-top: 1px solid var(--border); }
+.chat-in {
+  flex: 1; padding: 12px 14px; background: transparent; border: none;
+  color: var(--text); font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
+}
+.chat-in:focus { outline: none; }
+.chat-send {
+  padding: 12px 18px; background: var(--purple); color: white; border: none;
+  font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
+  transition: background .15s;
+}
+.chat-send:hover { background: var(--purple-light); }
+.quick-btns { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px; border-top: 1px solid var(--border); }
+.quick-btn {
+  font-size: 11px; padding: 4px 10px; border-radius: 6px;
+  border: 1px solid var(--border2); background: var(--bg3); color: var(--text2);
+  cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all .12s;
+}
+.quick-btn:hover { border-color: var(--purple); color: var(--purple-light); }
+
+/* ── EXPORT ── */
+.export-bar {
+  background: var(--teal-dim); border: 1px solid rgba(45,212,160,0.25);
+  border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
+  display: none; align-items: center; gap: 10px; font-size: 13px; color: var(--teal);
+}
+.export-bar.show { display: flex; }
+
+/* ── SAMPLE NOTICE ── */
+.sample-pill {
+  font-size: 11px; padding: 3px 9px; border-radius: 20px;
+  background: var(--amber-dim); color: var(--amber);
+  border: 1px solid rgba(251,191,36,0.3); display: none;
+}
+.sample-pill.show { display: inline-flex; align-items: center; gap: 4px; }
+
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .kpi-row { grid-template-columns: repeat(2,1fr); }
+  .setup-body { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <div class="topbar-logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 16 16" fill="none">
+        <rect x="1" y="1" width="6" height="6" rx="1.5" fill="white" opacity=".9"/>
+        <rect x="9" y="1" width="6" height="6" rx="1.5" fill="white" opacity=".6"/>
+        <rect x="1" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".6"/>
+        <rect x="9" y="9" width="6" height="6" rx="1.5" fill="white" opacity=".3"/>
+      </svg>
+    </div>
+    <span class="logo-text">영업<span>IQ</span></span>
+  </div>
+  <div class="topbar-center"></div>
+  <div class="topbar-right">
+    <span class="sample-pill show" id="samplePill">⚠ 샘플 데이터</span>
+    <div class="status-badge">
+      <span class="pulse" id="statusDot"></span>
+      <span id="statusTxt">미연결</span>
+    </div>
+    <button class="btn" onclick="showPage('setup')">⚙ 설정</button>
+    <button class="btn btn-teal" onclick="exportExcel()">↓ Excel</button>
+  </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">메뉴</div>
+      <div class="nav-item active" onclick="showPage('dashboard'); setNav(this)">
+        <span class="nav-icon">📊</span> 대시보드
+      </div>
+      <div class="nav-item" onclick="showPage('price'); setNav(this); renderPrice();">
+        <span class="nav-icon">💰</span> 단가 추이
+        <span class="nav-count" id="nc-price">0</span>
+      </div>
+      <div class="nav-item" onclick="showPage('vendor'); setNav(this); renderVendor();">
+        <span class="nav-icon">🏢</span> 거래처 현황
+        <span class="nav-count" id="nc-vendor">0</span>
+      </div>
+      <div style="display:none"><span id="nc-staff">0</span></div>
+      <div class="nav-item" onclick="showPage('bidding'); setNav(this); renderBidding();">
+        <span class="nav-icon">📋</span> 입찰공고
+        <span class="nav-count" id="nc-bidding">0</span>
+      </div>
+      <div style="display:none"><span id="nc-order">0</span></div>
+      <div style="display:none"><span id="nc-alerts">0</span><div id="dashAlerts"></div><tbody id="alertsBody2"></tbody></div>
+
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">도구</div>
+      <div class="nav-item" onclick="showPage('setup'); setNav(this)">
+        <span class="nav-icon">⚙</span> 설정
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ══ SETUP ══ -->
+    <div class="page active" id="page-setup">
+      <div class="setup-hero">
+        <h2>Slack <span>자동 연동</span> 설정</h2>
+        <p>아래 정보를 입력하면 대시보드를 열 때마다<br>Slack 메시지를 자동으로 분석해 최신 상태를 유지합니다.</p>
+      </div>
+
+      <div class="warn-box">
+        <span>⚠</span>
+        <span>브라우저 보안 정책(CORS)으로 인해 Slack API를 직접 호출하려면 <strong>Chrome 확장 프로그램</strong> 또는 <strong>로컬 프록시</strong>가 필요합니다. 아래 안내를 따르거나, 메시지를 복붙하는 수동 모드를 사용하세요.</span>
+      </div>
+
+      <div class="setup-card">
+        <div class="setup-card-header">
+          <div class="card-num">1</div>
+          <div><h3>Slack 연동</h3><p>User Token 사용 — 채널에 봇 추가 불필요, 다른 직원 모름</p></div>
+        </div>
+        <div class="setup-body">
+          <div class="form-group span2">
+            <label class="form-label">Slack User Token <span style="font-size:10px;background:var(--teal-dim);color:var(--teal);padding:2px 6px;border-radius:4px;margin-left:4px;">채널 알림 없음</span></label>
+            <input class="form-input mono" type="password" id="slackToken" placeholder="xoxp-XXXXXXXXXX-XXXXXXXXXX-XXXXXXXXXXXXXXXX">
+            <span class="form-hint">api.slack.com/apps → OAuth &amp; Permissions → <b>User Token</b> (xoxp- 로 시작) 복사</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label">분석 기간</label>
+            <select class="form-input" id="periodDays">
+              <option value="30">최근 30일</option>
+              <option value="60">최근 60일</option>
+              <option value="90" selected>최근 90일</option>
+              <option value="180">최근 180일</option>
+              <option value="365">최근 1년</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">자동 새로고침</label>
+            <select class="form-input" id="autoRefresh">
+              <option value="0" selected>사용 안 함</option>
+              <option value="60">1시간마다</option>
+              <option value="360">6시간마다</option>
+              <option value="1440">매일 1회</option>
+            </select>
+          </div>
+          <div class="form-group span2">
+            <label class="form-label">분석할 채널 선택</label>
+            <div class="channel-grid" id="chGrid">
+
+              <input class="ch-input" placeholder="채널명 입력 후 엔터" id="chInput" onkeydown="addCh(event)" style="width:150px;">
+              <span class="ch-tag" onclick="doAddCh(document.getElementById('chInput').value); document.getElementById('chInput').value='';" style="cursor:pointer;background:var(--purple-glow);border-color:rgba(124,92,191,0.5);color:var(--purple-light);">+ 추가</span>
+            </div>
+          </div>
+          <div class="form-group span2">
+            <label class="form-label">수집 키워드</label>
+            <input class="form-input" id="keywords" value="단가, 입찰, 견적, 계약, 인상, 협상, 납기, 발주, 라이신, 메치오닌, 트레오닌, 비타민, 미네랄, 아미노산, $/MT, $/kg, MT, 톤">
+          </div>
+        </div>
+        <div class="setup-footer">
+          <button class="btn btn-primary" onclick="runSlackFetch()">▶ Slack 연동 분석</button>
+          <button class="btn" onclick="openCorsHelper()">🔧 CORS 해결 방법</button>
+        </div>
+      </div>
+
+      <div class="setup-card">
+        <div class="setup-card-header">
+          <div class="card-num">2</div>
+          <div><h3>Claude AI 분석</h3><p>AI가 메시지에서 단가·입찰·업무 내용을 자동 추출합니다</p></div>
+        </div>
+        <div class="setup-body">
+          <div class="form-group span2">
+            <label class="form-label">Claude API Key</label>
+            <input class="form-input mono" type="password" id="claudeKey" placeholder="sk-ant-XXXXXXXXXXXXXXXX" onchange="saveSettings()" onblur="saveSettings()">
+            <span class="form-hint">console.anthropic.com → API Keys에서 발급</span>
+          </div>
+        </div>
+        <div class="setup-footer">
+          <button class="btn btn-primary" onclick="loadSample()">📋 샘플 데이터로 미리보기</button>
+          <span style="font-size:12px;color:var(--text3)">실제 연동 없이 전체 기능을 체험할 수 있습니다</span>
+        </div>
+      </div>
+
+      <div class="setup-card">
+        <div class="setup-card-header">
+          <div class="card-num">3</div>
+          <div><h3>수동 입력 모드</h3><p>Slack에서 메시지를 복사해서 붙여넣으면 AI가 분석합니다</p></div>
+        </div>
+        <div class="setup-body single">
+          <div class="form-group">
+            <label class="form-label">Slack 메시지 붙여넣기</label>
+            <textarea class="form-input" id="manualText" rows="6" placeholder="Slack 채널에서 메시지를 복사해서 여기에 붙여넣으세요.
+
+예시:
+[영업1팀 김영수] CJ바이오 라이신 단가 협상. $1,520/MT → $1,650/MT 인상 요청 접수. 중국 수출 규제 영향
+[영업2팀 박지현] Evonik 메치오닌 Q2 1,200MT 발주 완료. $2,900/MT 확정. 4/10 선적 예정
+[구매팀 이민호] NHU 비타민A 수급 불안. $7,900 → $8,650/kg 인상 통보. 긴급 재고 확보 필요"></textarea>
+          </div>
+        </div>
+        <div class="setup-footer">
+          <button class="btn btn-primary" onclick="analyzeManual()">🤖 AI 분석 시작</button>
+        </div>
+      </div>
+
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-steps" id="progSteps">
+          <div class="prog-step" id="ps1"><span class="prog-icon" id="pi1">1</span><span>Slack 채널 연결 및 메시지 수집</span></div>
+          <div class="prog-step" id="ps2"><span class="prog-icon" id="pi2">2</span><span>키워드 필터링 및 데이터 정제</span></div>
+          <div class="prog-step" id="ps3"><span class="prog-icon" id="pi3">3</span><span>Claude AI 분석 — 단가·입찰·업무보고 추출</span></div>
+          <div class="prog-step" id="ps4"><span class="prog-icon" id="pi4">4</span><span>전월 비교 및 변동율 산출</span></div>
+          <div class="prog-step" id="ps5"><span class="prog-icon" id="pi5">5</span><span>대시보드 업데이트 완료</span></div>
+        </div>
+        <div class="prog-meta"><span id="progLabel">준비 중...</span><span id="progPct">0%</span></div>
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+      </div>
+
+    </div><!-- /setup -->
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="page" id="page-dashboard">
+
+
+
+
+      <div class="ai-box">
+        <div class="ai-badge">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#9d7de8" stroke-width="1"/><path d="M4 7h6M7 4v6" stroke="#9d7de8" stroke-width="1.2" stroke-linecap="round"/></svg>
+          <span class="ai-badge-text">AI 종합 분석</span>
+        </div>
+        <div class="ai-content" id="aiSummary">이번 달 Slack 분석 결과, 사료 원료 단가인상 알림이 전월 대비 75% 급증했습니다. 아미노산 계열에서 트립토판(Ajinomoto +10.8%), 라이신(CJ바이오 +8.6%) 순으로 인상 압박이 크며, 비타민 계열도 A(NHU +9.5%), E(DSM -1.4% 협상 성공)로 명암이 갈렸습니다. 대상㈜ 트레오닌 납기 2주 지연으로 4월 생산 차질 위험이 있어 긴급 대체 공급처 확보가 필요합니다. DSM 비타민E 협상 인하(Q2 500MT)가 유일한 절감 성과입니다.</div>
+      </div>
+
+      <!-- 최근 알림 미리보기 -->
+      <div class="sec-head">
+        <div><div class="sec-title">긴급 알림</div><div class="sec-sub">즉각 조치가 필요한 항목</div></div>
+        <button class="btn" style="font-size:11px;padding:5px 10px" onclick="showPage('alerts');setNavById('page-alerts')">전체 보기 →</button>
+      </div>
+      <div class="alert-list" id="dashAlerts"></div>
+
+    </div>
+
+    <!-- ══ PRICE ══ -->
+    <div class="page" id="page-price">
+      <div class="sec-head">
+        <div><div class="sec-title">단가 추이</div><div class="sec-sub">김선이·성유진·왕려원 업무보고 단가 자동 추출</div></div>
+      </div>
+
+      <!-- 검색창 -->
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:20px;">
+        <input id="priceQuery" class="form-input" placeholder="🔍 원료명 검색 (예: 라이신, DCP, 메치오닌...)"
+          style="flex:1;max-width:400px;font-size:14px;padding:10px 14px;"
+          onkeyup="queryPrice(this.value)"
+          oninput="queryPrice(this.value)">
+        <span id="priceQueryCount" style="font-size:12px;color:#8891aa;white-space:nowrap;"></span>
+      </div>
+
+      <!-- 전광판: 전월→당월 비교 -->
+      <div id="priceBoard" style="display:none;margin-bottom:20px;"></div>
+
+      <!-- 단가 변동 테이블 -->
+      <div id="priceTableWrap" style="display:none;">
+        <div class="tbl-card">
+          <div style="padding:10px 14px;font-size:12px;font-weight:600;color:#4a5068;border-bottom:1px solid #dde2ee;">
+            📊 단가 변동 내역
+          </div>
+          <div class="tbl-wrap">
+            <table><thead><tr>
+              <th>날짜</th><th>작성자</th><th>원료명</th><th>단가</th><th>수량</th><th>비고</th>
+            </tr></thead><tbody id="priceSummary"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 기본 안내 -->
+      <div id="priceGuide" style="text-align:center;padding:60px 20px;color:#8891aa;">
+        <div style="font-size:48px;margin-bottom:16px;">🔍</div>
+        <div style="font-size:16px;font-weight:600;color:#4a5068;margin-bottom:8px;">원료명을 검색하세요</div>
+        <div style="font-size:13px;">예: 라이신, DCP, 메치오닌, 비타민, 트레오닌</div>
+      </div>
+
+      <div style="display:none">
+        <span id="nc-price">0</span>
+        <span id="priceCnt"></span>
+        <tbody id="priceBody"></tbody>
+      </div>
+    </div>
+    <!-- ══ VENDOR ══ -->
+    <div class="page" id="page-vendor">
+      <div class="sec-head">
+        <div><div class="sec-title">거래처 현황</div><div class="sec-sub">박제영 방문 일정 및 발주 내역</div></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn" onclick="calPrev()">← 이전달</button>
+          <span id="calTitle" style="font-size:14px;font-weight:700;min-width:100px;text-align:center;color:#1a1d2e;"></span>
+          <button class="btn" onclick="calNext()">다음달 →</button>
+        </div>
+      </div>
+
+      <!-- 캘린더 -->
+      <div style="background:#fff;border:1px solid #dde2ee;border-radius:12px;overflow:hidden;margin-bottom:16px;">
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);background:#eef1f7;">
+          <div style="padding:10px;text-align:center;font-size:11px;font-weight:700;color:#8891aa;">월</div>
+          <div style="padding:10px;text-align:center;font-size:11px;font-weight:700;color:#8891aa;">화</div>
+          <div style="padding:10px;text-align:center;font-size:11px;font-weight:700;color:#8891aa;">수</div>
+          <div style="padding:10px;text-align:center;font-size:11px;font-weight:700;color:#8891aa;">목</div>
+          <div style="padding:10px;text-align:center;font-size:11px;font-weight:700;color:#8891aa;">금</div>
+          <div style="padding:10px;text-align:center;font-size:11px;font-weight:700;color:#dde2ee;">토</div>
+          <div style="padding:10px;text-align:center;font-size:11px;font-weight:700;color:#dde2ee;">일</div>
+        </div>
+        <div id="calGrid" style="display:grid;grid-template-columns:repeat(7,1fr);"></div>
+      </div>
+
+      <!-- 클릭시 상세 -->
+      <div id="calDetail" style="display:none;background:#fff;border:1px solid #dde2ee;border-radius:12px;padding:16px;margin-bottom:16px;">
+        <div id="calDetailContent"></div>
+      </div>
+
+      <!-- 업체 통합 검색 -->
+      <div class="tbl-card" style="margin-bottom:16px;">
+        <div style="padding:12px 14px;border-bottom:1px solid #dde2ee;">
+          <div style="font-size:13px;font-weight:700;color:#1a1d2e;margin-bottom:10px;">🔍 업체 검색</div>
+          <input id="vendorSearchInput" class="form-input" placeholder="업체명 입력 (예: 대한가축약품, 오앤티...)"
+            style="width:100%;font-size:14px;padding:10px 14px;"
+            oninput="searchVendorAll(this.value)"
+            onkeyup="searchVendorAll(this.value)">
+        </div>
+        <!-- 업체 버튼 목록 -->
+        <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eef1f7;">
+          <span style="font-size:12px;color:#8891aa;" id="vendorBtnCount">업체 목록</span>
+          <button onclick="toggleVendorList()" id="vendorToggleBtn"
+            style="font-size:11px;padding:4px 10px;border:1px solid #dde2ee;border-radius:12px;background:#fff;color:#6c4fc2;cursor:pointer;font-weight:600;">
+            펼치기 ▼
+          </button>
+        </div>
+        <div id="vendorBtnList" style="padding:12px;display:none;flex-wrap:wrap;gap:8px;max-height:200px;overflow-y:auto;">
+          <div style="color:#8891aa;font-size:13px;padding:4px;">Slack 연동 후 업체 목록이 표시됩니다</div>
+        </div>
+        <!-- 검색 결과 -->
+        <div id="vendorSearchResult" style="display:none;border-top:1px solid #dde2ee;padding:16px;">
+          <div id="vendorSearchContent"></div>
+        </div>
+      </div>
+
+      <!-- 발주 주기 알림 -->
+      <div class="tbl-card" style="margin-bottom:16px;">
+        <div style="padding:10px 14px;font-size:13px;font-weight:600;color:#4a5068;border-bottom:1px solid #dde2ee;display:flex;align-items:center;justify-content:space-between;">
+          <span>⚠️ 발주 주기 체크 <span id="orderAlertCount" style="font-size:11px;color:#e03e3e;font-weight:700;"></span></span>
+          <span style="font-size:11px;color:#8891aa;">과거 발주 주기 기반 자동 감지</span>
+        </div>
+        <div id="orderAlertList" style="padding:12px;">
+          <div style="color:#8891aa;font-size:13px;">Slack 연동 후 자동 분석됩니다</div>
+        </div>
+      </div>
+
+      <!-- 발주 내역 -->
+      <div class="tbl-card" style="margin-bottom:16px;">
+        <div style="padding:10px 14px;font-size:13px;font-weight:600;color:#4a5068;border-bottom:1px solid #dde2ee;">
+          📦 발주 내역 (업체별)
+        </div>
+        <div id="orderVendorList" style="padding:12px;display:flex;flex-wrap:wrap;gap:8px;"></div>
+        <div id="orderDetail" style="display:none;padding:14px;border-top:1px solid #dde2ee;">
+          <div id="orderDetailContent"></div>
+        </div>
+      </div>
+    </div>
+    <!-- 업무보고 숨김 -->
+    <!-- ══ BIDDING ══ -->
+    <div class="page" id="page-bidding">
+      <div class="sec-head">
+        <div><div class="sec-title">입찰공고</div><div class="sec-sub">입찰 관련 메시지 자동 추출 — #0-06입찰공고</div></div>
+      </div>
+      <div class="tbl-card">
+        <div style="padding:10px 14px;font-size:12px;font-weight:600;color:#4a5068;border-bottom:1px solid #dde2ee;">📋 입찰 요약 (키워드 자동 추출)</div>
+        <div class="tbl-wrap">
+          <table><thead><tr>
+            <th>날짜</th><th>담당자</th><th>원료명</th><th>업체명</th>
+          </tr></thead><tbody id="biddingSummary"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div class="page" id="page-raw">
+      <div class="sec-head">
+        <div><div class="sec-title">수집된 Slack 메시지 전체</div><div class="sec-sub" id="rawCount"></div></div>
+      </div>
+      <div class="tbl-card">
+        <div class="tbl-toolbar">
+          <input class="tbl-search" placeholder="내용 검색..." onkeyup="filt('rawBody',this.value)">
+          <select class="tbl-filter" onchange="filtCol('rawBody',0,this.value)" id="rawChFilter">
+            <option value="">전체 채널</option>
+          </select>
+        </div>
+        <div class="tbl-wrap">
+          <table><thead><tr>
+            <th>채널</th><th>담당자</th><th>날짜</th><th>메시지 내용</th>
+          </tr></thead><tbody id="rawBody"></tbody></table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ── 데이터 ──────────────────────────────────────────────────
+// ※ 단가: $/MT(메트릭톤) 기준, 원화는 환율 1,370원 적용
+const PRICE_DATA = [
+  {product:"라이신 황산염 (L-Lysine HCl 98.5%)",vendor:"CJ바이오",p2:1480,p1:1520,cur:1650,note:"중국 공급 감소"},
+  {product:"메치오닌 (DL-Methionine 99%)",vendor:"Evonik Korea",p2:2850,p1:2900,cur:3120,note:"유럽발 물류비 인상"},
+  {product:"트레오닌 (L-Threonine 98.5%)",vendor:"대상㈜",p2:1050,p1:1080,cur:1080,note:"동결"},
+  {product:"비타민A (1,000,000IU/g)",vendor:"NHU Korea",p2:8200,p1:7900,cur:8650,note:"원료 수급 불안"},
+  {product:"비타민E (50% 분말)",vendor:"DSM Korea",p2:3400,p1:3600,cur:3550,note:"협상 소폭 인하"},
+  {product:"인산2칼슘 (DCP 18%)",vendor:"㈜세인바이오",p2:420,p1:430,cur:460,note:"인광석 가격 상승"},
+  {product:"황산아연 (ZnSO₄ 35%)",vendor:"영풍화학",p2:680,p1:680,cur:740,note:"아연 국제가 상승"},
+  {product:"콜린클로라이드 (60% 분체)",vendor:"Balchem Korea",p2:1100,p1:1150,cur:1150,note:"동결"},
+  {product:"트립토판 (L-Tryptophan 98%)",vendor:"Ajinomoto Korea",p2:4800,p1:5100,cur:5650,note:"수요 급증"},
+  {product:"바린 (L-Valine 98%)",vendor:"CJ바이오",p2:2200,p1:2300,cur:2480,note:"공급 부족"},
+];
+const VENDOR_DATA = [
+  {name:"CJ바이오",type:"단가인상",date:"2026-03-28",desc:"라이신 중국 수출 규제 영향으로 $/MT 기준 8.6% 인상 공문 접수",person:"김영수",impact:"+8.6%",action:"4/2 재협상"},
+  {name:"Evonik Korea",type:"단가인상",date:"2026-03-27",desc:"메치오닌 유럽 공장 가동률 하락 및 물류비 인상 반영 요청",person:"박지현",impact:"+7.6%",action:"수용 검토"},
+  {name:"NHU Korea",type:"단가인상",date:"2026-03-26",desc:"비타민A 원료(베타이온) 수급 불안정으로 $/kg 9.5% 인상 통보",person:"이민호",impact:"+9.5%",action:"4/5 미팅 예정"},
+  {name:"㈜세인바이오",type:"입찰",date:"2026-03-25",desc:"DCP·MCP Q2 분기 물량 입찰 진행. 톤당 $460 제시",person:"최수진",impact:"미정",action:"4/8 결과 대기"},
+  {name:"DSM Korea",type:"협상완료",date:"2026-03-24",desc:"비타민E Q2 계약 단가 소폭 인하 합의. $/kg -1.4% 확정",person:"정대원",impact:"-1.4%",action:"4/1 계약 날인"},
+  {name:"Ajinomoto Korea",type:"단가인상",date:"2026-03-22",desc:"트립토판 글로벌 수요 급증으로 분기 계약 10.8% 인상 요청",person:"김영수",impact:"+10.8%",action:"경영진 검토"},
+  {name:"영풍화학",type:"단가인상",date:"2026-03-20",desc:"황산아연 아연 국제 현물가 연동 인상. LME 기준 +9% 요구",person:"박지현",impact:"+8.8%",action:"내부 검토중"},
+  {name:"대상㈜",type:"공급이슈",date:"2026-03-19",desc:"트레오닌 발효 설비 점검으로 4월 납기 2주 지연 통보",person:"이민호",impact:"동결",action:"대체 공급처 탐색"},
+];
+const STAFF_DATA = [
+  {person:"김영수",date:"2026-03-28",ch:"#영업1팀",work:"CJ바이오 라이신 단가협상 미팅. 8.6% 인상안 접수, 중국 수급 데이터 기반 반박 자료 준비 중",vendor:"CJ바이오",amount:0,action:"4/2 재협상 미팅"},
+  {person:"박지현",date:"2026-03-28",ch:"#영업2팀",work:"Evonik 메치오닌 Q2 물량 1,200MT 발주 완료. 단가 $2,900/MT 확정",vendor:"Evonik Korea",amount:4765200000,action:"4/10 선적 확인"},
+  {person:"이민호",date:"2026-03-27",ch:"#영업1팀",work:"NHU 비타민A 긴급 미팅 요청 접수. 9.5% 인상 관련 대응 방안 검토 중",vendor:"NHU Korea",amount:0,action:"4/5 미팅 참석"},
+  {person:"최수진",date:"2026-03-27",ch:"#영업3팀",work:"대상㈜ 트레오닌 납기 지연 확인. 대체 공급처 Ajinomoto 재고 여부 문의",vendor:"대상㈜",amount:0,action:"4/1 대체 견적"},
+  {person:"정대원",date:"2026-03-26",ch:"#영업2팀",work:"DSM 비타민E Q2 계약 완료. 1.4% 인하 확보. 500MT 선도 계약 체결",vendor:"DSM Korea",amount:2434750000,action:"4/1 계약 날인"},
+  {person:"김영수",date:"2026-03-25",ch:"#영업1팀",work:"Ajinomoto 트립토판 10.8% 인상 공문 수령. 글로벌 수급 보고서 경영진 공유",vendor:"Ajinomoto Korea",amount:0,action:"4/3 대응 확정"},
+  {person:"박지현",date:"2026-03-24",ch:"#영업3팀",work:"㈜세인바이오 DCP Q2 입찰 견적 제출. $460/MT 기준 300MT 제안",vendor:"㈜세인바이오",amount:189420000,action:"4/8 낙찰 결과"},
+  {person:"이민호",date:"2026-03-22",ch:"#영업1팀",work:"영풍화학 황산아연 인상 공문 접수. LME 아연가 연동 조항 재검토 요청",vendor:"영풍화학",amount:0,action:"4/1 품의 결재"},
+];
+const ALERTS_DATA = [
+  {type:"danger",title:"Ajinomoto 트립토판 +10.8% 인상 — 경영진 즉시 검토 필요",body:"글로벌 트립토판 수요 급증으로 분기 계약 재협상 불가피. 대체 공급처(CJ바이오, 梅花生物) 비교 견적 선행 필요.",date:"03-22"},
+  {type:"danger",title:"NHU 비타민A +9.5% 인상 통보",body:"베타이온(원료) 수급 불안 지속. 비타민A 재고 2주분 미만 — 긴급 안전재고 확보 필요.",date:"03-26"},
+  {type:"warn",title:"CJ바이오 라이신 +8.6% 재협상 진행중",body:"중국 수출 규제 완화 여부가 협상 키. 4/2 미팅 전 CBOT 라이신 선물 데이터 준비 요망.",date:"03-28"},
+  {type:"warn",title:"대상㈜ 트레오닌 납기 2주 지연",body:"4월 출고 물량 차질 예상. Ajinomoto Korea 긴급 대체 공급 가능 여부 확인 중.",date:"03-19"},
+  {type:"info",title:"㈜세인바이오 DCP Q2 입찰 — 결과 대기",body:"4/8 낙찰 결과 예정. 경쟁사 대비 $460/MT 단가 경쟁력 사전 점검 필요.",date:"03-25"},
+  {type:"ok",title:"DSM 비타민E -1.4% 인하 협상 성공",body:"Q2 500MT 선도 계약 체결. 약 3,400만원 절감 효과 예상.",date:"03-24"},
+];
+
+let currentData = { price: [...PRICE_DATA], vendor: [...VENDOR_DATA], staff: [...STAFF_DATA] };
+let autoTimer = null;
+
+// ── 유틸 ──────────────────────────────────────────────────
+const fmt = n => n.toLocaleString('ko-KR');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+}
+function setNav(el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+}
+function setNavById(id) {}
+
+document.querySelectorAll('.ch-tag').forEach(t => t.onclick = () => t.classList.toggle('on'));
+function addCh(e) {
+  if (e.key !== 'Enter' && e.key !== ',' && e.key !== ' ') return;
+  e.preventDefault();
+  const v = e.target.value.trim().replace('#','').replace(',','');
+  if (!v) return;
+  doAddCh(v);
+  e.target.value = '';
+}
+
+function doAddCh(v) {
+  v = v.trim().replace('#','');
+  if (!v) return;
+  // 중복 체크
+  const existing = [...document.querySelectorAll('.ch-tag')].map(t => t.dataset.ch);
+  if (existing.includes(v)) return;
+  const tag = document.createElement('span');
+  tag.className = 'ch-tag on'; tag.dataset.ch = v; tag.textContent = '#' + v;
+  tag.onclick = () => tag.classList.toggle('on');
+  const input = document.getElementById('chInput');
+  document.getElementById('chGrid').insertBefore(tag, input);
+}
+
+// ── 렌더 ──────────────────────────────────────────────────
+function renderAll() {
+  renderPrice(); renderVendor(); renderStaff(); renderAlerts();
+  updateCounts();
+  const lu=document.getElementById('lastUpdate'); if(lu) lu.textContent='마지막 업데이트: '+new Date().toLocaleString('ko-KR');
+  const sd=document.getElementById('statusDot'); if(sd) sd.className='pulse live';
+  const st=document.getElementById('statusTxt'); if(st) st.textContent='연결됨';
+  showPage('dashboard'); setNav(document.querySelector('.nav-item'));
+}
+
+function renderPrice() {
+  if (!window._slackMsgs) return;
+  const priceKws = ['단가','$/mt','$/kg','원/kg','원/톤','$/','인상','인하','동결','시장단가','가격','매입단가','원('];
+  const msgs = window._slackMsgs.filter(m =>
+    (m.channel||'').includes('0-02') &&
+    priceKws.some(kw => (m.text||'').toLowerCase().includes(kw))
+  );
+  window._priceMsgs = msgs;
+  if(document.getElementById('priceCnt')) (function(){var _e=document.getElementById('priceCnt');if(_e)_e.textContent=msgs.length + '건';})();
+  if(document.getElementById('nc-price')) (function(){var _e=document.getElementById('nc-price');if(_e)_e.textContent=msgs.length;})();
+
+  // 원문 메시지
+  const tb = document.getElementById('priceBody');
+  if(tb) {
+    tb.innerHTML = msgs.map(m => `<tr>
+      <td style="white-space:nowrap;color:var(--text3);font-size:11px;font-family:monospace">${m.date||''}</td>
+      <td style="white-space:nowrap;font-weight:500;color:var(--text);font-size:12px">${m.person||''}</td>
+      <td style="font-size:13px;word-break:break-word;line-height:1.6;max-width:700px">${(m.text||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td>
+    </tr>`).join('') || '<tr><td colspan="3" style="text-align:center;color:var(--text3);padding:20px">메시지 없음</td></tr>';
+  }
+
+  // 직접 파싱으로 단가 추출 (AI 불필요)
+  parsePriceDirect(msgs);
+}
+
+function classifyLysine(line) {
+  if(!/라이신/i.test(line)) return '';
+  if(/황산염.{0,5}라이신|라이신.{0,5}황산염|황산라이신/i.test(line)) return '황산염라이신';
+  if(/염산염.{0,5}라이신|라이신.{0,5}염산염|염산라이신/i.test(line)) return '염산염라이신';
+  return '염산염라이신';
+}
+
+function parsePriceDirect(msgs) {
+  const targets = ['김선이','성유진','왕려원'];
+  const filteredMsgs = msgs.filter(m => targets.some(t=>(m.person||'').includes(t)));
+
+  window._priceRows = [];
+  const seen = new Set();
+
+  // 세인바이오 취급품목 기준 - 순서 중요 (구체적인 것 먼저)
+  const MAT_LIST = [
+    ['황산염라이신','황산염라이신'], ['라이신황산염','황산염라이신'],
+    ['염산염라이신','염산염라이신'], ['라이신염산염','염산염라이신'],
+    ['DL-메치오닌','DL-메치오닌'], ['DL메치오닌','DL-메치오닌'],
+    ['액상메치오닌','액상메치오닌'], ['메치오닌','DL-메치오닌'],
+    ['L-트레오닌','L-트레오닌'], ['트레오닌','L-트레오닌'],
+    ['트립토판','트립토판'], ['발린','발린'],
+    ['MDCP','MDCP'], ['MCP','MCP'], ['DCP','DCP'], ['TCP','TCP'],
+    ['비타민D3','비타민D3'], ['비타민D','비타민D3'],
+    ['비타민E','비타민E'], ['비타민A','비타민A'],
+    ['비타민C','비타민C'], ['비타민B','비타민B'],
+    ['염화콜린','염화콜린'], ['콜린','염화콜린'],
+    ['코코넛','코코넛'], ['ECM','ECM'],
+    ['보호지방','보호지방'], ['메가팻','보호지방(메가팻)'], ['하이팻','보호지방(하이팻)'],
+    ['BHT','BHT'], ['레시틴','레시틴'], ['비테인','비테인염산염'],
+    ['DDGS','DDGS'], ['대두박','대두박'], ['대두유','대두유'],
+  ];
+
+  // 제외: 시세/예상/문의/입찰 관련
+  const excludeKws = ['시세','예상','전망','문의','협상중','검토','참고','불가','선언','중단','입찰','낙찰','공고','offer','제안','견적'];
+  // 계약 확정 키워드
+  const buyKws = ['계약','발주','수령','확정','완료','체결','통관','ETA','ETD','입고','선적','구매','매입','CIF','FOB','낙찰확정','선택','선적완료'];
+
+  filteredMsgs.forEach(m => {
+    const text = m.text||'';
+    const lines = text.split('\n');
+
+    lines.forEach((line, li) => {
+      // 제외 키워드
+      if(excludeKws.some(k=>line.toLowerCase().includes(k.toLowerCase()))) return;
+      // $ 없으면 스킵
+      if(!/\$/.test(line)) return;
+      // 계약 키워드 없으면 스킵
+      if(!buyKws.some(k=>line.includes(k))) return;
+
+      // 단가 추출 - $/kg, $/MT, $/톤 모두
+      const priceM = line.match(/\$\s*([\d,]+(?:\.\d+)?)\s*(?:\/\s*(MT|톤|KG|kg|T|ton))?/i);
+      if(!priceM) return;
+      const price = parseFloat(priceM[1].replace(/,/g,''));
+      if(price<0.1||price>10000) return;
+      const unit = priceM[2]||'';
+
+      // 수량 추출
+      const qtyM = line.match(/([\d,]+(?:\.\d+)?)\s*(MT|톤|KG|kg)\b/i);
+      const qty = qtyM ? parseFloat(qtyM[1].replace(/,/g,'')).toLocaleString()+qtyM[2].toUpperCase() : '';
+
+      // 원료명: 현재 줄에서만
+      let mat = '';
+      if(/라이신/i.test(line)) {
+        mat = classifyLysine(line);
+      } else {
+        for(const [kw,label] of MAT_LIST) {
+          if(line.includes(kw)||line.toLowerCase().includes(kw.toLowerCase())) { mat=label; break; }
+        }
+      }
+      if(!mat) return;
+
+      const priceStr = '$'+price.toLocaleString()+(unit?'/'+unit:'');
+      const k = m.date+'_'+mat+'_'+price;
+      if(seen.has(k)) return; seen.add(k);
+
+      window._priceRows.push({
+        date:m.date||'', person:m.person||'', mat, price, priceStr, qty,
+        note: line.replace(/\*[^*]+\*/g,'').replace(/\*/g,'').replace(/@\S+/g,'').trim().substring(0,60)
+      });
+    });
+  });
+
+  window._priceRows.sort((a,b)=>b.date.localeCompare(a.date));
+  const cntEl = document.getElementById('nc-price');
+  if(cntEl) cntEl.textContent = window._priceRows.length;
+}
+
+function queryPrice(keyword) {
+  const board = document.getElementById('priceBoard');
+  const tableWrap = document.getElementById('priceTableWrap');
+  const guide = document.getElementById('priceGuide');
+  const tb = document.getElementById('priceSummary');
+  const cntEl = document.getElementById('priceQueryCount');
+  if(!tb) return;
+
+  if(!keyword||keyword.trim().length<1) {
+    if(board) board.style.display='none';
+    if(tableWrap) tableWrap.style.display='none';
+    if(guide) guide.style.display='block';
+    if(cntEl) cntEl.textContent='';
+    return;
+  }
+
+  if(guide) guide.style.display='none';
+  const q = keyword.trim().toLowerCase();
+  const rows = (window._priceRows||[]).filter(r=>
+    r.mat.toLowerCase().includes(q)||r.note.toLowerCase().includes(q)
+  );
+  if(cntEl) cntEl.textContent = rows.length+'건';
+
+  // 전광판 카드
+  if(board) {
+    const now = new Date();
+    const thisMonth = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+    const prevDate = new Date(now.getFullYear(),now.getMonth()-1,1);
+    const prevMonth = prevDate.getFullYear()+'-'+String(prevDate.getMonth()+1).padStart(2,'0');
+    const matGroups={};
+    rows.forEach(r=>{if(!matGroups[r.mat])matGroups[r.mat]=[];matGroups[r.mat].push(r);});
+    let bHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:20px;">';
+    Object.entries(matGroups).forEach(([mat,mrows])=>{
+      const sorted=[...mrows].sort((a,b)=>a.date.localeCompare(b.date));
+      const prevRows=sorted.filter(r=>r.date.startsWith(prevMonth));
+      const currRows=sorted.filter(r=>r.date.startsWith(thisMonth));
+      let prevP=null,currP=null,prevLabel='전월 ('+prevMonth+')',currLabel='당월 ('+thisMonth+')';
+      if(currRows.length>0)currP=currRows[currRows.length-1].price;
+      if(prevRows.length>0)prevP=prevRows[prevRows.length-1].price;
+      if(!currP&&sorted.length>=2){currP=sorted[sorted.length-1].price;prevP=sorted[sorted.length-2].price;currLabel='최근 ('+sorted[sorted.length-1].date+')';prevLabel='이전 ('+sorted[sorted.length-2].date+')';}
+      const diff=(currP&&prevP)?currP-prevP:null;
+      const isUp=diff>0,isDn=diff<0;
+      const col=isUp?'#e03e3e':isDn?'#0fa87a':'#8891aa';
+      const arrow=isUp?'↑':isDn?'↓':'→';
+      bHTML+=`<div style="background:#fff;border:1px solid #dde2ee;border-radius:12px;padding:16px;position:relative;box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${col};border-radius:12px 12px 0 0;"></div>
+        <div style="font-size:14px;font-weight:700;color:#1a1d2e;margin-bottom:12px;">${mat}</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          ${prevP!==null?`<div style="flex:1;text-align:center;padding:8px;background:#f4f6fb;border-radius:8px;"><div style="font-size:10px;color:#8891aa;margin-bottom:2px;">${prevLabel}</div><div style="font-size:17px;font-weight:700;color:#4a5068;">$${prevP.toLocaleString()}</div></div><div style="font-size:18px;color:${col};font-weight:700;">${arrow}</div>`:''}
+          <div style="flex:1;text-align:center;padding:8px;background:${col}11;border-radius:8px;border:1px solid ${col}33;"><div style="font-size:10px;color:#8891aa;margin-bottom:2px;">${currLabel}</div><div style="font-size:19px;font-weight:800;color:${col};">${currP?'$'+currP.toLocaleString():'-'}</div></div>
+          ${diff!==null?`<div style="flex:1;text-align:center;padding:8px;background:#f4f6fb;border-radius:8px;"><div style="font-size:10px;color:#8891aa;margin-bottom:2px;">변동</div><div style="font-size:14px;font-weight:700;color:${col};">${isUp?'+':''}$${Math.abs(diff).toLocaleString()}</div><div style="font-size:11px;color:${col};">${isUp?'+':''}${prevP?((diff/prevP)*100).toFixed(1)+'%':''}</div></div>`:''}
+        </div>
+        <div style="margin-top:6px;font-size:10px;color:#8891aa;text-align:right;">${mrows.length}건 · 최근 ${sorted[sorted.length-1].date}</div>
+      </div>`;
+    });
+    bHTML+='</div>';
+    board.innerHTML=bHTML;
+    board.style.display='block';
+  }
+
+  if(tableWrap) tableWrap.style.display='block';
+  tb.innerHTML=rows.length?rows.map(r=>`<tr style="border-bottom:1px solid #eef1f7;">
+    <td style="padding:9px 12px;font-size:11px;color:#8891aa;font-family:monospace;white-space:nowrap">${r.date}</td>
+    <td style="padding:9px 12px;font-size:12px;font-weight:600;color:#6c4fc2;white-space:nowrap">${r.person}</td>
+    <td style="padding:9px 12px;font-size:13px;font-weight:600;color:#1a1d2e">${r.mat}</td>
+    <td style="padding:9px 12px;font-size:13px;font-weight:700;color:#d97706;text-align:right;white-space:nowrap">${r.priceStr}</td>
+    <td style="padding:9px 12px;font-size:12px;color:#4a5068;white-space:nowrap">${r.qty||'-'}</td>
+    <td style="padding:9px 12px;font-size:11px;color:#4a5068;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.note}</td>
+  </tr>`).join('')
+  :`<tr><td colspan="6" style="text-align:center;color:#8891aa;padding:24px;">"${keyword}" 계약 내역 없음</td></tr>`;
+}
+
+
+
+
+
+function displayPriceSummary(rows) {
+  const tb = document.getElementById('priceSummary');
+  if(!tb) return;
+  tb.innerHTML = rows.map(r => `<tr data-trend="${r.label}">
+    <td style="white-space:nowrap;color:var(--text3);font-size:11px;font-family:monospace">${r.date||''}</td>
+    <td style="white-space:nowrap;font-size:12px;font-weight:500;color:var(--text)">${r.person||''}</td>
+    <td style="white-space:nowrap;font-size:13px;color:var(--blue);font-weight:500">${r.vendor}</td>
+    <td style="white-space:nowrap;font-size:13px;color:var(--text)">${r.material}</td>
+    <td style="white-space:nowrap;font-size:13px;font-weight:600;color:var(--amber)">${r.price}</td>
+    <td style="text-align:center"><span class="tag ${r.tag}">${r.label}</span></td>
+    <td style="font-size:12px;color:var(--text2);max-width:250px;word-break:break-word">${r.note}</td>
+  </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px">단가 관련 내용 없음</td></tr>';
+  if(document.getElementById('priceSumCnt')) (function(){var _e=document.getElementById('priceSumCnt');if(_e)_e.textContent=rows.length + '건';})();
+}
+
+function filtPriceTrend(val) {
+  if (!window._priceRows) return;
+  const filtered = val ? window._priceRows.filter(r => r.label === val) : window._priceRows;
+  displayPriceSummary(filtered);
+}
+
+function filtPriceSum(val) {
+  if (!window._priceRows) return;
+  const q = val.toLowerCase();
+  const filtered = window._priceRows.filter(r =>
+    r.vendor.toLowerCase().includes(q) || r.material.toLowerCase().includes(q) ||
+    r.person.toLowerCase().includes(q) || r.note.toLowerCase().includes(q)
+  );
+  displayPriceSummary(filtered);
+}
+
+function displayPriceMsgs(msgs) {
+  const tb = document.getElementById('priceBody');
+  if(!tb) return;
+
+  tb.innerHTML = msgs.map(m => {
+    const text = m.text || '';
+    // 인상/인하/동결/시장단가 구분
+    let tag = 'tag-flat'; let label = '관련';
+    if (/인상|올랐|상승|up|인상됨/i.test(text)) { tag = 'tag-up'; label = '인상'; }
+    else if (/인하|내렸|하락|down|인하됨/i.test(text)) { tag = 'tag-dn'; label = '인하'; }
+    else if (/동결|유지|변동없/i.test(text)) { tag = 'tag-flat'; label = '동결'; }
+    else if (/시장단가|market|현물/i.test(text)) { tag = 'tag-info'; label = '시장단가'; }
+
+    // 원료명/업체명 추출 (달러 앞 단어, 원/MT 앞 단어)
+    const materialMatch = text.match(/([가-힣a-zA-Z\-]+(?:\s[가-힣a-zA-Z\-]+)?)\s*(?:\$|USD|달러|원\/)/i);
+    const material = materialMatch ? materialMatch[1].trim() : '';
+
+    // 단가 숫자 추출
+    const priceMatch = text.match(/\$\s*([\d,\.]+)\s*\/?\s*(?:MT|KG|kg|mt|톤)/i) ||
+                       text.match(/([\d,]+)\s*원\s*\/\s*(?:MT|KG|kg|mt|톤)/i) ||
+                       text.match(/\$\s*([\d,\.]+)/);
+    const price = priceMatch ? priceMatch[0].trim() : '';
+
+    return `<tr data-trend="${label}">
+      <td style="white-space:nowrap;color:var(--text3);font-size:11px;font-family:monospace">${m.date||''}</td>
+      <td style="white-space:nowrap;font-weight:500;color:var(--text);font-size:13px">${m.person||''}</td>
+      <td style="white-space:nowrap;font-size:12px;color:var(--blue)">${material || '-'}</td>
+      <td style="font-size:13px;word-break:break-word;line-height:1.5;max-width:550px">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td>
+      <td style="text-align:center"><span class="tag ${tag}">${label}</span></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px">단가 관련 메시지 없음</td></tr>';
+
+  if(document.getElementById('priceCnt')) (function(){var _e=document.getElementById('priceCnt');if(_e)_e.textContent=msgs.length + '건';})();
+  if(document.getElementById('nc-price')) (function(){var _e=document.getElementById('nc-price');if(_e)_e.textContent=msgs.length;})();
+}
+
+function filtPriceTrend(val) {
+  if (!window._priceMsgs) return;
+  const filtered = val ? window._priceMsgs.filter(m => {
+    const text = m.text||'';
+    if (val === '인상') return /인상|올랐|상승/i.test(text);
+    if (val === '인하') return /인하|내렸|하락/i.test(text);
+    if (val === '동결') return /동결|유지|변동없/i.test(text);
+    if (val === '시장단가') return /시장단가|market|현물/i.test(text);
+    return true;
+  }) : window._priceMsgs;
+  displayPriceMsgs(filtered);
+}
+
+
+
+function renderStaff() {
+  if (!window._slackMsgs) return;
+  const msgs = window._slackMsgs.filter(m => (m.channel||'').includes('0-02'));
+  const tb = document.getElementById('staffBody');
+  const persons = [...new Set(msgs.map(m => m.person).filter(Boolean))];
+  const sel = document.getElementById('staffChFilter');
+  if(sel) sel.innerHTML = '<option value="">전체 담당자</option>' + persons.map(p => `<option value="${p}">${p}</option>`).join('');
+  tb.innerHTML = msgs.map(m => `<tr data-person="${m.person||''}">
+    <td style="white-space:nowrap;font-weight:500;color:var(--text)">${m.person||''}</td>
+    <td style="white-space:nowrap;color:var(--text3);font-size:11px;font-family:monospace">${m.date||''}</td>
+    <td style="font-size:13px;word-break:break-word;line-height:1.5;max-width:700px">${(m.text||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td>
+  </tr>`).join('') || '<tr><td colspan="3" style="text-align:center;color:var(--text3);padding:20px">메시지 없음</td></tr>';
+  (function(){var _e=document.getElementById('staffCnt');if(_e)_e.textContent=msgs.length + '건';})();
+  window._staffMsgs = msgs;
+}
+
+function filtStaffPerson(val) {
+  if (!window._staffMsgs) return;
+  const filtered = val ? window._staffMsgs.filter(m => m.person === val) : window._staffMsgs;
+  const tb = document.getElementById('staffBody');
+  tb.innerHTML = filtered.map(m => `<tr>
+    <td style="white-space:nowrap;font-weight:500;color:var(--text)">${m.person||''}</td>
+    <td style="white-space:nowrap;color:var(--text3);font-size:11px;font-family:monospace">${m.date||''}</td>
+    <td style="font-size:13px;word-break:break-word;line-height:1.5;max-width:700px">${(m.text||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td>
+  </tr>`).join('');
+  (function(){var _e=document.getElementById('staffCnt');if(_e)_e.textContent=filtered.length + '건';})();
+}
+
+function renderAlerts() {
+  if (!window._slackMsgs) return;
+  const alertKws = ['긴급','단가인상','인상통보','납기지연','공급중단','단가 인상','가격인상','긴급협조'];
+  const msgs = window._slackMsgs.filter(m =>
+    alertKws.some(kw => (m.text||'').toLowerCase().includes(kw))
+  );
+  const tb = document.getElementById('alertsBody2');
+  if(tb) {
+    tb.innerHTML = msgs.map(m => `<tr>
+      <td><span class="tag tag-warn" style="white-space:nowrap;font-size:11px">${m.channel||''}</span></td>
+      <td style="white-space:nowrap;color:var(--text2);font-size:12px">${m.person||''}</td>
+      <td style="white-space:nowrap;color:var(--text3);font-size:11px;font-family:monospace">${m.date||''}</td>
+      <td style="font-size:13px;word-break:break-word;line-height:1.5;max-width:600px">${(m.text||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td>
+    </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:20px">메시지 없음</td></tr>';
+    if(document.getElementById('alertsCnt2')) (function(){var _e=document.getElementById('alertsCnt2');if(_e)_e.textContent=msgs.length + '건';})();
+  }
+  // 대시보드 긴급 알림 미리보기 (기존 유지)
+  const dash = document.getElementById('dashAlerts');
+  if(dash) {
+    dash.innerHTML = msgs.slice(0,3).map(m => `
+      <div class="alert-item warn" style="margin-bottom:8px">
+        <div style="flex:1">
+          <div class="alert-title" style="font-size:13px;font-weight:600;color:var(--text)">${(m.text||'').slice(0,60).replace(/</g,'&lt;')}...</div>
+          <div class="alert-body" style="font-size:12px;color:var(--text2)">${m.channel||''} · ${m.person||''}</div>
+        </div>
+        <div class="alert-time" style="font-size:11px;color:var(--text3)">${m.date||''}</div>
+      </div>`).join('') || '<div style="color:var(--text3);font-size:13px;padding:10px">알림 없음</div>';
+  }
+  (function(){var _e=document.getElementById('nc-alerts');if(_e)_e.textContent=msgs.length;})();
+}
+
+function updateCounts() {
+  if(document.getElementById('nc-price')) (function(){var _e=document.getElementById('nc-price');if(_e)_e.textContent=currentData.price.length;})();
+  if(document.getElementById('nc-vendor')) (function(){var _e=document.getElementById('nc-vendor');if(_e)_e.textContent=currentData.vendor.length;})();
+  if(document.getElementById('nc-staff')) (function(){var _e=document.getElementById('nc-staff');if(_e)_e.textContent=currentData.staff.length;})();
+}
+
+// ── 필터 ──────────────────────────────────────────────────
+function filt(tbId, val) {
+  document.querySelectorAll('#' + tbId + ' tr').forEach(r => {
+    r.style.display = r.textContent.toLowerCase().includes(val.toLowerCase()) ? '' : 'none';
+  });
+}
+function filtCol(tbId, col, val) {
+  document.querySelectorAll('#' + tbId + ' tr').forEach(r => {
+    if (!val) { r.style.display = ''; return; }
+    const cells = r.querySelectorAll('td');
+    const txt = cells[col] ? cells[col].textContent : '';
+    r.style.display = (r.dataset.dir === val || txt.includes(val)) ? '' : 'none';
+  });
+}
+function filtStaff(val) {
+  document.querySelectorAll('#staffBody tr').forEach(r => {
+    r.style.display = (!val || r.dataset.person === val) ? '' : 'none';
+  });
+}
+
+// ── 샘플 로드 ──────────────────────────────────────────────
+
+function renderRawMessages(msgs) {
+  window._slackMsgs = msgs;
+  const _sd=document.getElementById('statusDot'); if(_sd) _sd.className='pulse live';
+  const _st=document.getElementById('statusTxt'); if(_st) _st.textContent='연결됨 · '+msgs.length+'건';
+  const _sp=document.getElementById('samplePill'); if(_sp) _sp.classList.remove('show');
+  const _lu=document.getElementById('lastUpdate'); if(_lu) _lu.textContent='마지막 업데이트: '+new Date().toLocaleString('ko-KR');
+  // 각 탭 렌더링
+  renderPrice();
+  renderVendor();
+  renderStaff();
+  renderBidding();
+  renderOrder();
+  renderAlerts();
+  initDashMsg(msgs);
+  // 카운트 업데이트
+  const staffMsgs = msgs.filter(m => (m.channel||'').includes('0-02'));
+  const biddingMsgs = msgs.filter(m => (m.channel||'').includes('0-06'));
+  const orderMsgs = msgs.filter(m => (m.channel||'').includes('0-04') || (m.channel||'').includes('2-02'));
+  if(document.getElementById('nc-staff')) (function(){var _e=document.getElementById('nc-staff');if(_e)_e.textContent=staffMsgs.length;})();
+  if(document.getElementById('nc-bidding')) (function(){var _e=document.getElementById('nc-bidding');if(_e)_e.textContent=biddingMsgs.length;})();
+  if(document.getElementById('nc-order')) (function(){var _e=document.getElementById('nc-order');if(_e)_e.textContent=orderMsgs.length;})();
+  showPage('dashboard');
+  setNav(document.querySelectorAll('.nav-item')[0]);
+}
+
+// ── 설정 자동 저장/복원 ──────────────────────────────────────
+function saveSettings() {
+  localStorage.setItem('slackToken', document.getElementById('slackToken').value);
+  localStorage.setItem('claudeKey', document.getElementById('claudeKey').value);
+  localStorage.setItem('claudeKey', document.getElementById('claudeKey').value);
+  localStorage.setItem('periodDays', document.getElementById('periodDays').value);
+  localStorage.setItem('autoRefresh', document.getElementById('autoRefresh').value);
+  localStorage.setItem('keywords', document.getElementById('keywords').value);
+  const chs = [...document.querySelectorAll('.ch-tag.on')].map(t => t.dataset.ch);
+  localStorage.setItem('channels', JSON.stringify(chs));
+}
+
+
+function resolvePersonName(text, userMap, userId) {
+  // 1. userMap에서 직접 찾기
+  if (userId && userMap[userId]) return userMap[userId];
+  // 2. 메시지 본문 *작성자* <@UID> 패턴에서 ID 추출 후 userMap 조회
+  const mentionMatch = text.match(/<@([A-Z0-9]+)>/);
+  if (mentionMatch && userMap[mentionMatch[1]]) return userMap[mentionMatch[1]];
+  // 3. 메시지에 한글 이름 패턴 찾기
+  const nameMatch = text.match(/\*작성자\*\s*<@[^>]+>\s*([가-힣]{2,4})/);
+  if (nameMatch) return nameMatch[1];
+  // 4. userId 앞부분
+  return userId ? userId.slice(0,8) : '알수없음';
+}
+
+function resolveTextMentions(text, userMap) {
+  return text.replace(/<@([A-Z0-9]+)>/g, (match, uid) => {
+    return userMap[uid] ? '@' + userMap[uid] : match;
+  });
+}
+
+function loadSettings() {
+  const token = localStorage.getItem('slackToken');
+  if (token) document.getElementById('slackToken').value = token;
+  const days = localStorage.getItem('periodDays');
+  if (days) document.getElementById('periodDays').value = days;
+  const refresh = localStorage.getItem('autoRefresh');
+  if (refresh) document.getElementById('autoRefresh').value = refresh;
+  const kw = localStorage.getItem('keywords');
+  if (kw) document.getElementById('keywords').value = kw;
+  const ck = localStorage.getItem('claudeKey');
+  if (ck) document.getElementById('claudeKey').value = ck;
+
+  // 채널 태그 복원 — 저장된 채널명으로 태그 새로 생성
+  const chs = JSON.parse(localStorage.getItem('channels') || '[]');
+  if (chs.length > 0) {
+    const grid = document.getElementById('chGrid');
+    const input = document.getElementById('chInput');
+    // 기존 태그 모두 제거
+    grid.querySelectorAll('.ch-tag').forEach(t => t.remove());
+    // 저장된 채널명으로 태그 재생성
+    chs.forEach(ch => {
+      const tag = document.createElement('span');
+      tag.className = 'ch-tag on';
+      tag.dataset.ch = ch;
+      tag.textContent = '#' + ch;
+      tag.onclick = () => tag.classList.toggle('on');
+      grid.insertBefore(tag, input);
+    });
+  }
+}
+
+
+// ── 대시보드 메시지 탭/필터 ───────────────────────────────────
+let dashMsgAll = [];
+let dashMsgCh = 'all';
+let dashMsgContent = 'all';
+
+function initDashMsg(msgs) {
+  dashMsgAll = msgs;
+  renderDashMsg();
+}
+
+function switchMsgTab(ch, el) {
+  dashMsgCh = ch;
+  document.querySelectorAll('#chTabBar .tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderDashMsg();
+}
+
+function switchContentFilter(type, el) {
+  dashMsgContent = type;
+  document.querySelectorAll('#contentFilter .btn').forEach(b => {
+    b.style.background = ''; b.style.color = ''; b.style.borderColor = '';
+  });
+  el.style.background = 'var(--purple)';
+  el.style.color = 'white';
+  el.style.borderColor = 'var(--purple)';
+  renderDashMsg();
+}
+
+const CONTENT_KEYWORDS = {
+  '단가': ['단가','가격','인상','인하','$/mt','$/kg','원/kg','협상','계약금액'],
+  '입찰': ['입찰','낙찰','응찰','견적','입찰공고'],
+  '발주': ['발주','주문','오더','order','po','구매'],
+  '업무보고': ['업무','보고','일일','주간','월간','미팅','방문','상담'],
+};
+
+function renderDashMsg() {
+  let filtered = [...dashMsgAll];
+  if (dashMsgCh !== 'all') {
+    filtered = filtered.filter(m => (m.channel||'').includes(dashMsgCh));
+  }
+  if (dashMsgContent !== 'all') {
+    const kws = CONTENT_KEYWORDS[dashMsgContent] || [dashMsgContent];
+    filtered = filtered.filter(m => kws.some(kw => (m.text||'').toLowerCase().includes(kw.toLowerCase())));
+  }
+  const search = (document.getElementById('dashMsgSearch')||{}).value || '';
+  if (search) filtered = filtered.filter(m => (m.text||'').toLowerCase().includes(search.toLowerCase()) || (m.person||'').toLowerCase().includes(search.toLowerCase()));
+
+  const tb = document.getElementById('dashMsgBody');
+  if (!tb) return;
+  if(document.getElementById('dashMsgCount')) (function(){var _e=document.getElementById('dashMsgCount');if(_e)_e.textContent=filtered.length + '건';})();
+
+  const chColors = {
+    '0-02업무보고': 'tag-purple',
+    '0-04발주': 'tag-info',
+    '0-06입찰공고': 'tag-warn',
+    '2-02세인비에스-발주': 'tag-done',
+    '4-02세인팜텍-발주': 'tag-up',
+  };
+
+  tb.innerHTML = filtered.slice(0, 200).map(m => {
+    const chName = (m.channel||'').replace('#','');
+    const tagCls = Object.keys(chColors).find(k => chName.includes(k)) ? chColors[Object.keys(chColors).find(k => chName.includes(k))] : 'tag-flat';
+    return `<tr>
+      <td><span class="tag ${tagCls}" style="white-space:nowrap;font-size:11px">${m.channel||''}</span></td>
+      <td style="white-space:nowrap;color:var(--text2);font-size:12px">${m.person||''}</td>
+      <td style="white-space:nowrap;color:var(--text3);font-size:11px;font-family:monospace">${m.date||''}</td>
+      <td style="color:var(--text);font-size:13px;max-width:600px;word-break:break-word;line-height:1.5">${(m.text||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:20px">해당 메시지 없음</td></tr>';
+}
+
+function filterDashMsg() { renderDashMsg(); }
+
+function loadSample() {
+  currentData = { price: [...PRICE_DATA], vendor: [...VENDOR_DATA], staff: [...STAFF_DATA] };
+  document.getElementById('samplePill').classList.add('show');
+  renderAll();
+  setTimeout(analyzeOrderCycles, 200);
+}
+
+// ── 프록시 서버 연결 확인 ──────────────────────────────────
+const PROXY = 'http://localhost:3000';
+let proxyOk = false;
+
+async function checkProxy() {
+  try {
+    const r = await fetch(`${PROXY}/health`, { signal: AbortSignal.timeout(2000) });
+    const d = await r.json();
+    proxyOk = d.ok === true;
+  } catch { proxyOk = false; }
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusTxt');
+  if (proxyOk) {
+    dot.className = 'pulse warn';
+    txt.textContent = '프록시 연결됨';
+  }
+  return proxyOk;
+}
+
+async function slackGet(endpoint, token, params = {}) {
+  const qs = new URLSearchParams(params).toString();
+  const url = `${PROXY}/slack/${endpoint}${qs ? '?' + qs : ''}`;
+  const r = await fetch(url, { headers: { Authorization: 'Bearer ' + token } });
+  return r.json();
+}
+
+// ── Slack API 연동 ─────────────────────────────────────────
+async function runSlackFetch() {
+  saveSettings();
+  const token = document.getElementById('slackToken').value.trim();
+  if (!token) { alert('Slack Bot Token을 먼저 입력해주세요.'); return; }
+
+  const pw = document.getElementById('progressWrap');
+  pw.classList.add('show');
+
+  const setStep = (n, state) => {
+    const el = document.getElementById('pi' + n);
+    el.className = 'prog-icon' + (state === 'run' ? ' run' : state === 'done' ? ' done' : state === 'err' ? ' err' : '');
+    el.textContent = state === 'done' ? '✓' : state === 'err' ? '✗' : n;
+    document.getElementById('ps' + n).style.color =
+      state === 'done' ? 'var(--teal)' : state === 'run' ? 'var(--amber)' : '';
+  };
+  const setProg = (p, label) => {
+    document.getElementById('progFill').style.width = p + '%';
+    (function(){var _e=document.getElementById('progPct');if(_e)_e.textContent=p + '%';})();
+    (function(){var _e=document.getElementById('progLabel');if(_e)_e.textContent=label;})();
+  };
+
+  try {
+    // ── Step 1: 프록시 확인 + 채널 목록 ──────────────────
+    setStep(1, 'run'); setProg(8, '프록시 서버 연결 확인 중...');
+    const ok = await checkProxy();
+    if (!ok) {
+      setStep(1, 'err');
+      setProg(0, '프록시 서버 미연결');
+      alert('프록시 서버가 실행되지 않았습니다.\n\n【해결 방법】\n1. 터미널(cmd)을 열고\n2. "서버시작.bat" 파일을 더블클릭 하거나\n   아래 명령어를 입력하세요:\n\n   python proxy.py\n\n서버 시작 후 다시 시도해주세요.');
+      return;
+    }
+
+    setProg(15, '채널 목록 조회 중...');
+    const chData = await slackGet('conversations.list', token, {
+      types: 'public_channel,private_channel', limit: 200
+    });
+    if (!chData.ok) throw new Error('채널 조회 실패: ' + chData.error);
+
+    const chMap = {};
+    chData.channels.forEach(c => { chMap[c.name] = c.id; });
+    const selectedChs = [...document.querySelectorAll('.ch-tag.on')].map(t => t.dataset.ch);
+    const foundChs = selectedChs.filter(n => chMap[n]);
+    const missingChs = selectedChs.filter(n => !chMap[n]);
+    if (missingChs.length) console.warn('채널 없음 (봇 미초대 가능):', missingChs);
+
+    setStep(1, 'done');
+
+    // ── Step 2: 사용자 목록 + 메시지 수집 ────────────────
+    setStep(2, 'run'); setProg(25, '사용자 정보 조회 중...');
+    const userMap = {};
+    try {
+      const uData = await slackGet('users.list', token, { limit: 200 });
+      if (uData.ok) {
+        uData.members.forEach(u => {
+          const name = u.profile?.display_name || u.profile?.real_name || u.real_name || u.name || '';
+          if (name) userMap[u.id] = name;
+        });
+        console.log('사용자 로드:', Object.keys(userMap).length + '명', userMap);
+      } else {
+        console.warn('users.list 오류:', uData.error);
+        setProg(30, '사용자 정보 조회 실패 (' + uData.error + ') — 계속 진행');
+      }
+    } catch(e) { console.warn('users.list 예외:', e); }
+
+    setProg(35, `메시지 수집 중... (${foundChs.length}개 채널)`);
+    const days = parseInt(document.getElementById('periodDays').value);
+    const oldest = Math.floor((Date.now() - days * 86400000) / 1000);
+    const keywords = document.getElementById('keywords').value.split(',').map(k => k.trim().toLowerCase()).filter(Boolean);
+
+    let allMessages = [];
+    for (let i = 0; i < foundChs.length; i++) {
+      const chName = foundChs[i];
+      const chId = chMap[chName];
+      setProg(35 + Math.round(i / foundChs.length * 20), `#${chName} 수집 중...`);
+
+      let cursor = '';
+      do {
+        const params = { channel: chId, oldest, limit: 200 };
+        if (cursor) params.cursor = cursor;
+        const mData = await slackGet('conversations.history', token, params);
+        if (!mData.ok) break;
+
+        const msgs = (mData.messages || []).filter(m => m.type === 'message' && m.text);
+        msgs.forEach(m => {
+          const resolvedName = resolvePersonName(m.text, userMap, m.user);
+          allMessages.push({
+            channel: '#' + chName,
+            text: resolveTextMentions(m.text, userMap),
+            person: resolvedName,
+            ts: m.ts,
+            date: new Date(parseFloat(m.ts) * 1000).toISOString().split('T')[0]
+          });
+        });
+        cursor = mData.response_metadata?.next_cursor || '';
+      } while (cursor);
+    }
+
+    setStep(2, 'done');
+
+    // ── Step 3: 키워드 필터링 ────────────────────────────
+    setStep(3, 'run'); setProg(58, '키워드 필터링 중...');
+    const filtered = keywords.length
+      ? allMessages.filter(m => keywords.some(kw => m.text.toLowerCase().includes(kw)))
+      : allMessages;
+
+    setProg(65, `${filtered.length}건 추출 완료`);
+    await sleep(300);
+    setStep(3, 'done');
+
+    // ── Step 4: Claude AI 분석 ───────────────────────────
+    setStep(4, 'run'); setProg(70, '데이터 정리 중...');
+    renderRawMessages(filtered.length > 0 ? filtered : allMessages);
+    await sleep(300);
+    setStep(4, 'done');
+    setStep(4, 'done');
+
+    // ── Step 5: 완료 ─────────────────────────────────────
+    setStep(5, 'run'); setProg(95, '대시보드 업데이트 중...');
+    await sleep(400);
+    setStep(5, 'done'); setProg(100, `완료! ${filtered.length}건 분석`);
+    document.getElementById('samplePill').classList.remove('show');
+    (function(){var _e=document.getElementById('statusDot');if(_e)_e.className='pulse live';})();
+    (function(){var _e=document.getElementById('statusTxt');if(_e)_e.textContent=`연결됨 · ${filtered.length}건`;})();
+
+  } catch (err) {
+    console.error(err);
+    const isProxy = err.message?.includes('Failed to fetch') || err.message?.includes('NetworkError');
+    if (isProxy) {
+      alert('프록시 서버에 연결할 수 없습니다.\n\n"서버시작.bat"을 실행하고 다시 시도해주세요.');
+    } else {
+      alert('오류: ' + err.message);
+    }
+    loadSample();
+  }
+}
+
+// ── Claude AI 분석 ─────────────────────────────────────────
+async function aiAnalyze(messages, key) {
+  const msgText = messages.slice(0, 80).map(m =>
+    `[${m.date}][${m.channel}][${m.person}] ${m.text}`
+  ).join('\n');
+
+  const prompt = `다음은 사료 원료 회사 Slack 채널에서 수집된 영업·구매 관련 메시지입니다.
+형식: [날짜][채널][담당자] 메시지 내용
+
+=== Slack 메시지 ===
+${msgText}
+===================
+
+위 메시지에서 아래 3가지 항목을 추출해 JSON으로만 출력하세요. JSON 외 다른 텍스트는 절대 포함하지 마세요.
+
+추출 규칙:
+- price: 제품 단가가 언급된 경우. 달러($)는 그대로, 원화(₩/원)는 그대로 저장. 단위 $/MT, $/kg, 원/kg 등 note에 기재
+- vendor: 거래처와 관련된 입찰·단가인상·협상·공급이슈 내용
+- staff: 담당자별 업무 내용 요약 (한 메시지 = 한 건)
+- 정보가 불명확하면 해당 항목 배열을 비워두세요 ([]로)
+
+{
+  "price": [
+    {"product":"제품명","vendor":"거래처명","p2":전전월단가숫자,"p1":전월단가숫자,"cur":이번달단가숫자,"note":"$/MT 등 단위·비고"}
+  ],
+  "vendor": [
+    {"name":"거래처명","type":"단가인상|입찰|공급이슈|협상완료","date":"YYYY-MM-DD","desc":"내용 요약","person":"담당자","impact":"+X% 또는 미정","action":"조치사항"}
+  ],
+  "staff": [
+    {"person":"담당자명","date":"YYYY-MM-DD","ch":"채널명","work":"업무 내용 요약","vendor":"관련 거래처","amount":원화금액숫자또는0,"action":"다음 할일"}
+  ]
+}`;
+
+  const res = await fetch('/claude/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': key },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-5',
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await res.json();
+  const text = data.content?.filter(c => c.type === 'text').map(c => c.text).join('') || '{}';
+
+  try {
+    const clean = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+    if (parsed.price?.length) currentData.price = parsed.price;
+    if (parsed.vendor?.length) currentData.vendor = parsed.vendor;
+    if (parsed.staff?.length) currentData.staff = parsed.staff;
+  } catch (e) {
+    console.error('AI 응답 파싱 실패:', e, text);
+  }
+  renderAll();
+}
+
+async function analyzeManual() {
+  const text = document.getElementById('manualText').value.trim();
+  if (!text) { alert('Slack 메시지를 붙여넣어 주세요.'); return; }
+  const key = document.getElementById('claudeKey').value.trim();
+  if (!key) { alert('Claude API Key를 입력해주세요.'); return; }
+
+  const pw = document.getElementById('progressWrap');
+  pw.classList.add('show');
+  document.getElementById('pi3').className = 'prog-icon run';
+  document.getElementById('progFill').style.width = '50%';
+  (function(){var _e=document.getElementById('progLabel');if(_e)_e.textContent='AI 분석 중...';})();
+
+  await aiAnalyze([{channel:'수동입력', text}], key);
+
+  document.getElementById('pi3').className = 'prog-icon done';
+  document.getElementById('pi3').textContent = '✓';
+  document.getElementById('progFill').style.width = '100%';
+  (function(){var _e=document.getElementById('progLabel');if(_e)_e.textContent='완료!';})();
+  document.getElementById('samplePill').classList.remove('show');
+}
+
+// ── AI 채팅 ────────────────────────────────────────────────
+const chatContext = () => `
+현재 영업 인텔리전스 데이터:
+[단가 추이] ${JSON.stringify(currentData.price)}
+[거래처 현황] ${JSON.stringify(currentData.vendor)}
+[업무보고] ${JSON.stringify(currentData.staff)}
+
+위 데이터 기반으로 사용자 질문에 한국어로 간결하게 답변하세요.
+`;
+
+async function sendChat() {
+  const inp = document.getElementById('chatIn');
+  const q = inp.value.trim();
+  if (!q) return;
+  inp.value = '';
+  addMsg('user', q);
+  const bubble = addMsg('bot', '');
+  bubble.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
+
+  const key = document.getElementById('claudeKey').value.trim();
+  if (!key) {
+    await sleep(600);
+    bubble.textContent = localAnswer(q);
+    return;
+  }
+  try {
+    const res = await fetch('/claude/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': claudeKey },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 1000,
+        system: chatContext(),
+        messages: [{ role: 'user', content: q }]
+      })
+    });
+    const data = await res.json();
+    const txt = data.content?.filter(c => c.type === 'text').map(c => c.text).join('') || '응답을 받지 못했습니다.';
+    bubble.textContent = txt;
+  } catch(e) {
+    bubble.textContent = localAnswer(q);
+  }
+}
+
+function qChat(q) { document.getElementById('chatIn').value = q; sendChat(); }
+
+function addMsg(role, text) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  const b = document.createElement('div');
+  b.className = 'msg-bubble';
+  b.textContent = text;
+  div.appendChild(b);
+  document.getElementById('chatMsgs').appendChild(div);
+  document.getElementById('chatMsgs').scrollTop = 9999;
+  return b;
+}
+
+function localAnswer(q) {
+  const lq = q.toLowerCase();
+  if (lq.includes('단가인상') || lq.includes('top3') || lq.includes('인상')) {
+    const ups = currentData.vendor.filter(v => v.type === '단가인상').sort((a,b) => parseFloat(b.impact) - parseFloat(a.impact));
+    return `단가인상 현황:\n${ups.map((v,i) => `${i+1}. ${v.name}: ${v.impact} — ${v.action}`).join('\n')}`;
+  }
+  if (lq.includes('담당자') || lq.includes('성과')) {
+    const persons = [...new Set(currentData.staff.map(s => s.person))];
+    return persons.map(p => {
+      const items = currentData.staff.filter(s => s.person === p);
+      const total = items.reduce((s,i) => s + i.amount, 0);
+      return `${p}: ${items.length}건, 확정 ${fmt(total)}원`;
+    }).join('\n');
+  }
+  if (lq.includes('긴급') || lq.includes('시급') || lq.includes('조치')) {
+    return '긴급 조치 필요:\n1. LS전선 +12% → 경영진 즉시 검토\n2. KCC실리콘 납기지연 → 대체업체 확보\n3. 대한철강 8% 재협상 → 4/2 자료 준비';
+  }
+  if (lq.includes('입찰')) {
+    const bids = currentData.vendor.filter(v => v.type === '입찰');
+    return `진행 중인 입찰:\n${bids.map(v => `• ${v.name}: ${v.desc} — ${v.action}`).join('\n')}`;
+  }
+  if (lq.includes('변동') || lq.includes('오른')) {
+    const sorted = [...currentData.price].sort((a,b) => (b.cur-b.p1)/b.p1 - (a.cur-a.p1)/a.p1);
+    return `단가 변동 TOP3:\n${sorted.slice(0,3).map((r,i)=>`${i+1}. ${r.product}: ${((r.cur-r.p1)/r.p1*100).toFixed(1)}% (${fmt(r.p1)}→${fmt(r.cur)})`).join('\n')}`;
+  }
+  return 'Claude API Key를 설정에 입력하시면 더 정확한 AI 답변을 받을 수 있습니다. 현재 데이터 기반으로 답변하겠습니다.';
+}
+
+// ── Excel 내보내기 ─────────────────────────────────────────
+function exportExcel() {
+  const wb = XLSX.utils.book_new();
+  const today = new Date().toISOString().split('T')[0];
+
+  // 요약
+  const s1 = XLSX.utils.aoa_to_sheet([
+    ['영업 인텔리전스 리포트 — 사료 원료', today],
+    [],
+    ['항목','이번달','전월','변동'],
+    ['거래 건수',38,35,'+8.6%'],
+    ['단가인상 알림',7,4,'+75.0%'],
+    ['진행중 입찰',4,4,'동일'],
+    ['평균 단가변동율','7.2%','4.1%','+3.1%p'],
+  ]);
+  s1['!cols'] = [{wch:24},{wch:12},{wch:12},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, s1, '요약');
+
+  // 단가 추이
+  const priceRows = [['제품명','거래처','전전월 단가','전월 단가','이번달 단가','변동액','변동율','비고']];
+  currentData.price.forEach(r => {
+    const diff = r.cur - r.p1;
+    priceRows.push([r.product, r.vendor, r.p2, r.p1, r.cur, diff, ((r.cur-r.p1)/r.p1*100).toFixed(1)+'%', r.note]);
+  });
+  const s2 = XLSX.utils.aoa_to_sheet(priceRows);
+  s2['!cols'] = [{wch:26},{wch:16},{wch:14},{wch:14},{wch:14},{wch:12},{wch:10},{wch:20}];
+  XLSX.utils.book_append_sheet(wb, s2, '단가 추이');
+
+  // 거래처 현황
+  const vendorRows = [['거래처','분류','날짜','내용','담당자','단가영향','조치사항']];
+  currentData.vendor.forEach(r => vendorRows.push([r.name,r.type,r.date,r.desc,r.person,r.impact,r.action]));
+  const s3 = XLSX.utils.aoa_to_sheet(vendorRows);
+  s3['!cols'] = [{wch:16},{wch:12},{wch:14},{wch:40},{wch:10},{wch:10},{wch:22}];
+  XLSX.utils.book_append_sheet(wb, s3, '거래처 현황');
+
+  // 업무보고
+  const staffRows = [['담당자','날짜','채널','주요 업무','거래처','금액(원)','다음 액션']];
+  currentData.staff.forEach(r => staffRows.push([r.person,r.date,r.ch,r.work,r.vendor,r.amount||'-',r.action]));
+  const s4 = XLSX.utils.aoa_to_sheet(staffRows);
+  s4['!cols'] = [{wch:10},{wch:14},{wch:12},{wch:50},{wch:14},{wch:14},{wch:26}];
+  XLSX.utils.book_append_sheet(wb, s4, '업무보고');
+
+  // 알림
+  const alertRows = [['분류','제목','내용','날짜']];
+  ALERTS_DATA.forEach(a => alertRows.push([a.type, a.title, a.body, '03/'+a.date.split('-')[1]]));
+  const s5 = XLSX.utils.aoa_to_sheet(alertRows);
+  s5['!cols'] = [{wch:10},{wch:36},{wch:60},{wch:10}];
+  XLSX.utils.book_append_sheet(wb, s5, '알림');
+
+  XLSX.writeFile(wb, `영업_인텔리전스_${today}.xlsx`);
+  document.getElementById('exportBar').classList.add('show');
+}
+
+function openCorsHelper() {
+  alert('CORS 해결 방법 3가지:\n\n1️⃣ Chrome 확장 설치\n   "Allow CORS: Access-Control-Allow-Origin" 설치 후 활성화\n   chrome.google.com/webstore 에서 검색\n\n2️⃣ 수동 입력 모드 사용 (가장 쉬움)\n   Slack에서 메시지 복사 → 수동 입력 탭에 붙여넣기\n\n3️⃣ 로컬 프록시 실행\n   Terminal: npx cors-anywhere\n   이후 토큰 앞에 http://localhost:8080/ 추가');
+}
+
+
+// ── 업무보고/발주/캘린더 커스텀 함수 ─────────────────────────
+function renderStaff() {}
+function filtStaffPerson() {}
+function renderOrder() {}
+function filtOrderCh(val) {}
+function renderBidding() {
+  if(!window._slackMsgs) return;
+  const msgs=window._slackMsgs.filter(m=>(m.channel||'').includes('0-06'));
+  const tb=document.getElementById('biddingSummary');
+  const cntEl=document.getElementById('nc-bidding');
+  if(!tb) return;
+  if(cntEl) cntEl.textContent=msgs.length;
+  const matKws=['라이신','메치오닌','트레오닌','비타민','인산칼슘','DCP','MCP','MDCP','콜린','아연','망간','황산','아미노산','사료','TCP'];
+  tb.innerHTML=msgs.map(m=>{
+    const text=m.text||'';
+    const mat=matKws.find(k=>text.includes(k))||'';
+    const vM=text.match(/(SUNCHEM|ALCHEM|WENGFU|대한제분|한국씸벨|부경양돈|대구축협|수협|CJ|대상|농협|축협|[가-힣]{2,8}(?:㈜|상사|사료|바이오)?)/);
+    const vendor=vM?vM[1]:'';
+    return '<tr><td style="white-space:nowrap;font-size:11px;color:#8891aa;font-family:monospace">'+m.date+'</td><td style="font-size:12px;font-weight:600;color:#6c4fc2">'+m.person+'</td><td style="font-size:13px;color:#1a1d2e">'+(mat||'-')+'</td><td style="font-size:13px;color:#2563eb">'+(vendor||'-')+'</td></tr>';
+  }).join('')||'<tr><td colspan="4" style="text-align:center;color:#8891aa;padding:20px">입찰 데이터 없음</td></tr>';
+}
+
+function renderAlerts() {
+  if(!window._slackMsgs) return;
+  const staffMsgs=window._slackMsgs.filter(m=>(m.channel||'').includes('0-02'));
+  const alerts=[];
+  staffMsgs.forEach(m=>{
+    const text=m.text||'', person=m.person||'', date=m.date||'';
+    const lines=text.split('\n');
+    let sec2=[],in2=false;
+    lines.forEach(line=>{
+      const clean=line.replace(/\*[^*]+\*/g,'').trim();
+      if(/^2[.\s]/.test(line)&&/(타부서|임원진)/.test(line)){in2=true;return;}
+      if(/^[3-9][.\s]/.test(line)||/^\*2\./.test(line)){in2=false;}
+      if(in2&&clean&&clean!=='없음'&&clean.length>2) sec2.push(clean);
+    });
+    const s2=sec2.join(' / ').substring(0,200);
+    if(s2) alerts.push({person,body:s2,date});
+  });
+  alerts.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const dashEl=document.getElementById('dashAlerts');
+  if(dashEl) dashEl.innerHTML=alerts.slice(0,5).map(a=>
+    '<div class="alert-item info" style="border-left-color:#2563eb"><div style="flex:1"><div class="alert-title">'+a.person+'</div><div class="alert-body" style="margin-top:4px">'+a.body+'</div></div><div class="alert-time">'+a.date+'</div></div>'
+  ).join('')||'<div style="color:#8891aa;font-size:13px;padding:12px;">타부서 공유사항 없음</div>';
+}
+
+function updateAiSummary(key) {}
+function queryPriceAI() { alert('단가조회 기능'); }
+
+
+function setEl(id, prop, val) {
+  var e = document.getElementById(id);
+  if (e) e[prop] = val;
+}
+
+// ── 거래처현황 함수 ────────────────────────────────────────
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+function calPrev() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
+function calNext() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); }
+
+function renderVendor() {
+  if(!window._slackMsgs) return;
+  renderCalendar();
+  renderOrderVendors();
+  buildVendorIndex();
+  analyzeOrderCycles();
+}
+
+// 박제영 업무보고에서 방문지 추출
+function extractVisits(text) {
+  const visits = [];
+  text.split('\n').forEach(line => {
+    const m = line.match(/^\s*[\d]+[)\.]\s*(.+)/);
+    if(m) {
+      const raw = m[1].replace(/\*[^*]+\*/g,'').replace(/@\S+/g,'').trim();
+      const v = raw.split('/')[0].split(' /')[0].trim();
+      if(v.length>1 && v.length<20 && !/http|www|#/.test(v)) visits.push(v);
+    }
+  });
+  return visits;
+}
+
+// 박제영 업무보고 메시지 가져오기
+function getMyReportMsgs() {
+  if(!window._slackMsgs) return [];
+  return window._slackMsgs.filter(m =>
+    (m.person||'').includes('박제영') && (m.channel||'').includes('0-02')
+  );
+}
+
+// 박제영 발주 채널 메시지
+function getMyOrderMsgs() {
+  if(!window._slackMsgs) return [];
+  return window._slackMsgs.filter(m =>
+    (m.person||'').includes('박제영') &&
+    ((m.channel||'').includes('0-04') || (m.channel||'').includes('2-02'))
+  );
+}
+
+function renderCalendar() {
+  const titleEl = document.getElementById('calTitle');
+  const gridEl = document.getElementById('calGrid');
+  if(!gridEl) return;
+
+  const mn = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+  if(titleEl) titleEl.textContent = calYear+'년 '+mn[calMonth];
+
+  const mStr = calYear+'-'+String(calMonth+1).padStart(2,'0');
+
+  // 방문: 업무보고에서 추출
+  function getEffDate(m){const dm=(m.text||'').match(/^(\d{4}-\d{2}-\d{2})/m);return dm?dm[1]:(m.date||'');}
+  const reportMsgs = getMyReportMsgs().filter(m=>getEffDate(m).startsWith(mStr));
+  const orderMsgs = getMyOrderMsgs().filter(m=>(m.date||'').startsWith(mStr));
+  const visitMap = {};
+  const orderMap = {};
+  reportMsgs.forEach(m => {
+    const d = parseInt(getEffDate(m).split('-')[2]||0);
+    if(!visitMap[d]) visitMap[d] = {places:[], msgs:[]};
+    visitMap[d].places.push(...extractVisits(m.text||''));
+    visitMap[d].msgs.push(m);
+  });
+  orderMsgs.forEach(m => {
+    const d = parseInt((m.date||'').split('-')[2]||0);
+    if(!orderMap[d]) orderMap[d] = [];
+    orderMap[d].push(m);
+  });
+
+  const firstDay = new Date(calYear,calMonth,1).getDay();
+  const lastDate = new Date(calYear,calMonth+1,0).getDate();
+  const today = new Date();
+  const isTM = today.getFullYear()===calYear && today.getMonth()===calMonth;
+
+  // 7열 (월화수목금토일), 토/일은 회색 공란
+  let cells = '';
+
+  // 1일의 요일 (월요일 시작 기준: 월=0,화=1,수=2,목=3,금=4,토=5,일=6)
+  const firstDow = new Date(calYear,calMonth,1).getDay(); // JS: 0=일,1=월,...,6=토
+  const monOffset = firstDow === 0 ? 6 : firstDow - 1; // 월 기준 offset
+
+  for(let i=0;i<monOffset;i++) cells += '<div style="height:110px;border-right:1px solid #dde2ee;border-bottom:1px solid #dde2ee;background:#f8f9fc;"></div>';
+
+  for(let d=1;d<=lastDate;d++) {
+    const dow = new Date(calYear,calMonth,d).getDay(); // 0=일,6=토
+    const isWeekend = dow===0||dow===6;
+    const isToday = isTM && d===today.getDate();
+    const dateStr = calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+
+    if(isWeekend) {
+      // 토/일: 회색 공란
+      cells += `<div style="height:110px;border-right:1px solid #dde2ee;border-bottom:1px solid #dde2ee;padding:5px;background:#f8f9fc;">
+        <div style="font-size:12px;color:#dde2ee;">${d}</div>
+      </div>`;
+      continue;
+    }
+
+    const visits = visitMap[d];
+    const orders = orderMap[d]||[];
+    let dots = '';
+    if(visits && visits.places.length > 0) {
+      dots += visits.places.slice(0,5).map(p=>
+        `<div style="font-size:10px;color:#0fa87a;background:rgba(15,168,122,0.08);border-radius:3px;padding:1px 4px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;" onclick="showCalDetail('${dateStr}','visit',event)">${p}</div>`
+      ).join('');
+    }
+    if(orders.length > 0) {
+      dots += `<div style="font-size:10px;color:#6c4fc2;background:rgba(108,79,194,0.1);border-radius:3px;padding:1px 4px;margin-top:2px;cursor:pointer;" onclick="showCalDetail('${dateStr}','order',event)">발주 ${orders.length}건</div>`;
+    }
+    cells += `<div style="height:110px;overflow:hidden;border-right:1px solid #dde2ee;border-bottom:1px solid #dde2ee;padding:5px;${isToday?'background:rgba(108,79,194,0.05);':''}">
+      <div style="font-size:12px;font-weight:${isToday?700:500};color:${isToday?'#6c4fc2':'#4a5068'};margin-bottom:2px;">${d}</div>
+      ${dots}
+    </div>`;
+  }
+  gridEl.innerHTML = cells;
+}
+
+function showCalDetail(dateStr, type, e) {
+  if(e) e.stopPropagation();
+  const detailEl = document.getElementById('calDetail');
+  const contentEl = document.getElementById('calDetailContent');
+  if(!detailEl||!contentEl) return;
+
+  let html = `<div style="font-size:13px;font-weight:700;margin-bottom:12px;color:#1a1d2e;">📅 ${dateStr}</div>`;
+
+  if(type==='visit'||type==='all') {
+    const msgs = getMyReportMsgs().filter(m=>m.date===dateStr);
+    if(msgs.length) {
+      html += '<div style="font-size:12px;font-weight:700;color:#0fa87a;margin-bottom:8px;">🟢 방문 내역</div>';
+      msgs.forEach(m=>{
+        const places = extractVisits(m.text||'');
+        const fullText = (m.text||'').replace(/\*[^*]+\*/g,'').replace(/@\S+/g,'').replace(/\n/g,'<br>').substring(0,600);
+        html += `<div style="background:#f0faf6;border-radius:8px;padding:12px;margin-bottom:8px;border-left:3px solid #0fa87a;">
+          ${places.length?'<div style="font-size:12px;font-weight:600;color:#0fa87a;margin-bottom:6px;">'+places.join(' · ')+'</div>':''}
+          <div style="font-size:12px;color:#4a5068;line-height:1.8;">${fullText}</div>
+        </div>`;
+      });
+    }
+  }
+
+  if(type==='order'||type==='all') {
+    const msgs = getMyOrderMsgs().filter(m=>m.date===dateStr);
+    if(msgs.length) {
+      html += '<div style="font-size:12px;font-weight:700;color:#6c4fc2;margin-bottom:8px;">📦 발주 내역</div>';
+      msgs.forEach(m=>{
+        const fullText = (m.text||'').replace(/\*[^*]+\*/g,'').replace(/@\S+/g,'').replace(/\n/g,'<br>').substring(0,600);
+        html += `<div style="background:#f5f3ff;border-radius:8px;padding:12px;margin-bottom:8px;border-left:3px solid #6c4fc2;">
+          <div style="font-size:12px;color:#4a5068;line-height:1.8;">${fullText}</div>
+        </div>`;
+      });
+    }
+  }
+
+  html += '<button class="btn" onclick="document.getElementById(\'calDetail\').style.display=\'none\'" style="margin-top:8px;">닫기</button>';
+  contentEl.innerHTML = html;
+  detailEl.style.display = 'block';
+}
+
+// 발주 업체별 정리
+function renderOrderVendors() {
+  const msgs = getMyOrderMsgs();
+  const vendorMap = {};
+
+  msgs.forEach(m => {
+    const text = m.text||'';
+    // 업체명 추출
+    const vM = text.match(/(SUNCHEM|ALCHEM|WENGFU|XINLIN|DSM|NHU|CJ바이오|CJ|BK&?CO|운천화|세인바이오|Evonik|Ajinomoto|Balchem|가림특수사료|프라임사료|부경양돈|오앤티|대한가축약품|김해축협|삼민목장|우일축산약품|[가-힣]{2,8}(?:㈜|상사|무역|화학|축협|농협|목장|축산|약품|사료)?)/i);
+    const vendor = vM ? vM[1].trim() : '기타';
+    if(!vendorMap[vendor]) vendorMap[vendor] = [];
+    vendorMap[vendor].push(m);
+  });
+
+  const listEl = document.getElementById('orderVendorList');
+  if(!listEl) return;
+
+  const vendors = Object.keys(vendorMap).sort();
+  listEl.innerHTML = vendors.length ? vendors.map(v =>
+    `<button onclick="showOrderDetail('${v}')" style="padding:6px 14px;border:1px solid #dde2ee;border-radius:20px;background:#fff;font-size:12px;font-weight:600;color:#4a5068;cursor:pointer;" onmouseover="this.style.background='#eef1f7'" onmouseout="this.style.background='#fff'">
+      ${v} <span style="color:#6c4fc2;font-weight:700;">${vendorMap[v].length}</span>
+    </button>`
+  ).join('') : '<div style="color:#8891aa;font-size:13px;">발주 내역 없음</div>';
+
+  window._orderVendorMap = vendorMap;
+}
+
+function searchOrder(kw) {
+  const vendorMap = window._orderVendorMap||{};
+  const listEl = document.getElementById('orderVendorList');
+  if(!listEl) return;
+  const q = kw.toLowerCase();
+  const vendors = Object.keys(vendorMap).filter(v=>v.toLowerCase().includes(q)).sort();
+  listEl.innerHTML = vendors.map(v =>
+    `<button onclick="showOrderDetail('${v}')" style="padding:6px 14px;border:1px solid #dde2ee;border-radius:20px;background:#fff;font-size:12px;font-weight:600;color:#4a5068;cursor:pointer;" onmouseover="this.style.background='#eef1f7'" onmouseout="this.style.background='#fff'">
+      ${v} <span style="color:#6c4fc2;font-weight:700;">${vendorMap[v].length}</span>
+    </button>`
+  ).join('');
+}
+
+function showOrderDetail(vendor) {
+  const vendorMap = window._orderVendorMap||{};
+  const msgs = (vendorMap[vendor]||[]).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const detailEl = document.getElementById('orderDetail');
+  const contentEl = document.getElementById('orderDetailContent');
+  if(!detailEl||!contentEl) return;
+
+  let html = `<div style="font-size:13px;font-weight:700;color:#1a1d2e;margin-bottom:12px;">📦 ${vendor} 발주/출고 내역</div>`;
+  html += msgs.map(m => {
+    const text = (m.text||'').replace(/\*[^*]+\*/g,'').replace(/@\S+/g,'').trim();
+    const lines = text.split('\n').filter(l=>l.trim().length>2);
+    const summary = lines.slice(0,5).join('<br>');
+    return `<div style="background:#f5f3ff;border-radius:8px;padding:12px;margin-bottom:8px;border-left:3px solid #6c4fc2;">
+      <div style="font-size:11px;color:#8891aa;margin-bottom:6px;font-family:monospace;">${m.date}</div>
+      <div style="font-size:12px;color:#4a5068;line-height:1.8;">${summary}</div>
+    </div>`;
+  }).join('');
+
+  contentEl.innerHTML = html;
+  detailEl.style.display = 'block';
+}
+
+
+// ── 업체 통합 검색 ──────────────────────────────────────────
+function buildVendorIndex() {
+  if(!window._slackMsgs) return;
+  // 박제영 관련 메시지에서 업체명 추출
+  const myMsgs = window._slackMsgs.filter(m=>(m.person||'').includes('박제영'));
+  const vendorMap = {};
+
+  myMsgs.forEach(m => {
+    const text = m.text||'';
+    // 알려진 거래처 목록에서 찾기
+    const normMap={'합천':'합천돼지자가','합천돼지':'합천돼지자가','조양':'조양수산','정우':'정우수산','우일':'우일가축약품'};
+    const knownVendors=['합천돼지자가','합천돼지','합천','가림특수사료','프라임사료','부경양돈','오앤티','대한가축약품',
+      '김해축협','삼민목장','우일축산약품','우일가축약품','대구축협','수협','수협사료','합천축협',
+      '조양수산','조양','정우수산','정우','경주TMF','장유수산','충무수산','에이스파마텍','부산사료','시현축산',
+      'SUNCHEM','ALCHEM','WENGFU','XINLIN','DSM','NHU','CJ바이오','CJ',
+      'BK&CO','운천화','세인바이오','Evonik','Ajinomoto','Balchem','한국씸벨'];
+    const exLine=/출고요청|발주|입고|선적|CIF|FOB|부탁|확인|완료|예정|#|\$|\d+\s*(kg|MT|톤|원)/i;
+    function addV(v,m){const n=normMap[v]||v;if(!vendorMap[n])vendorMap[n]=[];if(!vendorMap[n].find(x=>x.date===m.date&&x.text===m.text))vendorMap[n].push(m);}
+    const isOrdCh=(m.channel||'').includes('0-04')||(m.channel||'').includes('2-02');
+    for(const v of knownVendors){if(text.includes(v))addV(v,m);}
+    if(isOrdCh){text.split('\n').forEach(line=>{const c=line.replace(/@\S+/g,'').replace(/\*[^*]+\*/g,'').trim();if(exLine.test(c))return;if(/^[가-힣]{2,10}$/.test(c))addV(c,m);});}
+    if(!isOrdCh){text.split('\n').forEach(line=>{const vm=line.match(/^\s*[\d]+[)\.\s]\s*([가-힣]{2,10}(?:축협|농협|목장|축산|약품|사료|바이오|병원|수의|동물|수산)?)/);if(vm){const r=vm[1].trim();if(r.length>=3&&!['일반보고','업무내용','방문기록','오늘은','이번주','기본사항'].includes(r))addV(r,m);}});}
+  });
+
+  window._vendorIndex = vendorMap;
+
+  // 버튼 목록 업데이트
+  const btnEl = document.getElementById('vendorBtnList');
+  if(!btnEl) return;
+  const vendors = Object.keys(vendorMap).sort();
+  const countEl = document.getElementById('vendorBtnCount');
+  if(countEl) countEl.textContent = '업체 '+vendors.length+'개';
+  btnEl.innerHTML = vendors.length ? vendors.map(v=>
+    `<button onclick="showVendorDetail('${v.replace(/'/g,"\'")}')"
+      style="padding:5px 12px;border:1px solid #dde2ee;border-radius:16px;background:#fff;font-size:12px;color:#4a5068;cursor:pointer;white-space:nowrap;"
+      onmouseover="this.style.background='#eef1f7';this.style.borderColor='#6c4fc2';this.style.color='#6c4fc2'"
+      onmouseout="this.style.background='#fff';this.style.borderColor='#dde2ee';this.style.color='#4a5068'">
+      ${v} <span style="color:#6c4fc2;font-weight:700;font-size:11px;">${vendorMap[v].length}</span>
+    </button>`
+  ).join('') : '<div style="color:#8891aa;font-size:13px;">업체 정보 없음</div>';
+}
+
+function searchVendorAll(kw) {
+  if(!kw||kw.trim().length<1) {
+    const resultEl = document.getElementById('vendorSearchResult');
+    if(resultEl) resultEl.style.display='none';
+    return;
+  }
+  const q = kw.trim().toLowerCase();
+  const vendorMap = window._vendorIndex||{};
+  const matched = Object.keys(vendorMap).filter(v=>v.toLowerCase().includes(q));
+
+  if(matched.length === 1) {
+    showVendorDetail(matched[0]);
+  } else if(matched.length > 1) {
+    // 여러 업체 매칭 - 선택 버튼 표시
+    const resultEl = document.getElementById('vendorSearchResult');
+    const contentEl = document.getElementById('vendorSearchContent');
+    if(!resultEl||!contentEl) return;
+    contentEl.innerHTML = '<div style="font-size:12px;color:#8891aa;margin-bottom:8px;">검색 결과:</div>' +
+      matched.map(v=>`<button onclick="showVendorDetail('${v.replace(/'/g,"\'")}')"
+        style="margin:4px;padding:6px 14px;border:1px solid #6c4fc2;border-radius:16px;background:#fff;font-size:13px;font-weight:600;color:#6c4fc2;cursor:pointer;">
+        ${v} (${vendorMap[v].length}건)
+      </button>`).join('');
+    resultEl.style.display='block';
+  }
+}
+
+function showVendorDetail(vendor) {
+  const vendorMap=window._vendorIndex||{};
+  const allMsgs=(vendorMap[vendor]||[]).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const resultEl=document.getElementById('vendorSearchResult');
+  const contentEl=document.getElementById('vendorSearchContent');
+  if(!resultEl||!contentEl)return;
+
+  const chOrderMsgs=allMsgs.filter(m=>(m.channel||'').includes('0-04')||(m.channel||'').includes('2-02'));
+  const visitMsgs=allMsgs.filter(m=>!((m.channel||'').includes('0-04')||(m.channel||'').includes('2-02')));
+
+  const matKws=['황산염라이신','염산염라이신','라이신','DL-메치오닌','메치오닌','L-트레오닌','트레오닌',
+    '트립토판','발린','MDCP','MCP','DCP','TCP','비타민D3','비타민E','비타민A','비타민C',
+    '염화콜린','콜린','코코넛','ECM','보호지방','BHT','DDGS','대두박','대두유',
+    '나노비타믹스','나노비타블럭','VM프리믹스','비테인','하우린','인산칼슘'];
+
+  // 업무보고에서 발주 관련 줄 추출
+  // 메시지에 업체명 포함 → 주문/발송/출고/발주/입고/kg/톤 키워드 줄 전체 추출
+  const orderKw=/주문|발송|출고|발주|입고|요청|배송/i;
+  const qtyKw=/\d+\s*(kg|KG|MT|톤|g)/i;
+  const reportExtracted=[];
+  const seenReport=new Set();
+  visitMsgs.forEach(m=>{
+    const text=(m.text||'').replace(/@\S+/g,'').replace(/\*[^*]+\*/g,'');
+    if(!text.includes(vendor)) return;
+    const bodyDate=text.match(/^(\d{4}-\d{2}-\d{2})/m);
+    const effDate=bodyDate?bodyDate[1]:(m.date||'');
+    text.split('\n').forEach(line=>{
+      const l=line.trim();
+      if(l.length<3) return;
+      if(!(orderKw.test(l)||qtyKw.test(l))) return;
+      const k=effDate+'_'+l.substring(0,30);
+      if(seenReport.has(k)) return; seenReport.add(k);
+      // 원료명 찾기 - 없으면 줄 내용 그대로
+      let mat='-';
+      if(/라이신/i.test(l)){mat=/황산염|황산/i.test(l)?'황산염라이신':'염산염라이신';}
+      else{const f=matKws.find(k=>l.toLowerCase().includes(k.toLowerCase()));if(f)mat=f;}
+      const qM=l.match(/([\d,]+(?:\.\d+)?)\s*(MT|톤|KG|kg)\b/i);
+      const qty=qM?Number(qM[1].replace(/,/g,'')).toLocaleString()+' '+qM[2].toUpperCase():'-';
+      const pM=l.match(/\$\s*([\d,]+)/);
+      const price=pM?'$'+Number(pM[1].replace(/,/g,'')).toLocaleString():'-';
+      reportExtracted.push({date:effDate,mat,qty,price,summary:l.substring(0,60)});
+    });
+  });
+  // 날짜 내림차순 정렬
+  reportExtracted.sort((a,b)=>b.date.localeCompare(a.date));
+
+  const totalOrderCount=chOrderMsgs.length+reportExtracted.length;
+  let html=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;"><div style="font-size:15px;font-weight:700;color:#1a1d2e;">🏢 ${vendor}</div><span style="font-size:12px;color:#8891aa;">발주 ${totalOrderCount}건 · 방문 ${visitMsgs.length}건</span></div>`;
+  html+=`<div style="margin-bottom:20px;"><div style="font-size:13px;font-weight:700;color:#6c4fc2;margin-bottom:10px;">📦 발주 내역</div>`;
+
+  if(totalOrderCount>0){
+    html+=`<div style="border:1px solid #dde2ee;border-radius:10px;overflow:hidden;"><table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="background:#f5f3ff;border-bottom:2px solid #dde2ee;"><th style="padding:10px 12px;text-align:left;color:#6c4fc2;font-weight:700;white-space:nowrap;">날짜</th><th style="padding:10px 12px;text-align:left;color:#6c4fc2;font-weight:700;white-space:nowrap;">원료</th><th style="padding:10px 12px;text-align:right;color:#6c4fc2;font-weight:700;white-space:nowrap;">수량</th><th style="padding:10px 12px;text-align:right;color:#6c4fc2;font-weight:700;white-space:nowrap;">단가</th><th style="padding:10px 12px;text-align:left;color:#6c4fc2;font-weight:700;">내용</th></tr></thead><tbody>`;
+    chOrderMsgs.forEach((m,i)=>{
+      const text=(m.text||'').replace(/@\S+/g,'').replace(/\*[^*]+\*/g,'').trim();
+      const lines=text.split('\n');
+      let mat='-';
+      for(const line of lines){
+        if(/라이신/i.test(line)){mat=/황산염.{0,5}라이신|라이신.{0,5}황산염|황산라이신/i.test(line)?'황산염라이신':'염산염라이신';break;}
+        const f=matKws.find(k=>line.toLowerCase().includes(k.toLowerCase()));
+        if(f){mat=f;break;}
+      }
+      const qM=text.match(/([\d,]+(?:\.\d+)?)\s*(MT|톤|KG|kg)\b/i);
+      const qty=qM?Number(qM[1].replace(/,/g,'')).toLocaleString()+' '+qM[2].toUpperCase():'-';
+      const pM=text.match(/\$\s*([\d,]+)/);
+      const price=pM?'$'+Number(pM[1].replace(/,/g,'')).toLocaleString():'-';
+      const summary=lines.filter(l=>l.trim().length>2).slice(0,2).join(' ').substring(0,50);
+      html+=`<tr style="background:${i%2===0?'#fff':'#fafbff'};border-bottom:1px solid #eef1f7;"><td style="padding:10px 12px;white-space:nowrap;color:#8891aa;font-family:monospace;font-size:11px;">${m.date}</td><td style="padding:10px 12px;white-space:nowrap;font-weight:600;color:#1a1d2e;">${mat}</td><td style="padding:10px 12px;white-space:nowrap;text-align:right;color:#4a5068;">${qty}</td><td style="padding:10px 12px;white-space:nowrap;text-align:right;font-weight:700;color:#d97706;">${price}</td><td style="padding:10px 12px;color:#4a5068;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${summary}</td></tr>`;
+    });
+    reportExtracted.forEach((r,i)=>{
+      const bg=(chOrderMsgs.length+i)%2===0?'#fff':'#fafbff';
+      html+=`<tr style="background:${bg};border-bottom:1px solid #eef1f7;"><td style="padding:10px 12px;white-space:nowrap;color:#8891aa;font-family:monospace;font-size:11px;">${r.date}<span style="font-size:9px;color:#9d7de8;margin-left:3px;">보고</span></td><td style="padding:10px 12px;white-space:nowrap;font-weight:600;color:#1a1d2e;">${r.mat}</td><td style="padding:10px 12px;white-space:nowrap;text-align:right;color:#4a5068;">${r.qty}</td><td style="padding:10px 12px;white-space:nowrap;text-align:right;font-weight:700;color:#d97706;">${r.price}</td><td style="padding:10px 12px;color:#4a5068;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.summary}</td></tr>`;
+    });
+    html+=`</tbody></table></div>`;
+  }else{html+=`<div style="padding:16px;background:#f5f3ff;border-radius:8px;color:#8891aa;font-size:13px;text-align:center;">발주 내역 없음</div>`;}
+  html+='</div>';
+
+  if(visitMsgs.length){
+    html+=`<div style="font-size:13px;font-weight:700;color:#0fa87a;margin-bottom:10px;">📝 방문/보고 내역</div>`;
+    html+=visitMsgs.slice(0,5).map(m=>{
+      const raw=(m.text||'').replace(/@\S+/g,'').replace(/\*[^*]+\*/g,'').trim();
+      const lines=raw.split('\n');
+      const vIdx=lines.findIndex(l=>l.includes(vendor));
+      const relevant=vIdx>=0?lines.slice(Math.max(0,vIdx-1),vIdx+6).filter(l=>l.trim().length>0):lines.filter(l=>l.trim().length>0).slice(0,5);
+      return `<div style="background:#f0faf6;border-radius:8px;padding:10px 12px;margin-bottom:6px;border-left:3px solid #0fa87a;"><div style="font-size:11px;font-family:monospace;color:#8891aa;margin-bottom:4px;">${m.date}</div><div style="font-size:12px;color:#4a5068;line-height:1.8;">${relevant.join('<br>')}</div></div>`;
+    }).join('');
+  }
+  contentEl.innerHTML=html;
+  resultEl.style.display='block';
+  resultEl.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+
+
+function toggleVendorList() {
+  const listEl = document.getElementById('vendorBtnList');
+  const btnEl = document.getElementById('vendorToggleBtn');
+  if(!listEl||!btnEl) return;
+  const isHidden = listEl.style.display==='none'||listEl.style.display==='';
+  listEl.style.display = isHidden ? 'flex' : 'none';
+  btnEl.textContent = isHidden ? '접기 ▲' : '펼치기 ▼';
+}
+
+
+// ── 발주 주기 분석 & 알림 ──────────────────────────────────
+function analyzeOrderCycles() {
+  const msgs = getMyOrderMsgs();
+  if(!msgs.length) return;
+
+  const matKws = ['황산염라이신','염산염라이신','라이신','DL-메치오닌','메치오닌',
+    'L-트레오닌','트레오닌','트립토판','발린','MDCP','MCP','DCP','TCP',
+    '비타민D3','비타민E','비타민A','비타민C','염화콜린','콜린',
+    '코코넛','ECM','보호지방','BHT','DDGS','대두박','대두유'];
+
+  // 업체+원료 조합별 발주 날짜 수집
+  const orderHistory = {}; // key: "업체_원료"
+
+  msgs.forEach(m => {
+    const text = m.text||'';
+    const date = m.date||'';
+    if(!date) return;
+
+    const nm={'합천':'합천돼지자가','합천돼지':'합천돼지자가','조양':'조양수산','정우':'정우수산','우일':'우일가축약품'};
+    const kl=['합천돼지자가','합천돼지','합천','시현축산','SUNCHEM','ALCHEM','WENGFU','XINLIN','DSM','NHU','CJ바이오','CJ','BK&CO','운천화','세인바이오','Evonik','Ajinomoto','Balchem','가림특수사료','프라임사료','부경양돈','오앤티','대한가축약품','김해축협','삼민목장','우일축산약품','우일가축약품','합천축협','수협','대구축협','조양수산','조양','정우수산','정우','경주TMF','장유수산','충무수산','에이스파마텍','부산사료'];
+    const exL=/출고요청|발주|입고|선적|CIF|FOB|부탁|확인|완료|예정|#|\$|\d+\s*(kg|MT|톤|원)/i;
+    let rv='';
+    for(const v of [...kl].sort((a,b)=>b.length-a.length)){if(text.includes(v)){rv=v;break;}}
+    if(!rv){for(const l of text.split('\n').map(x=>x.replace(/@\S+/g,'').trim())){if(exL.test(l))continue;if(/^[가-힣]{2,10}$/.test(l)){rv=l;break;}}}
+    const vendor=nm[rv]||rv;
+    if(!vendor)return;
+    const mat=matKws.find(k=>text.toLowerCase().includes(k.toLowerCase()))||'';
+    if(!mat)return;
+    const key=vendor+'_'+mat;
+    if(!orderHistory[key])orderHistory[key]={vendor,mat,dates:[]};
+    if(!orderHistory[key].dates.includes(date))orderHistory[key].dates.push(date);
+  });
+  window._orderHistory=orderHistory;
+
+  // 각 조합별 평균 발주 주기 계산
+  const today = new Date();
+  const alerts = [];
+  const normal = [];
+
+  Object.values(orderHistory).forEach(item => {
+    const sortedDates = item.dates.sort();
+    const lastDate = new Date(sortedDates[sortedDates.length-1]);
+    const daysSinceLast = Math.floor((today - lastDate) / (1000*60*60*24));
+
+    let avgCycle = 0;
+    if(sortedDates.length >= 2) {
+      // 평균 주기 계산
+      const gaps = [];
+      for(let i=1;i<sortedDates.length;i++) {
+        const d1 = new Date(sortedDates[i-1]);
+        const d2 = new Date(sortedDates[i]);
+        gaps.push(Math.floor((d2-d1)/(1000*60*60*24)));
+      }
+      avgCycle = Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length);
+    } else {
+      // 1건만 있으면 30일 기본 주기
+      avgCycle = 30;
+    }
+
+    const overdueBy = daysSinceLast - avgCycle;
+    const pct = avgCycle > 0 ? Math.round((daysSinceLast/avgCycle)*100) : 0;
+
+    const info = {
+      vendor: item.vendor,
+      mat: item.mat,
+      lastDate: sortedDates[sortedDates.length-1],
+      daysSinceLast,
+      avgCycle,
+      overdueBy,
+      pct,
+      orderCount: sortedDates.length
+    };
+
+    if(overdueBy > 0) {
+      alerts.push(info); // 주기 초과
+    } else {
+      normal.push(info); // 정상
+    }
+  });
+
+  alerts.sort((a,b)=>b.overdueBy-a.overdueBy);
+  normal.sort((a,b)=>b.pct-a.pct);
+
+  // 알림 렌더링
+  const alertEl = document.getElementById('orderAlertList');
+  const cntEl = document.getElementById('orderAlertCount');
+  if(!alertEl) return;
+  if(cntEl) cntEl.textContent = alerts.length ? alerts.length+'건 주의' : '';
+
+  if(!alerts.length && !normal.length) {
+    alertEl.innerHTML = '<div style="color:#8891aa;font-size:13px;padding:4px;">발주 데이터 분석 중...</div>';
+    return;
+  }
+
+  let html = '';
+
+  // 주의/초과 항목
+  if(alerts.length) {
+    html += '<div style="margin-bottom:12px;">';
+    html += alerts.map(a => {
+      const urgency = a.overdueBy > a.avgCycle ? '#e03e3e' : '#d97706';
+      const urgencyLabel = a.overdueBy > a.avgCycle ? '🔴 긴급' : '🟡 주의';
+      return `<div style="background:${urgency}08;border:1px solid ${urgency}33;border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap;">
+            <span style="font-size:10px;padding:2px 7px;border-radius:10px;background:${urgency}22;color:${urgency};font-weight:700;">${urgencyLabel}</span>
+            <span style="font-size:15px;font-weight:800;color:#1a1d2e;">${a.vendor}</span>
+            <span style="font-size:11px;color:#fff;background:#6c4fc2;padding:2px 8px;border-radius:10px;font-weight:700;">${a.mat}</span>
+          </div>
+          <div style="font-size:11px;color:#8891aa;">
+            평균 주기 <b style="color:#4a5068;">${a.avgCycle}일</b> · 
+            마지막 발주 <b style="color:#4a5068;">${a.lastDate}</b> · 
+            경과 <b style="color:${urgency};">${a.daysSinceLast}일</b>
+            (${a.orderCount}건 분석)
+          </div>
+        </div>
+        <div style="text-align:center;min-width:60px;">
+          <div style="font-size:20px;font-weight:700;color:${urgency};">${a.overdueBy > 0 ? '+'+a.overdueBy : a.overdueBy}일</div>
+          <div style="font-size:10px;color:#8891aa;">주기 초과</div>
+        </div>
+      </div>`;
+    }).join('');
+    html += '</div>';
+  }
+
+  // 정상 항목 (주기의 70% 이상 경과)
+  const nearDue = normal.filter(n=>n.pct>=70).sort((a,b)=>b.pct-a.pct);
+  if(nearDue.length) {
+    html += `<div style="margin-bottom:8px;">
+      <div style="font-size:11px;font-weight:600;color:#8891aa;margin-bottom:8px;">📋 곧 발주 예정 (주기 70% 이상 경과)</div>`;
+    html += nearDue.map(n => {
+      const remaining = n.avgCycle - n.daysSinceLast;
+      return `<div style="background:#fff;border:1px solid #dde2ee;border-radius:8px;padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <span style="font-size:15px;font-weight:800;color:#1a1d2e;">${n.vendor}</span>
+          <span style="font-size:11px;color:#fff;background:#6c4fc2;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px;">${n.mat}</span>
+          <div style="font-size:11px;color:#8891aa;margin-top:2px;">마지막 발주 ${n.lastDate} · 주기 ${n.avgCycle}일</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:13px;font-weight:700;color:#d97706;">D-${remaining}</div>
+          <div style="font-size:10px;color:#8891aa;">${n.pct}%</div>
+          <!-- 진행바 -->
+          <div style="width:60px;height:4px;background:#eef1f7;border-radius:2px;margin-top:4px;">
+            <div style="width:${Math.min(n.pct,100)}%;height:4px;background:${n.pct>=90?'#d97706':'#2563eb'};border-radius:2px;"></div>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    html += '</div>';
+  }
+
+  if(!html) {
+    html = '<div style="color:#0fa87a;font-size:13px;padding:4px;">✅ 모든 발주 정상 주기 내</div>';
+  }
+
+  alertEl.innerHTML = html;
+}
+
+
+// ── 자동 새로고침 설정 ─────────────────────────────────────
+document.getElementById('autoRefresh').addEventListener('change', function() {
+  if (autoTimer) clearInterval(autoTimer);
+  const mins = parseInt(this.value);
+  if (mins > 0) {
+    autoTimer = setInterval(() => {
+      const token = document.getElementById('slackToken').value.trim();
+      if (token) runSlackFetch(); else loadSample();
+    }, mins * 60000);
+  }
+});
+
+// ── 초기화 ─────────────────────────────────────────────────
+loadSettings();
+loadSample();
+checkProxy();
+</script>
+</body>
+</html>
