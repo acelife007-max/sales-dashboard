@@ -89,6 +89,7 @@ body {
   border-right: 1px solid var(--border);
   padding: 20px 0;
   position: sticky; top: 52px; height: calc(100vh - 52px); overflow-y: auto;
+  background: var(--bg);
 }
 .sidebar-section { padding: 0 12px; margin-bottom: 20px; }
 .sidebar-label { font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; padding: 0 8px; margin-bottom: 6px; }
@@ -103,6 +104,33 @@ body {
 .nav-icon { width: 16px; height: 16px; opacity: 0.7; font-size: 14px; text-align: center; }
 .nav-count { margin-left: auto; font-size: 10px; background: var(--bg3); border: 1px solid var(--border); padding: 1px 6px; border-radius: 10px; color: var(--text3); }
 .main { flex: 1; padding: 24px; overflow-x: hidden; }
+
+/* ── 모바일 사이드바 오버레이 ── */
+.sidebar-backdrop {
+  display: none;
+  position: fixed; inset: 0; z-index: 98;
+  background: rgba(0,0,0,0.4);
+}
+.sidebar-backdrop.open { display: block; }
+
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed !important;
+    top: 52px; left: 0;
+    height: calc(100vh - 52px);
+    z-index: 99;
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+    width: 240px;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .kpi-row { grid-template-columns: repeat(2,1fr); }
+  .setup-body { grid-template-columns: 1fr; }
+  .main { padding: 16px; }
+}
 
 /* ── PAGES ── */
 .page { display: none; }
@@ -344,12 +372,6 @@ td.bold { color: var(--text); font-weight: 500; }
   border: 1px solid rgba(251,191,36,0.3); display: none;
 }
 .sample-pill.show { display: inline-flex; align-items: center; gap: 4px; }
-
-@media (max-width: 900px) {
-  .sidebar { display: none; }
-  .kpi-row { grid-template-columns: repeat(2,1fr); }
-  .setup-body { grid-template-columns: 1fr; }
-}
 </style>
 </head>
 <body>
@@ -404,8 +426,7 @@ td.bold { color: var(--text); font-weight: 500; }
         <span class="nav-icon">📋</span> 입찰공고
         <span class="nav-count" id="nc-bidding">0</span>
       </div>
-      <div style="display:none"><span id="nc-order">0</span></div>
-      <div style="display:none"><span id="nc-alerts">0</span><div id="dashAlerts"></div><tbody id="alertsBody2"></tbody></div>
+      <div style="display:none"><span id="nc-order">0</span><div id="dashAlerts"></div><tbody id="alertsBody2"></tbody></div>
 
     </div>
     <div class="sidebar-section">
@@ -464,7 +485,6 @@ td.bold { color: var(--text); font-weight: 500; }
           <div class="form-group span2">
             <label class="form-label">분석할 채널 선택</label>
             <div class="channel-grid" id="chGrid">
-
               <input class="ch-input" placeholder="채널명 입력 후 엔터" id="chInput" onkeydown="addCh(event)" style="width:150px;">
               <span class="ch-tag" onclick="doAddCh(document.getElementById('chInput').value); document.getElementById('chInput').value='';" style="cursor:pointer;background:var(--purple-glow);border-color:rgba(124,92,191,0.5);color:var(--purple-light);">+ 추가</span>
             </div>
@@ -506,12 +526,7 @@ td.bold { color: var(--text); font-weight: 500; }
         <div class="setup-body single">
           <div class="form-group">
             <label class="form-label">Slack 메시지 붙여넣기</label>
-            <textarea class="form-input" id="manualText" rows="6" placeholder="Slack 채널에서 메시지를 복사해서 여기에 붙여넣으세요.
-
-예시:
-[영업1팀 김영수] CJ바이오 라이신 단가 협상. $1,520/MT → $1,650/MT 인상 요청 접수. 중국 수출 규제 영향
-[영업2팀 박지현] Evonik 메치오닌 Q2 1,200MT 발주 완료. $2,900/MT 확정. 4/10 선적 예정
-[구매팀 이민호] NHU 비타민A 수급 불안. $7,900 → $8,650/kg 인상 통보. 긴급 재고 확보 필요"></textarea>
+            <textarea class="form-input" id="manualText" rows="6" placeholder="Slack 채널에서 메시지를 복사해서 여기에 붙여넣으세요.&#10;&#10;예시:&#10;[영업1팀 김영수] CJ바이오 라이신 단가 협상. $1,520/MT → $1,650/MT 인상 요청 접수. 중국 수출 규제 영향&#10;[영업2팀 박지현] Evonik 메치오닌 Q2 1,200MT 발주 완료. $2,900/MT 확정. 4/10 선적 예정&#10;[구매팀 이민호] NHU 비타민A 수급 불안. $7,900 → $8,650/kg 인상 통보. 긴급 재고 확보 필요"></textarea>
           </div>
         </div>
         <div class="setup-footer">
@@ -535,10 +550,6 @@ td.bold { color: var(--text); font-weight: 500; }
 
     <!-- ══ DASHBOARD ══ -->
     <div class="page" id="page-dashboard">
-
-
-
-
       <div class="ai-box">
         <div class="ai-badge">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#9d7de8" stroke-width="1"/><path d="M4 7h6M7 4v6" stroke="#9d7de8" stroke-width="1.2" stroke-linecap="round"/></svg>
@@ -547,13 +558,11 @@ td.bold { color: var(--text); font-weight: 500; }
         <div class="ai-content" id="aiSummary">이번 달 Slack 분석 결과, 사료 원료 단가인상 알림이 전월 대비 75% 급증했습니다. 아미노산 계열에서 트립토판(Ajinomoto +10.8%), 라이신(CJ바이오 +8.6%) 순으로 인상 압박이 크며, 비타민 계열도 A(NHU +9.5%), E(DSM -1.4% 협상 성공)로 명암이 갈렸습니다. 대상㈜ 트레오닌 납기 2주 지연으로 4월 생산 차질 위험이 있어 긴급 대체 공급처 확보가 필요합니다. DSM 비타민E 협상 인하(Q2 500MT)가 유일한 절감 성과입니다.</div>
       </div>
 
-      <!-- 최근 알림 미리보기 -->
       <div class="sec-head">
         <div><div class="sec-title">긴급 알림</div><div class="sec-sub">즉각 조치가 필요한 항목</div></div>
         <button class="btn" style="font-size:11px;padding:5px 10px" onclick="showPage('alerts');setNavById('page-alerts')">전체 보기 →</button>
       </div>
       <div class="alert-list" id="dashAlerts"></div>
-
     </div>
 
     <!-- ══ PRICE ══ -->
@@ -561,8 +570,6 @@ td.bold { color: var(--text); font-weight: 500; }
       <div class="sec-head">
         <div><div class="sec-title">단가 추이</div><div class="sec-sub">김선이·성유진·왕려원 업무보고 단가 자동 추출</div></div>
       </div>
-
-      <!-- 검색창 -->
       <div style="display:flex;gap:10px;align-items:center;margin-bottom:20px;">
         <input id="priceQuery" class="form-input" placeholder="🔍 원료명 검색 (예: 라이신, DCP, 메치오닌...)"
           style="flex:1;max-width:400px;font-size:14px;padding:10px 14px;"
@@ -570,11 +577,7 @@ td.bold { color: var(--text); font-weight: 500; }
           oninput="queryPrice(this.value)">
         <span id="priceQueryCount" style="font-size:12px;color:#8891aa;white-space:nowrap;"></span>
       </div>
-
-      <!-- 전광판: 전월→당월 비교 -->
       <div id="priceBoard" style="display:none;margin-bottom:20px;"></div>
-
-      <!-- 단가 변동 테이블 -->
       <div id="priceTableWrap" style="display:none;">
         <div class="tbl-card">
           <div style="padding:10px 14px;font-size:12px;font-weight:600;color:#4a5068;border-bottom:1px solid #dde2ee;">
@@ -587,20 +590,18 @@ td.bold { color: var(--text); font-weight: 500; }
           </div>
         </div>
       </div>
-
-      <!-- 기본 안내 -->
       <div id="priceGuide" style="text-align:center;padding:60px 20px;color:#8891aa;">
         <div style="font-size:48px;margin-bottom:16px;">🔍</div>
         <div style="font-size:16px;font-weight:600;color:#4a5068;margin-bottom:8px;">원료명을 검색하세요</div>
         <div style="font-size:13px;">예: 라이신, DCP, 메치오닌, 비타민, 트레오닌</div>
       </div>
-
       <div style="display:none">
         <span id="nc-price">0</span>
         <span id="priceCnt"></span>
         <tbody id="priceBody"></tbody>
       </div>
     </div>
+
     <!-- ══ VENDOR ══ -->
     <div class="page" id="page-vendor">
       <div class="sec-head">
@@ -611,8 +612,6 @@ td.bold { color: var(--text); font-weight: 500; }
           <button class="btn" onclick="calNext()">다음달 →</button>
         </div>
       </div>
-
-      <!-- 캘린더 -->
       <div style="background:#fff;border:1px solid #dde2ee;border-radius:12px;overflow:hidden;margin-bottom:16px;">
         <div style="display:grid;grid-template-columns:repeat(7,1fr);background:#eef1f7;">
           <div style="padding:10px;text-align:center;font-size:11px;font-weight:700;color:#8891aa;">월</div>
@@ -625,13 +624,9 @@ td.bold { color: var(--text); font-weight: 500; }
         </div>
         <div id="calGrid" style="display:grid;grid-template-columns:repeat(7,1fr);"></div>
       </div>
-
-      <!-- 클릭시 상세 -->
       <div id="calDetail" style="display:none;background:#fff;border:1px solid #dde2ee;border-radius:12px;padding:16px;margin-bottom:16px;">
         <div id="calDetailContent"></div>
       </div>
-
-      <!-- 업체 통합 검색 -->
       <div class="tbl-card" style="margin-bottom:16px;">
         <div style="padding:12px 14px;border-bottom:1px solid #dde2ee;">
           <div style="font-size:13px;font-weight:700;color:#1a1d2e;margin-bottom:10px;">🔍 업체 검색</div>
@@ -640,7 +635,6 @@ td.bold { color: var(--text); font-weight: 500; }
             oninput="searchVendorAll(this.value)"
             onkeyup="searchVendorAll(this.value)">
         </div>
-        <!-- 업체 버튼 목록 -->
         <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eef1f7;">
           <span style="font-size:12px;color:#8891aa;" id="vendorBtnCount">업체 목록</span>
           <button onclick="toggleVendorList()" id="vendorToggleBtn"
@@ -651,13 +645,10 @@ td.bold { color: var(--text); font-weight: 500; }
         <div id="vendorBtnList" style="padding:12px;display:none;flex-wrap:wrap;gap:8px;max-height:200px;overflow-y:auto;">
           <div style="color:#8891aa;font-size:13px;padding:4px;">Slack 연동 후 업체 목록이 표시됩니다</div>
         </div>
-        <!-- 검색 결과 -->
         <div id="vendorSearchResult" style="display:none;border-top:1px solid #dde2ee;padding:16px;">
           <div id="vendorSearchContent"></div>
         </div>
       </div>
-
-      <!-- 발주 주기 알림 -->
       <div class="tbl-card" style="margin-bottom:16px;">
         <div style="padding:10px 14px;font-size:13px;font-weight:600;color:#4a5068;border-bottom:1px solid #dde2ee;display:flex;align-items:center;justify-content:space-between;">
           <span>⚠️ 발주 주기 체크 <span id="orderAlertCount" style="font-size:11px;color:#e03e3e;font-weight:700;"></span></span>
@@ -667,8 +658,6 @@ td.bold { color: var(--text); font-weight: 500; }
           <div style="color:#8891aa;font-size:13px;">Slack 연동 후 자동 분석됩니다</div>
         </div>
       </div>
-
-      <!-- 발주 내역 -->
       <div class="tbl-card" style="margin-bottom:16px;">
         <div style="padding:10px 14px;font-size:13px;font-weight:600;color:#4a5068;border-bottom:1px solid #dde2ee;">
           📦 발주 내역 (업체별)
@@ -679,7 +668,7 @@ td.bold { color: var(--text); font-weight: 500; }
         </div>
       </div>
     </div>
-    <!-- 업무보고 숨김 -->
+
     <!-- ══ BIDDING ══ -->
     <div class="page" id="page-bidding">
       <div class="sec-head">
@@ -694,8 +683,6 @@ td.bold { color: var(--text); font-weight: 500; }
         </div>
       </div>
     </div>
-
-
 
     <div class="page" id="page-raw">
       <div class="sec-head">
@@ -717,10 +704,31 @@ td.bold { color: var(--text); font-weight: 500; }
     </div>
   </main>
 </div>
-toggleSidebar/openSidebar/closeSidebar
+
 <script>
+// ── 사이드바 토글 (모바일) ──────────────────────────────────
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const bd = document.getElementById('sidebarBackdrop');
+  const isOpen = sb.classList.contains('open');
+  if (isOpen) {
+    sb.classList.remove('open');
+    bd.classList.remove('open');
+  } else {
+    sb.classList.add('open');
+    bd.classList.add('open');
+  }
+}
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarBackdrop').classList.add('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarBackdrop').classList.remove('open');
+}
+
 // ── 데이터 ──────────────────────────────────────────────────
-// ※ 단가: $/MT(메트릭톤) 기준, 원화는 환율 1,370원 적용
 const PRICE_DATA = [
   {product:"라이신 황산염 (L-Lysine HCl 98.5%)",vendor:"CJ바이오",p2:1480,p1:1520,cur:1650,note:"중국 공급 감소"},
   {product:"메치오닌 (DL-Methionine 99%)",vendor:"Evonik Korea",p2:2850,p1:2900,cur:3120,note:"유럽발 물류비 인상"},
@@ -765,7 +773,6 @@ const ALERTS_DATA = [
 let currentData = { price: [...PRICE_DATA], vendor: [...VENDOR_DATA], staff: [...STAFF_DATA] };
 let autoTimer = null;
 
-// ── 유틸 ──────────────────────────────────────────────────
 const fmt = n => n.toLocaleString('ko-KR');
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
@@ -776,6 +783,7 @@ function showPage(id) {
 function setNav(el) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   el.classList.add('active');
+  closeSidebar(); // 모바일에서 메뉴 선택 후 자동 닫힘
 }
 function setNavById(id) {}
 
@@ -792,7 +800,6 @@ function addCh(e) {
 function doAddCh(v) {
   v = v.trim().replace('#','');
   if (!v) return;
-  // 중복 체크
   const existing = [...document.querySelectorAll('.ch-tag')].map(t => t.dataset.ch);
   if (existing.includes(v)) return;
   const tag = document.createElement('span');
@@ -802,7 +809,6 @@ function doAddCh(v) {
   document.getElementById('chGrid').insertBefore(tag, input);
 }
 
-// ── 렌더 ──────────────────────────────────────────────────
 function renderAll() {
   renderPrice(); renderVendor(); renderStaff(); renderAlerts();
   updateCounts();
@@ -820,10 +826,8 @@ function renderPrice() {
     priceKws.some(kw => (m.text||'').toLowerCase().includes(kw))
   );
   window._priceMsgs = msgs;
-  if(document.getElementById('priceCnt')) (function(){var _e=document.getElementById('priceCnt');if(_e)_e.textContent=msgs.length + '건';})();
-  if(document.getElementById('nc-price')) (function(){var _e=document.getElementById('nc-price');if(_e)_e.textContent=msgs.length;})();
-
-  // 원문 메시지
+  if(document.getElementById('priceCnt')) document.getElementById('priceCnt').textContent=msgs.length+'건';
+  if(document.getElementById('nc-price')) document.getElementById('nc-price').textContent=msgs.length;
   const tb = document.getElementById('priceBody');
   if(tb) {
     tb.innerHTML = msgs.map(m => `<tr>
@@ -832,27 +836,21 @@ function renderPrice() {
       <td style="font-size:13px;word-break:break-word;line-height:1.6;max-width:700px">${(m.text||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td>
     </tr>`).join('') || '<tr><td colspan="3" style="text-align:center;color:var(--text3);padding:20px">메시지 없음</td></tr>';
   }
-
-  // 직접 파싱으로 단가 추출 (AI 불필요)
   parsePriceDirect(msgs);
 }
 
 function classifyLysine(ctx) {
-  // 반드시 "라이신" 단어가 있어야만 분류
   if(!/라이신/i.test(ctx)) return '';
   if (/황산염.{0,5}라이신|라이신.{0,5}황산염|황산라이신/i.test(ctx)) return '황산염라이신';
   if (/염산염.{0,5}라이신|라이신.{0,5}염산염|염산라이신/i.test(ctx)) return '염산염라이신';
-  return '염산염라이신'; // 단독 라이신 = 염산염
+  return '염산염라이신';
 }
 
 function parsePriceDirect(msgs) {
   const targets = ['김선이','성유진','왕려원'];
   const filteredMsgs = msgs.filter(m => targets.some(t=>(m.person||'').includes(t)));
-
   window._priceRows = [];
   const seen = new Set();
-
-  // 세인바이오 취급품목 기준 - 순서 중요 (구체적인 것 먼저)
   const MAT_LIST = [
     ['황산염라이신','황산염라이신'], ['라이신황산염','황산염라이신'],
     ['염산염라이신','염산염라이신'], ['라이신염산염','염산염라이신'],
@@ -870,47 +868,31 @@ function parsePriceDirect(msgs) {
     ['BHT','BHT'], ['레시틴','레시틴'], ['비테인','비테인염산염'],
     ['DDGS','DDGS'], ['대두박','대두박'], ['대두유','대두유'],
   ];
-
-  // 제외: 시세/예상/문의/입찰 관련
   const excludeKws = ['시세','예상','전망','문의','협상중','검토','참고','불가','선언','중단','입찰','낙찰','공고','offer','제안','견적'];
-  // 계약 확정 키워드
   const buyKws = ['계약','발주','수령','확정','완료','체결','통관','ETA','ETD','입고','선적','구매','매입','CIF','FOB','낙찰확정','선택','선적완료'];
 
   filteredMsgs.forEach(m => {
     const text = m.text||'';
     const lines = text.split('\n');
-
     lines.forEach((line, li) => {
-      // 제외 키워드
       if(excludeKws.some(k=>line.toLowerCase().includes(k.toLowerCase()))) return;
-      // $ 없으면 스킵
       if(!/\$/.test(line)) return;
-      // 계약 키워드 없으면 스킵
       if(!buyKws.some(k=>line.includes(k))) return;
-
-      // 단가 추출 - $/kg, $/MT, $/톤 모두
       const priceM = line.match(/\$\s*([\d,]+(?:\.\d+)?)\s*(?:\/\s*(MT|톤|KG|kg|T|ton))?/i);
       if(!priceM) return;
       const price = parseFloat(priceM[1].replace(/,/g,''));
       if(price<0.1||price>10000) return;
       const unit = priceM[2]||'';
-
-      // 수량 추출
       const qtyM = line.match(/([\d,]+(?:\.\d+)?)\s*(MT|톤|KG|kg)\b/i);
       const qty = qtyM ? parseFloat(qtyM[1].replace(/,/g,'')).toLocaleString()+qtyM[2].toUpperCase() : '';
-
-      // 원료명 - 현재줄 + 앞 5줄
       const ctx = lines.slice(Math.max(0,li-5), li+1).join(' ') + ' ' + line;
-
       let mat = '';
       if(/라이신/i.test(ctx)) {
         mat = classifyLysine(ctx);
       } else {
-        // 현재 줄 먼저
         for(const [kw, label] of MAT_LIST) {
           if(line.includes(kw)||line.toLowerCase().includes(kw.toLowerCase())) { mat=label; break; }
         }
-        // 없으면 컨텍스트
         if(!mat) {
           for(const [kw, label] of MAT_LIST) {
             if(ctx.includes(kw)||ctx.toLowerCase().includes(kw.toLowerCase())) { mat=label; break; }
@@ -918,18 +900,15 @@ function parsePriceDirect(msgs) {
         }
       }
       if(!mat) return;
-
       const priceStr = '$'+price.toLocaleString()+(unit?'/'+unit:'');
       const k = m.date+'_'+mat+'_'+price+'_'+qty;
       if(seen.has(k)) return; seen.add(k);
-
       window._priceRows.push({
         date:m.date||'', person:m.person||'', mat, price, priceStr, qty,
         note: line.replace(/\*[^*]+\*/g,'').replace(/\*/g,'').replace(/@\S+/g,'').trim().substring(0,60)
       });
     });
   });
-
   window._priceRows.sort((a,b)=>b.date.localeCompare(a.date));
   const cntEl = document.getElementById('nc-price');
   if(cntEl) cntEl.textContent = window._priceRows.length;
@@ -942,7 +921,6 @@ function queryPrice(keyword) {
   const tb = document.getElementById('priceSummary');
   const cntEl = document.getElementById('priceQueryCount');
   if(!tb) return;
-
   if(!keyword||keyword.trim().length<1) {
     if(board) board.style.display='none';
     if(tableWrap) tableWrap.style.display='none';
@@ -950,15 +928,12 @@ function queryPrice(keyword) {
     if(cntEl) cntEl.textContent='';
     return;
   }
-
   if(guide) guide.style.display='none';
   const q = keyword.trim().toLowerCase();
   const rows = (window._priceRows||[]).filter(r=>
     r.mat.toLowerCase().includes(q)||r.note.toLowerCase().includes(q)
   );
   if(cntEl) cntEl.textContent = rows.length+'건';
-
-  // 전광판 카드
   if(board) {
     const now = new Date();
     const thisMonth = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
@@ -1000,7 +975,6 @@ function queryPrice(keyword) {
     board.innerHTML=bHTML;
     board.style.display='block';
   }
-
   if(tableWrap) tableWrap.style.display='block';
   tb.innerHTML=rows.length?rows.map(r=>`<tr style="border-bottom:1px solid #eef1f7;">
     <td style="padding:9px 12px;font-size:11px;color:#8891aa;font-family:monospace;white-space:nowrap">${r.date}</td>
@@ -1013,158 +987,57 @@ function queryPrice(keyword) {
   :`<tr><td colspan="6" style="text-align:center;color:#8891aa;padding:24px;">"${keyword}" 계약 내역 없음</td></tr>`;
 }
 
-
-
-
-
-function displayPriceSummary(rows) {
-  const tb = document.getElementById('priceSummary');
-  if(!tb) return;
-  tb.innerHTML = rows.map(r => `<tr data-trend="${r.label}">
-    <td style="white-space:nowrap;color:var(--text3);font-size:11px;font-family:monospace">${r.date||''}</td>
-    <td style="white-space:nowrap;font-size:12px;font-weight:500;color:var(--text)">${r.person||''}</td>
-    <td style="white-space:nowrap;font-size:13px;color:var(--blue);font-weight:500">${r.vendor}</td>
-    <td style="white-space:nowrap;font-size:13px;color:var(--text)">${r.material}</td>
-    <td style="white-space:nowrap;font-size:13px;font-weight:600;color:var(--amber)">${r.price}</td>
-    <td style="text-align:center"><span class="tag ${r.tag}">${r.label}</span></td>
-    <td style="font-size:12px;color:var(--text2);max-width:250px;word-break:break-word">${r.note}</td>
-  </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px">단가 관련 내용 없음</td></tr>';
-  if(document.getElementById('priceSumCnt')) (function(){var _e=document.getElementById('priceSumCnt');if(_e)_e.textContent=rows.length + '건';})();
-}
-
-function filtPriceTrend(val) {
-  if (!window._priceRows) return;
-  const filtered = val ? window._priceRows.filter(r => r.label === val) : window._priceRows;
-  displayPriceSummary(filtered);
-}
-
-function filtPriceSum(val) {
-  if (!window._priceRows) return;
-  const q = val.toLowerCase();
-  const filtered = window._priceRows.filter(r =>
-    r.vendor.toLowerCase().includes(q) || r.material.toLowerCase().includes(q) ||
-    r.person.toLowerCase().includes(q) || r.note.toLowerCase().includes(q)
-  );
-  displayPriceSummary(filtered);
-}
-
-function displayPriceMsgs(msgs) {
-  const tb = document.getElementById('priceBody');
-  if(!tb) return;
-
-  tb.innerHTML = msgs.map(m => {
-    const text = m.text || '';
-    // 인상/인하/동결/시장단가 구분
-    let tag = 'tag-flat'; let label = '관련';
-    if (/인상|올랐|상승|up|인상됨/i.test(text)) { tag = 'tag-up'; label = '인상'; }
-    else if (/인하|내렸|하락|down|인하됨/i.test(text)) { tag = 'tag-dn'; label = '인하'; }
-    else if (/동결|유지|변동없/i.test(text)) { tag = 'tag-flat'; label = '동결'; }
-    else if (/시장단가|market|현물/i.test(text)) { tag = 'tag-info'; label = '시장단가'; }
-
-    // 원료명/업체명 추출 (달러 앞 단어, 원/MT 앞 단어)
-    const materialMatch = text.match(/([가-힣a-zA-Z\-]+(?:\s[가-힣a-zA-Z\-]+)?)\s*(?:\$|USD|달러|원\/)/i);
-    const material = materialMatch ? materialMatch[1].trim() : '';
-
-    // 단가 숫자 추출
-    const priceMatch = text.match(/\$\s*([\d,\.]+)\s*\/?\s*(?:MT|KG|kg|mt|톤)/i) ||
-                       text.match(/([\d,]+)\s*원\s*\/\s*(?:MT|KG|kg|mt|톤)/i) ||
-                       text.match(/\$\s*([\d,\.]+)/);
-    const price = priceMatch ? priceMatch[0].trim() : '';
-
-    return `<tr data-trend="${label}">
-      <td style="white-space:nowrap;color:var(--text3);font-size:11px;font-family:monospace">${m.date||''}</td>
-      <td style="white-space:nowrap;font-weight:500;color:var(--text);font-size:13px">${m.person||''}</td>
-      <td style="white-space:nowrap;font-size:12px;color:var(--blue)">${material || '-'}</td>
-      <td style="font-size:13px;word-break:break-word;line-height:1.5;max-width:550px">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td>
-      <td style="text-align:center"><span class="tag ${tag}">${label}</span></td>
-    </tr>`;
-  }).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px">단가 관련 메시지 없음</td></tr>';
-
-  if(document.getElementById('priceCnt')) (function(){var _e=document.getElementById('priceCnt');if(_e)_e.textContent=msgs.length + '건';})();
-  if(document.getElementById('nc-price')) (function(){var _e=document.getElementById('nc-price');if(_e)_e.textContent=msgs.length;})();
-}
-
-function filtPriceTrend(val) {
-  if (!window._priceMsgs) return;
-  const filtered = val ? window._priceMsgs.filter(m => {
-    const text = m.text||'';
-    if (val === '인상') return /인상|올랐|상승/i.test(text);
-    if (val === '인하') return /인하|내렸|하락/i.test(text);
-    if (val === '동결') return /동결|유지|변동없/i.test(text);
-    if (val === '시장단가') return /시장단가|market|현물/i.test(text);
-    return true;
-  }) : window._priceMsgs;
-  displayPriceMsgs(filtered);
-}
-
-
-
-function renderStaff() {
-  if (!window._slackMsgs) return;
-  const msgs = window._slackMsgs.filter(m => (m.channel||'').includes('0-02'));
-  const tb = document.getElementById('staffBody');
-  const persons = [...new Set(msgs.map(m => m.person).filter(Boolean))];
-  const sel = document.getElementById('staffChFilter');
-  if(sel) sel.innerHTML = '<option value="">전체 담당자</option>' + persons.map(p => `<option value="${p}">${p}</option>`).join('');
-  tb.innerHTML = msgs.map(m => `<tr data-person="${m.person||''}">
-    <td style="white-space:nowrap;font-weight:500;color:var(--text)">${m.person||''}</td>
-    <td style="white-space:nowrap;color:var(--text3);font-size:11px;font-family:monospace">${m.date||''}</td>
-    <td style="font-size:13px;word-break:break-word;line-height:1.5;max-width:700px">${(m.text||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td>
-  </tr>`).join('') || '<tr><td colspan="3" style="text-align:center;color:var(--text3);padding:20px">메시지 없음</td></tr>';
-  (function(){var _e=document.getElementById('staffCnt');if(_e)_e.textContent=msgs.length + '건';})();
-  window._staffMsgs = msgs;
-}
-
-function filtStaffPerson(val) {
-  if (!window._staffMsgs) return;
-  const filtered = val ? window._staffMsgs.filter(m => m.person === val) : window._staffMsgs;
-  const tb = document.getElementById('staffBody');
-  tb.innerHTML = filtered.map(m => `<tr>
-    <td style="white-space:nowrap;font-weight:500;color:var(--text)">${m.person||''}</td>
-    <td style="white-space:nowrap;color:var(--text3);font-size:11px;font-family:monospace">${m.date||''}</td>
-    <td style="font-size:13px;word-break:break-word;line-height:1.5;max-width:700px">${(m.text||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td>
-  </tr>`).join('');
-  (function(){var _e=document.getElementById('staffCnt');if(_e)_e.textContent=filtered.length + '건';})();
-}
+function renderStaff() {}
+function filtStaffPerson() {}
+function renderOrder() {}
 
 function renderAlerts() {
-  if (!window._slackMsgs) return;
-  const alertKws = ['긴급','단가인상','인상통보','납기지연','공급중단','단가 인상','가격인상','긴급협조'];
-  const msgs = window._slackMsgs.filter(m =>
-    alertKws.some(kw => (m.text||'').toLowerCase().includes(kw))
-  );
-  const tb = document.getElementById('alertsBody2');
-  if(tb) {
-    tb.innerHTML = msgs.map(m => `<tr>
-      <td><span class="tag tag-warn" style="white-space:nowrap;font-size:11px">${m.channel||''}</span></td>
-      <td style="white-space:nowrap;color:var(--text2);font-size:12px">${m.person||''}</td>
-      <td style="white-space:nowrap;color:var(--text3);font-size:11px;font-family:monospace">${m.date||''}</td>
-      <td style="font-size:13px;word-break:break-word;line-height:1.5;max-width:600px">${(m.text||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td>
-    </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:20px">메시지 없음</td></tr>';
-    if(document.getElementById('alertsCnt2')) (function(){var _e=document.getElementById('alertsCnt2');if(_e)_e.textContent=msgs.length + '건';})();
-  }
-  // 대시보드 긴급 알림 미리보기 (기존 유지)
-  const dash = document.getElementById('dashAlerts');
-  if(dash) {
-    dash.innerHTML = msgs.slice(0,3).map(m => `
-      <div class="alert-item warn" style="margin-bottom:8px">
-        <div style="flex:1">
-          <div class="alert-title" style="font-size:13px;font-weight:600;color:var(--text)">${(m.text||'').slice(0,60).replace(/</g,'&lt;')}...</div>
-          <div class="alert-body" style="font-size:12px;color:var(--text2)">${m.channel||''} · ${m.person||''}</div>
-        </div>
-        <div class="alert-time" style="font-size:11px;color:var(--text3)">${m.date||''}</div>
-      </div>`).join('') || '<div style="color:var(--text3);font-size:13px;padding:10px">알림 없음</div>';
-  }
-  (function(){var _e=document.getElementById('nc-alerts');if(_e)_e.textContent=msgs.length;})();
+  if(!window._slackMsgs) return;
+  const staffMsgs=window._slackMsgs.filter(m=>(m.channel||'').includes('0-02'));
+  const alerts=[];
+  staffMsgs.forEach(m=>{
+    const text=m.text||'', person=m.person||'', date=m.date||'';
+    const lines=text.split('\n');
+    let sec2=[],in2=false;
+    lines.forEach(line=>{
+      const clean=line.replace(/\*[^*]+\*/g,'').trim();
+      if(/^2[.\s]/.test(line)&&/(타부서|임원진)/.test(line)){in2=true;return;}
+      if(/^[3-9][.\s]/.test(line)||/^\*2\./.test(line)){in2=false;}
+      if(in2&&clean&&clean!=='없음'&&clean.length>2) sec2.push(clean);
+    });
+    const s2=sec2.join(' / ').substring(0,200);
+    if(s2) alerts.push({person,body:s2,date});
+  });
+  alerts.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const dashEl=document.getElementById('dashAlerts');
+  if(dashEl) dashEl.innerHTML=alerts.slice(0,5).map(a=>
+    '<div class="alert-item info" style="border-left-color:#2563eb"><div style="flex:1"><div class="alert-title">'+a.person+'</div><div class="alert-body" style="margin-top:4px">'+a.body+'</div></div><div class="alert-time">'+a.date+'</div></div>'
+  ).join('')||'<div style="color:#8891aa;font-size:13px;padding:12px;">타부서 공유사항 없음</div>';
+}
+
+function renderBidding() {
+  if(!window._slackMsgs) return;
+  const msgs=window._slackMsgs.filter(m=>(m.channel||'').includes('0-06'));
+  const tb=document.getElementById('biddingSummary');
+  const cntEl=document.getElementById('nc-bidding');
+  if(!tb) return;
+  if(cntEl) cntEl.textContent=msgs.length;
+  const matKws=['라이신','메치오닌','트레오닌','비타민','인산칼슘','DCP','MCP','MDCP','콜린','아연','망간','황산','아미노산','사료','TCP'];
+  tb.innerHTML=msgs.map(m=>{
+    const text=m.text||'';
+    const mat=matKws.find(k=>text.includes(k))||'';
+    const vM=text.match(/(SUNCHEM|ALCHEM|WENGFU|대한제분|한국씸벨|부경양돈|대구축협|수협|CJ|대상|농협|축협|[가-힣]{2,8}(?:㈜|상사|사료|바이오)?)/);
+    const vendor=vM?vM[1]:'';
+    return '<tr><td style="white-space:nowrap;font-size:11px;color:#8891aa;font-family:monospace">'+m.date+'</td><td style="font-size:12px;font-weight:600;color:#6c4fc2">'+m.person+'</td><td style="font-size:13px;color:#1a1d2e">'+(mat||'-')+'</td><td style="font-size:13px;color:#2563eb">'+(vendor||'-')+'</td></tr>';
+  }).join('')||'<tr><td colspan="4" style="text-align:center;color:#8891aa;padding:20px">입찰 데이터 없음</td></tr>';
 }
 
 function updateCounts() {
-  if(document.getElementById('nc-price')) (function(){var _e=document.getElementById('nc-price');if(_e)_e.textContent=currentData.price.length;})();
-  if(document.getElementById('nc-vendor')) (function(){var _e=document.getElementById('nc-vendor');if(_e)_e.textContent=currentData.vendor.length;})();
-  if(document.getElementById('nc-staff')) (function(){var _e=document.getElementById('nc-staff');if(_e)_e.textContent=currentData.staff.length;})();
+  if(document.getElementById('nc-price')) document.getElementById('nc-price').textContent=currentData.price.length;
+  if(document.getElementById('nc-vendor')) document.getElementById('nc-vendor').textContent=currentData.vendor.length;
+  if(document.getElementById('nc-staff')) document.getElementById('nc-staff').textContent=currentData.staff.length;
 }
 
-// ── 필터 ──────────────────────────────────────────────────
 function filt(tbId, val) {
   document.querySelectorAll('#' + tbId + ' tr').forEach(r => {
     r.style.display = r.textContent.toLowerCase().includes(val.toLowerCase()) ? '' : 'none';
@@ -1178,43 +1051,25 @@ function filtCol(tbId, col, val) {
     r.style.display = (r.dataset.dir === val || txt.includes(val)) ? '' : 'none';
   });
 }
-function filtStaff(val) {
-  document.querySelectorAll('#staffBody tr').forEach(r => {
-    r.style.display = (!val || r.dataset.person === val) ? '' : 'none';
-  });
-}
-
-// ── 샘플 로드 ──────────────────────────────────────────────
 
 function renderRawMessages(msgs) {
   window._slackMsgs = msgs;
   const _sd=document.getElementById('statusDot'); if(_sd) _sd.className='pulse live';
   const _st=document.getElementById('statusTxt'); if(_st) _st.textContent='연결됨 · '+msgs.length+'건';
   const _sp=document.getElementById('samplePill'); if(_sp) _sp.classList.remove('show');
-  const _lu=document.getElementById('lastUpdate'); if(_lu) _lu.textContent='마지막 업데이트: '+new Date().toLocaleString('ko-KR');
-  // 각 탭 렌더링
-  renderPrice();
-  renderVendor();
-  renderStaff();
-  renderBidding();
-  renderOrder();
-  renderAlerts();
-  initDashMsg(msgs);
-  // 카운트 업데이트
+  renderPrice(); renderVendor(); renderStaff(); renderBidding(); renderOrder(); renderAlerts();
   const staffMsgs = msgs.filter(m => (m.channel||'').includes('0-02'));
   const biddingMsgs = msgs.filter(m => (m.channel||'').includes('0-06'));
   const orderMsgs = msgs.filter(m => (m.channel||'').includes('0-04') || (m.channel||'').includes('2-02'));
-  if(document.getElementById('nc-staff')) (function(){var _e=document.getElementById('nc-staff');if(_e)_e.textContent=staffMsgs.length;})();
-  if(document.getElementById('nc-bidding')) (function(){var _e=document.getElementById('nc-bidding');if(_e)_e.textContent=biddingMsgs.length;})();
-  if(document.getElementById('nc-order')) (function(){var _e=document.getElementById('nc-order');if(_e)_e.textContent=orderMsgs.length;})();
+  if(document.getElementById('nc-staff')) document.getElementById('nc-staff').textContent=staffMsgs.length;
+  if(document.getElementById('nc-bidding')) document.getElementById('nc-bidding').textContent=biddingMsgs.length;
+  if(document.getElementById('nc-order')) document.getElementById('nc-order').textContent=orderMsgs.length;
   showPage('dashboard');
   setNav(document.querySelectorAll('.nav-item')[0]);
 }
 
-// ── 설정 자동 저장/복원 ──────────────────────────────────────
 function saveSettings() {
   localStorage.setItem('slackToken', document.getElementById('slackToken').value);
-  localStorage.setItem('claudeKey', document.getElementById('claudeKey').value);
   localStorage.setItem('claudeKey', document.getElementById('claudeKey').value);
   localStorage.setItem('periodDays', document.getElementById('periodDays').value);
   localStorage.setItem('autoRefresh', document.getElementById('autoRefresh').value);
@@ -1223,17 +1078,12 @@ function saveSettings() {
   localStorage.setItem('channels', JSON.stringify(chs));
 }
 
-
 function resolvePersonName(text, userMap, userId) {
-  // 1. userMap에서 직접 찾기
   if (userId && userMap[userId]) return userMap[userId];
-  // 2. 메시지 본문 *작성자* <@UID> 패턴에서 ID 추출 후 userMap 조회
   const mentionMatch = text.match(/<@([A-Z0-9]+)>/);
   if (mentionMatch && userMap[mentionMatch[1]]) return userMap[mentionMatch[1]];
-  // 3. 메시지에 한글 이름 패턴 찾기
   const nameMatch = text.match(/\*작성자\*\s*<@[^>]+>\s*([가-힣]{2,4})/);
   if (nameMatch) return nameMatch[1];
-  // 4. userId 앞부분
   return userId ? userId.slice(0,8) : '알수없음';
 }
 
@@ -1269,12 +1119,7 @@ function loadSettings() {
   if (kw) document.getElementById('keywords').value = kw;
   const ck = localStorage.getItem('claudeKey');
   if (ck) document.getElementById('claudeKey').value = ck;
-
-  // 저장된 채널 복원
   const chs = JSON.parse(localStorage.getItem('channels') || '[]');
-  if (chs.length > 0) setChannelTags(chs);
-
-  // Railway 서버에서 토큰+채널 자동 로드 (항상 실행)
   const DEFAULT_CHANNELS = ['0-02업무보고','0-04발주','0-06입찰공고','2-02세인비에스-발주'];
   fetch(`${PROXY}/config`).then(r=>r.json()).then(cfg=>{
     if(cfg.slackToken) {
@@ -1285,93 +1130,17 @@ function loadSettings() {
       document.getElementById('claudeKey').value = cfg.claudeKey;
       localStorage.setItem('claudeKey', cfg.claudeKey);
     }
-    // 채널: 서버값 우선, 없으면 기본값
     const chList = (cfg.channels && cfg.channels.length>0) ? cfg.channels : DEFAULT_CHANNELS;
     setChannelTags(chList);
     localStorage.setItem('channels', JSON.stringify(chList));
-    // 자동 연결
     if(cfg.slackToken) {
       setTimeout(()=>{ if(typeof connectSlack==='function') connectSlack(); }, 800);
     }
   }).catch(()=>{
-    // 서버 없으면 기본 채널 설정
     if(chs.length === 0) setChannelTags(DEFAULT_CHANNELS);
+    else setChannelTags(chs);
   });
 }
-
-
-// ── 대시보드 메시지 탭/필터 ───────────────────────────────────
-let dashMsgAll = [];
-let dashMsgCh = 'all';
-let dashMsgContent = 'all';
-
-function initDashMsg(msgs) {
-  dashMsgAll = msgs;
-  renderDashMsg();
-}
-
-function switchMsgTab(ch, el) {
-  dashMsgCh = ch;
-  document.querySelectorAll('#chTabBar .tab-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  renderDashMsg();
-}
-
-function switchContentFilter(type, el) {
-  dashMsgContent = type;
-  document.querySelectorAll('#contentFilter .btn').forEach(b => {
-    b.style.background = ''; b.style.color = ''; b.style.borderColor = '';
-  });
-  el.style.background = 'var(--purple)';
-  el.style.color = 'white';
-  el.style.borderColor = 'var(--purple)';
-  renderDashMsg();
-}
-
-const CONTENT_KEYWORDS = {
-  '단가': ['단가','가격','인상','인하','$/mt','$/kg','원/kg','협상','계약금액'],
-  '입찰': ['입찰','낙찰','응찰','견적','입찰공고'],
-  '발주': ['발주','주문','오더','order','po','구매'],
-  '업무보고': ['업무','보고','일일','주간','월간','미팅','방문','상담'],
-};
-
-function renderDashMsg() {
-  let filtered = [...dashMsgAll];
-  if (dashMsgCh !== 'all') {
-    filtered = filtered.filter(m => (m.channel||'').includes(dashMsgCh));
-  }
-  if (dashMsgContent !== 'all') {
-    const kws = CONTENT_KEYWORDS[dashMsgContent] || [dashMsgContent];
-    filtered = filtered.filter(m => kws.some(kw => (m.text||'').toLowerCase().includes(kw.toLowerCase())));
-  }
-  const search = (document.getElementById('dashMsgSearch')||{}).value || '';
-  if (search) filtered = filtered.filter(m => (m.text||'').toLowerCase().includes(search.toLowerCase()) || (m.person||'').toLowerCase().includes(search.toLowerCase()));
-
-  const tb = document.getElementById('dashMsgBody');
-  if (!tb) return;
-  if(document.getElementById('dashMsgCount')) (function(){var _e=document.getElementById('dashMsgCount');if(_e)_e.textContent=filtered.length + '건';})();
-
-  const chColors = {
-    '0-02업무보고': 'tag-purple',
-    '0-04발주': 'tag-info',
-    '0-06입찰공고': 'tag-warn',
-    '2-02세인비에스-발주': 'tag-done',
-    '4-02세인팜텍-발주': 'tag-up',
-  };
-
-  tb.innerHTML = filtered.slice(0, 200).map(m => {
-    const chName = (m.channel||'').replace('#','');
-    const tagCls = Object.keys(chColors).find(k => chName.includes(k)) ? chColors[Object.keys(chColors).find(k => chName.includes(k))] : 'tag-flat';
-    return `<tr>
-      <td><span class="tag ${tagCls}" style="white-space:nowrap;font-size:11px">${m.channel||''}</span></td>
-      <td style="white-space:nowrap;color:var(--text2);font-size:12px">${m.person||''}</td>
-      <td style="white-space:nowrap;color:var(--text3);font-size:11px;font-family:monospace">${m.date||''}</td>
-      <td style="color:var(--text);font-size:13px;max-width:600px;word-break:break-word;line-height:1.5">${(m.text||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td>
-    </tr>`;
-  }).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--text3);padding:20px">해당 메시지 없음</td></tr>';
-}
-
-function filterDashMsg() { renderDashMsg(); }
 
 function loadSample() {
   currentData = { price: [...PRICE_DATA], vendor: [...VENDOR_DATA], staff: [...STAFF_DATA] };
@@ -1379,7 +1148,6 @@ function loadSample() {
   renderAll();
 }
 
-// ── 프록시 서버 연결 확인 ──────────────────────────────────
 const PROXY = window.location.hostname === 'localhost' ? 'http://localhost:3000' : window.location.origin;
 let proxyOk = false;
 
@@ -1391,10 +1159,7 @@ async function checkProxy() {
   } catch { proxyOk = false; }
   const dot = document.getElementById('statusDot');
   const txt = document.getElementById('statusTxt');
-  if (proxyOk) {
-    dot.className = 'pulse warn';
-    txt.textContent = '프록시 연결됨';
-  }
+  if (proxyOk) { dot.className = 'pulse warn'; txt.textContent = '프록시 연결됨'; }
   return proxyOk;
 }
 
@@ -1405,96 +1170,69 @@ async function slackGet(endpoint, token, params = {}) {
   return r.json();
 }
 
-// ── Slack API 연동 ─────────────────────────────────────────
 async function runSlackFetch() {
   saveSettings();
   const token = document.getElementById('slackToken').value.trim();
   if (!token) { alert('Slack Bot Token을 먼저 입력해주세요.'); return; }
-
   const pw = document.getElementById('progressWrap');
   pw.classList.add('show');
-
   const setStep = (n, state) => {
     const el = document.getElementById('pi' + n);
     el.className = 'prog-icon' + (state === 'run' ? ' run' : state === 'done' ? ' done' : state === 'err' ? ' err' : '');
     el.textContent = state === 'done' ? '✓' : state === 'err' ? '✗' : n;
-    document.getElementById('ps' + n).style.color =
-      state === 'done' ? 'var(--teal)' : state === 'run' ? 'var(--amber)' : '';
+    document.getElementById('ps' + n).style.color = state === 'done' ? 'var(--teal)' : state === 'run' ? 'var(--amber)' : '';
   };
   const setProg = (p, label) => {
     document.getElementById('progFill').style.width = p + '%';
-    (function(){var _e=document.getElementById('progPct');if(_e)_e.textContent=p + '%';})();
-    (function(){var _e=document.getElementById('progLabel');if(_e)_e.textContent=label;})();
+    document.getElementById('progPct').textContent = p + '%';
+    document.getElementById('progLabel').textContent = label;
   };
-
   try {
-    // ── Step 1: 프록시 확인 + 채널 목록 ──────────────────
     setStep(1, 'run'); setProg(8, '프록시 서버 연결 확인 중...');
     const ok = await checkProxy();
     if (!ok) {
-      setStep(1, 'err');
-      setProg(0, '프록시 서버 미연결');
-      alert('프록시 서버가 실행되지 않았습니다.\n\n【해결 방법】\n1. 터미널(cmd)을 열고\n2. "서버시작.bat" 파일을 더블클릭 하거나\n   아래 명령어를 입력하세요:\n\n   python proxy.py\n\n서버 시작 후 다시 시도해주세요.');
+      setStep(1, 'err'); setProg(0, '프록시 서버 미연결');
+      alert('프록시 서버가 실행되지 않았습니다.\n\n"서버시작.bat" 파일을 더블클릭 하거나\n터미널에서 python proxy.py 실행 후 다시 시도해주세요.');
       return;
     }
-
     setProg(15, '채널 목록 조회 중...');
-    const chData = await slackGet('conversations.list', token, {
-      types: 'public_channel,private_channel', limit: 200
-    });
+    const chData = await slackGet('conversations.list', token, { types: 'public_channel,private_channel', limit: 200 });
     if (!chData.ok) throw new Error('채널 조회 실패: ' + chData.error);
-
     const chMap = {};
     chData.channels.forEach(c => { chMap[c.name] = c.id; });
     const selectedChs = [...document.querySelectorAll('.ch-tag.on')].map(t => t.dataset.ch);
     const foundChs = selectedChs.filter(n => chMap[n]);
-    const missingChs = selectedChs.filter(n => !chMap[n]);
-    if (missingChs.length) console.warn('채널 없음 (봇 미초대 가능):', missingChs);
-
     setStep(1, 'done');
-
-    // ── Step 2: 사용자 목록 + 메시지 수집 ────────────────
     setStep(2, 'run'); setProg(25, '사용자 정보 조회 중...');
     const userMap = {};
     try {
       const uData = await slackGet('users.list', token, { limit: 200 });
-      if (uData.ok) {
-        uData.members.forEach(u => {
-          const name = u.profile?.display_name || u.profile?.real_name || u.real_name || u.name || '';
-          if (name) userMap[u.id] = name;
-        });
-        console.log('사용자 로드:', Object.keys(userMap).length + '명', userMap);
-      } else {
-        console.warn('users.list 오류:', uData.error);
-        setProg(30, '사용자 정보 조회 실패 (' + uData.error + ') — 계속 진행');
-      }
+      if (uData.ok) uData.members.forEach(u => {
+        const name = u.profile?.display_name || u.profile?.real_name || u.real_name || u.name || '';
+        if (name) userMap[u.id] = name;
+      });
     } catch(e) { console.warn('users.list 예외:', e); }
-
     setProg(35, `메시지 수집 중... (${foundChs.length}개 채널)`);
     const days = parseInt(document.getElementById('periodDays').value);
     const oldest = Math.floor((Date.now() - days * 86400000) / 1000);
     const keywords = document.getElementById('keywords').value.split(',').map(k => k.trim().toLowerCase()).filter(Boolean);
-
     let allMessages = [];
     for (let i = 0; i < foundChs.length; i++) {
       const chName = foundChs[i];
       const chId = chMap[chName];
       setProg(35 + Math.round(i / foundChs.length * 20), `#${chName} 수집 중...`);
-
       let cursor = '';
       do {
         const params = { channel: chId, oldest, limit: 200 };
         if (cursor) params.cursor = cursor;
         const mData = await slackGet('conversations.history', token, params);
         if (!mData.ok) break;
-
         const msgs = (mData.messages || []).filter(m => m.type === 'message' && m.text);
         msgs.forEach(m => {
-          const resolvedName = resolvePersonName(m.text, userMap, m.user);
           allMessages.push({
             channel: '#' + chName,
             text: resolveTextMentions(m.text, userMap),
-            person: resolvedName,
+            person: resolvePersonName(m.text, userMap, m.user),
             ts: m.ts,
             date: new Date(parseFloat(m.ts) * 1000).toISOString().split('T')[0]
           });
@@ -1502,100 +1240,46 @@ async function runSlackFetch() {
         cursor = mData.response_metadata?.next_cursor || '';
       } while (cursor);
     }
-
     setStep(2, 'done');
-
-    // ── Step 3: 키워드 필터링 ────────────────────────────
     setStep(3, 'run'); setProg(58, '키워드 필터링 중...');
-    const filtered = keywords.length
-      ? allMessages.filter(m => keywords.some(kw => m.text.toLowerCase().includes(kw)))
-      : allMessages;
-
+    const filtered = keywords.length ? allMessages.filter(m => keywords.some(kw => m.text.toLowerCase().includes(kw))) : allMessages;
     setProg(65, `${filtered.length}건 추출 완료`);
     await sleep(300);
     setStep(3, 'done');
-
-    // ── Step 4: Claude AI 분석 ───────────────────────────
     setStep(4, 'run'); setProg(70, '데이터 정리 중...');
     renderRawMessages(filtered.length > 0 ? filtered : allMessages);
     await sleep(300);
     setStep(4, 'done');
-    setStep(4, 'done');
-
-    // ── Step 5: 완료 ─────────────────────────────────────
     setStep(5, 'run'); setProg(95, '대시보드 업데이트 중...');
     await sleep(400);
     setStep(5, 'done'); setProg(100, `완료! ${filtered.length}건 분석`);
     document.getElementById('samplePill').classList.remove('show');
-    (function(){var _e=document.getElementById('statusDot');if(_e)_e.className='pulse live';})();
-    (function(){var _e=document.getElementById('statusTxt');if(_e)_e.textContent=`연결됨 · ${filtered.length}건`;})();
-
+    document.getElementById('statusDot').className='pulse live';
+    document.getElementById('statusTxt').textContent=`연결됨 · ${filtered.length}건`;
   } catch (err) {
     console.error(err);
-    const isProxy = err.message?.includes('Failed to fetch') || err.message?.includes('NetworkError');
-    if (isProxy) {
-      alert('프록시 서버에 연결할 수 없습니다.\n\n"서버시작.bat"을 실행하고 다시 시도해주세요.');
-    } else {
-      alert('오류: ' + err.message);
-    }
+    alert('오류: ' + err.message);
     loadSample();
   }
 }
 
-// ── Claude AI 분석 ─────────────────────────────────────────
 async function aiAnalyze(messages, key) {
-  const msgText = messages.slice(0, 80).map(m =>
-    `[${m.date}][${m.channel}][${m.person}] ${m.text}`
-  ).join('\n');
-
-  const prompt = `다음은 사료 원료 회사 Slack 채널에서 수집된 영업·구매 관련 메시지입니다.
-형식: [날짜][채널][담당자] 메시지 내용
-
-=== Slack 메시지 ===
-${msgText}
-===================
-
-위 메시지에서 아래 3가지 항목을 추출해 JSON으로만 출력하세요. JSON 외 다른 텍스트는 절대 포함하지 마세요.
-
-추출 규칙:
-- price: 제품 단가가 언급된 경우. 달러($)는 그대로, 원화(₩/원)는 그대로 저장. 단위 $/MT, $/kg, 원/kg 등 note에 기재
-- vendor: 거래처와 관련된 입찰·단가인상·협상·공급이슈 내용
-- staff: 담당자별 업무 내용 요약 (한 메시지 = 한 건)
-- 정보가 불명확하면 해당 항목 배열을 비워두세요 ([]로)
-
-{
-  "price": [
-    {"product":"제품명","vendor":"거래처명","p2":전전월단가숫자,"p1":전월단가숫자,"cur":이번달단가숫자,"note":"$/MT 등 단위·비고"}
-  ],
-  "vendor": [
-    {"name":"거래처명","type":"단가인상|입찰|공급이슈|협상완료","date":"YYYY-MM-DD","desc":"내용 요약","person":"담당자","impact":"+X% 또는 미정","action":"조치사항"}
-  ],
-  "staff": [
-    {"person":"담당자명","date":"YYYY-MM-DD","ch":"채널명","work":"업무 내용 요약","vendor":"관련 거래처","amount":원화금액숫자또는0,"action":"다음 할일"}
-  ]
-}`;
-
+  const msgText = messages.slice(0, 80).map(m => `[${m.date}][${m.channel}][${m.person}] ${m.text}`).join('\n');
+  const prompt = `다음은 사료 원료 회사 Slack 채널에서 수집된 영업·구매 관련 메시지입니다.\n\n=== Slack 메시지 ===\n${msgText}\n===================\n\n위 메시지에서 price, vendor, staff 항목을 추출해 JSON으로만 출력하세요.\n\n{"price":[{"product":"제품명","vendor":"거래처명","p2":0,"p1":0,"cur":0,"note":""}],"vendor":[{"name":"","type":"","date":"","desc":"","person":"","impact":"","action":""}],"staff":[{"person":"","date":"","ch":"","work":"","vendor":"","amount":0,"action":""}]}`;
   const res = await fetch('/claude/messages', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-api-key': key },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-5',
-      max_tokens: 2000,
-      messages: [{ role: 'user', content: prompt }]
-    })
+    body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
   });
   const data = await res.json();
   const text = data.content?.filter(c => c.type === 'text').map(c => c.text).join('') || '{}';
-
   try {
     const clean = text.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(clean);
     if (parsed.price?.length) currentData.price = parsed.price;
     if (parsed.vendor?.length) currentData.vendor = parsed.vendor;
     if (parsed.staff?.length) currentData.staff = parsed.staff;
-  } catch (e) {
-    console.error('AI 응답 파싱 실패:', e, text);
-  }
+  } catch (e) { console.error('AI 응답 파싱 실패:', e); }
   renderAll();
 }
 
@@ -1604,222 +1288,40 @@ async function analyzeManual() {
   if (!text) { alert('Slack 메시지를 붙여넣어 주세요.'); return; }
   const key = document.getElementById('claudeKey').value.trim();
   if (!key) { alert('Claude API Key를 입력해주세요.'); return; }
-
   const pw = document.getElementById('progressWrap');
   pw.classList.add('show');
   document.getElementById('pi3').className = 'prog-icon run';
   document.getElementById('progFill').style.width = '50%';
-  (function(){var _e=document.getElementById('progLabel');if(_e)_e.textContent='AI 분석 중...';})();
-
+  document.getElementById('progLabel').textContent = 'AI 분석 중...';
   await aiAnalyze([{channel:'수동입력', text}], key);
-
   document.getElementById('pi3').className = 'prog-icon done';
   document.getElementById('pi3').textContent = '✓';
   document.getElementById('progFill').style.width = '100%';
-  (function(){var _e=document.getElementById('progLabel');if(_e)_e.textContent='완료!';})();
+  document.getElementById('progLabel').textContent = '완료!';
   document.getElementById('samplePill').classList.remove('show');
 }
 
-// ── AI 채팅 ────────────────────────────────────────────────
-const chatContext = () => `
-현재 영업 인텔리전스 데이터:
-[단가 추이] ${JSON.stringify(currentData.price)}
-[거래처 현황] ${JSON.stringify(currentData.vendor)}
-[업무보고] ${JSON.stringify(currentData.staff)}
-
-위 데이터 기반으로 사용자 질문에 한국어로 간결하게 답변하세요.
-`;
-
-async function sendChat() {
-  const inp = document.getElementById('chatIn');
-  const q = inp.value.trim();
-  if (!q) return;
-  inp.value = '';
-  addMsg('user', q);
-  const bubble = addMsg('bot', '');
-  bubble.innerHTML = '<span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>';
-
-  const key = document.getElementById('claudeKey').value.trim();
-  if (!key) {
-    await sleep(600);
-    bubble.textContent = localAnswer(q);
-    return;
-  }
-  try {
-    const res = await fetch('/claude/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': claudeKey },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 1000,
-        system: chatContext(),
-        messages: [{ role: 'user', content: q }]
-      })
-    });
-    const data = await res.json();
-    const txt = data.content?.filter(c => c.type === 'text').map(c => c.text).join('') || '응답을 받지 못했습니다.';
-    bubble.textContent = txt;
-  } catch(e) {
-    bubble.textContent = localAnswer(q);
-  }
-}
-
-function qChat(q) { document.getElementById('chatIn').value = q; sendChat(); }
-
-function addMsg(role, text) {
-  const div = document.createElement('div');
-  div.className = 'msg ' + role;
-  const b = document.createElement('div');
-  b.className = 'msg-bubble';
-  b.textContent = text;
-  div.appendChild(b);
-  document.getElementById('chatMsgs').appendChild(div);
-  document.getElementById('chatMsgs').scrollTop = 9999;
-  return b;
-}
-
-function localAnswer(q) {
-  const lq = q.toLowerCase();
-  if (lq.includes('단가인상') || lq.includes('top3') || lq.includes('인상')) {
-    const ups = currentData.vendor.filter(v => v.type === '단가인상').sort((a,b) => parseFloat(b.impact) - parseFloat(a.impact));
-    return `단가인상 현황:\n${ups.map((v,i) => `${i+1}. ${v.name}: ${v.impact} — ${v.action}`).join('\n')}`;
-  }
-  if (lq.includes('담당자') || lq.includes('성과')) {
-    const persons = [...new Set(currentData.staff.map(s => s.person))];
-    return persons.map(p => {
-      const items = currentData.staff.filter(s => s.person === p);
-      const total = items.reduce((s,i) => s + i.amount, 0);
-      return `${p}: ${items.length}건, 확정 ${fmt(total)}원`;
-    }).join('\n');
-  }
-  if (lq.includes('긴급') || lq.includes('시급') || lq.includes('조치')) {
-    return '긴급 조치 필요:\n1. LS전선 +12% → 경영진 즉시 검토\n2. KCC실리콘 납기지연 → 대체업체 확보\n3. 대한철강 8% 재협상 → 4/2 자료 준비';
-  }
-  if (lq.includes('입찰')) {
-    const bids = currentData.vendor.filter(v => v.type === '입찰');
-    return `진행 중인 입찰:\n${bids.map(v => `• ${v.name}: ${v.desc} — ${v.action}`).join('\n')}`;
-  }
-  if (lq.includes('변동') || lq.includes('오른')) {
-    const sorted = [...currentData.price].sort((a,b) => (b.cur-b.p1)/b.p1 - (a.cur-a.p1)/a.p1);
-    return `단가 변동 TOP3:\n${sorted.slice(0,3).map((r,i)=>`${i+1}. ${r.product}: ${((r.cur-r.p1)/r.p1*100).toFixed(1)}% (${fmt(r.p1)}→${fmt(r.cur)})`).join('\n')}`;
-  }
-  return 'Claude API Key를 설정에 입력하시면 더 정확한 AI 답변을 받을 수 있습니다. 현재 데이터 기반으로 답변하겠습니다.';
-}
-
-// ── Excel 내보내기 ─────────────────────────────────────────
 function exportExcel() {
   const wb = XLSX.utils.book_new();
   const today = new Date().toISOString().split('T')[0];
-
-  // 요약
-  const s1 = XLSX.utils.aoa_to_sheet([
-    ['영업 인텔리전스 리포트 — 사료 원료', today],
-    [],
-    ['항목','이번달','전월','변동'],
-    ['거래 건수',38,35,'+8.6%'],
-    ['단가인상 알림',7,4,'+75.0%'],
-    ['진행중 입찰',4,4,'동일'],
-    ['평균 단가변동율','7.2%','4.1%','+3.1%p'],
-  ]);
-  s1['!cols'] = [{wch:24},{wch:12},{wch:12},{wch:12}];
+  const s1 = XLSX.utils.aoa_to_sheet([['영업 인텔리전스 리포트', today],[],['항목','이번달','전월','변동'],['거래 건수',38,35,'+8.6%'],['단가인상 알림',7,4,'+75.0%'],['진행중 입찰',4,4,'동일'],]);
   XLSX.utils.book_append_sheet(wb, s1, '요약');
-
-  // 단가 추이
   const priceRows = [['제품명','거래처','전전월 단가','전월 단가','이번달 단가','변동액','변동율','비고']];
-  currentData.price.forEach(r => {
-    const diff = r.cur - r.p1;
-    priceRows.push([r.product, r.vendor, r.p2, r.p1, r.cur, diff, ((r.cur-r.p1)/r.p1*100).toFixed(1)+'%', r.note]);
-  });
+  currentData.price.forEach(r => { const diff = r.cur - r.p1; priceRows.push([r.product, r.vendor, r.p2, r.p1, r.cur, diff, ((r.cur-r.p1)/r.p1*100).toFixed(1)+'%', r.note]); });
   const s2 = XLSX.utils.aoa_to_sheet(priceRows);
-  s2['!cols'] = [{wch:26},{wch:16},{wch:14},{wch:14},{wch:14},{wch:12},{wch:10},{wch:20}];
   XLSX.utils.book_append_sheet(wb, s2, '단가 추이');
-
-  // 거래처 현황
   const vendorRows = [['거래처','분류','날짜','내용','담당자','단가영향','조치사항']];
   currentData.vendor.forEach(r => vendorRows.push([r.name,r.type,r.date,r.desc,r.person,r.impact,r.action]));
   const s3 = XLSX.utils.aoa_to_sheet(vendorRows);
-  s3['!cols'] = [{wch:16},{wch:12},{wch:14},{wch:40},{wch:10},{wch:10},{wch:22}];
   XLSX.utils.book_append_sheet(wb, s3, '거래처 현황');
-
-  // 업무보고
-  const staffRows = [['담당자','날짜','채널','주요 업무','거래처','금액(원)','다음 액션']];
-  currentData.staff.forEach(r => staffRows.push([r.person,r.date,r.ch,r.work,r.vendor,r.amount||'-',r.action]));
-  const s4 = XLSX.utils.aoa_to_sheet(staffRows);
-  s4['!cols'] = [{wch:10},{wch:14},{wch:12},{wch:50},{wch:14},{wch:14},{wch:26}];
-  XLSX.utils.book_append_sheet(wb, s4, '업무보고');
-
-  // 알림
-  const alertRows = [['분류','제목','내용','날짜']];
-  ALERTS_DATA.forEach(a => alertRows.push([a.type, a.title, a.body, '03/'+a.date.split('-')[1]]));
-  const s5 = XLSX.utils.aoa_to_sheet(alertRows);
-  s5['!cols'] = [{wch:10},{wch:36},{wch:60},{wch:10}];
-  XLSX.utils.book_append_sheet(wb, s5, '알림');
-
   XLSX.writeFile(wb, `영업_인텔리전스_${today}.xlsx`);
-  document.getElementById('exportBar').classList.add('show');
 }
 
 function openCorsHelper() {
-  alert('CORS 해결 방법 3가지:\n\n1️⃣ Chrome 확장 설치\n   "Allow CORS: Access-Control-Allow-Origin" 설치 후 활성화\n   chrome.google.com/webstore 에서 검색\n\n2️⃣ 수동 입력 모드 사용 (가장 쉬움)\n   Slack에서 메시지 복사 → 수동 입력 탭에 붙여넣기\n\n3️⃣ 로컬 프록시 실행\n   Terminal: npx cors-anywhere\n   이후 토큰 앞에 http://localhost:8080/ 추가');
+  alert('CORS 해결 방법:\n\n1️⃣ Chrome 확장 "Allow CORS" 설치 후 활성화\n2️⃣ 수동 입력 모드 사용 (가장 쉬움)\n3️⃣ 로컬 프록시: python proxy.py 실행');
 }
 
-
-// ── 업무보고/발주/캘린더 커스텀 함수 ─────────────────────────
-function renderStaff() {}
-function filtStaffPerson() {}
-function renderOrder() {}
-function filtOrderCh(val) {}
-function renderBidding() {
-  if(!window._slackMsgs) return;
-  const msgs=window._slackMsgs.filter(m=>(m.channel||'').includes('0-06'));
-  const tb=document.getElementById('biddingSummary');
-  const cntEl=document.getElementById('nc-bidding');
-  if(!tb) return;
-  if(cntEl) cntEl.textContent=msgs.length;
-  const matKws=['라이신','메치오닌','트레오닌','비타민','인산칼슘','DCP','MCP','MDCP','콜린','아연','망간','황산','아미노산','사료','TCP'];
-  tb.innerHTML=msgs.map(m=>{
-    const text=m.text||'';
-    const mat=matKws.find(k=>text.includes(k))||'';
-    const vM=text.match(/(SUNCHEM|ALCHEM|WENGFU|대한제분|한국씸벨|부경양돈|대구축협|수협|CJ|대상|농협|축협|[가-힣]{2,8}(?:㈜|상사|사료|바이오)?)/);
-    const vendor=vM?vM[1]:'';
-    return '<tr><td style="white-space:nowrap;font-size:11px;color:#8891aa;font-family:monospace">'+m.date+'</td><td style="font-size:12px;font-weight:600;color:#6c4fc2">'+m.person+'</td><td style="font-size:13px;color:#1a1d2e">'+(mat||'-')+'</td><td style="font-size:13px;color:#2563eb">'+(vendor||'-')+'</td></tr>';
-  }).join('')||'<tr><td colspan="4" style="text-align:center;color:#8891aa;padding:20px">입찰 데이터 없음</td></tr>';
-}
-
-function renderAlerts() {
-  if(!window._slackMsgs) return;
-  const staffMsgs=window._slackMsgs.filter(m=>(m.channel||'').includes('0-02'));
-  const alerts=[];
-  staffMsgs.forEach(m=>{
-    const text=m.text||'', person=m.person||'', date=m.date||'';
-    const lines=text.split('\n');
-    let sec2=[],in2=false;
-    lines.forEach(line=>{
-      const clean=line.replace(/\*[^*]+\*/g,'').trim();
-      if(/^2[.\s]/.test(line)&&/(타부서|임원진)/.test(line)){in2=true;return;}
-      if(/^[3-9][.\s]/.test(line)||/^\*2\./.test(line)){in2=false;}
-      if(in2&&clean&&clean!=='없음'&&clean.length>2) sec2.push(clean);
-    });
-    const s2=sec2.join(' / ').substring(0,200);
-    if(s2) alerts.push({person,body:s2,date});
-  });
-  alerts.sort((a,b)=>(b.date||'').localeCompare(a.date||''));
-  const dashEl=document.getElementById('dashAlerts');
-  if(dashEl) dashEl.innerHTML=alerts.slice(0,5).map(a=>
-    '<div class="alert-item info" style="border-left-color:#2563eb"><div style="flex:1"><div class="alert-title">'+a.person+'</div><div class="alert-body" style="margin-top:4px">'+a.body+'</div></div><div class="alert-time">'+a.date+'</div></div>'
-  ).join('')||'<div style="color:#8891aa;font-size:13px;padding:12px;">타부서 공유사항 없음</div>';
-}
-
-function updateAiSummary(key) {}
-function queryPriceAI() { alert('단가조회 기능'); }
-
-
-function setEl(id, prop, val) {
-  var e = document.getElementById(id);
-  if (e) e[prop] = val;
-}
-
-// ── 거래처현황 함수 ────────────────────────────────────────
+// ── 거래처현황 함수 ──
 let calYear = new Date().getFullYear();
 let calMonth = new Date().getMonth();
 function calPrev() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
@@ -1833,33 +1335,24 @@ function renderVendor() {
   analyzeOrderCycles();
 }
 
-// 박제영 업무보고에서 방문지 추출
 function extractVisits(text) {
   const visits = [];
   const lines = text.split('\n');
   lines.forEach(line => {
-    // "1) 어디어디" or "1. 어디어디" 패턴
     const m = line.match(/^\s*[\d]+[)\.]\s*(.+)/);
     if(m) {
       const place = m[1].replace(/\*[^*]+\*/g,'').replace(/@\S+/g,'').trim();
-      // 너무 짧거나 일반 텍스트 제외
-      if(place.length > 2 && place.length < 30 && !/http|www|#/.test(place)) {
-        visits.push(place);
-      }
+      if(place.length > 2 && place.length < 30 && !/http|www|#/.test(place)) visits.push(place);
     }
   });
   return visits;
 }
 
-// 박제영 업무보고 메시지 가져오기
 function getMyReportMsgs() {
   if(!window._slackMsgs) return [];
-  return window._slackMsgs.filter(m =>
-    (m.person||'').includes('박제영') && (m.channel||'').includes('0-02')
-  );
+  return window._slackMsgs.filter(m => (m.person||'').includes('박제영') && (m.channel||'').includes('0-02'));
 }
 
-// 박제영 발주 채널 메시지
 function getMyOrderMsgs() {
   if(!window._slackMsgs) return [];
   return window._slackMsgs.filter(m =>
@@ -1872,21 +1365,13 @@ function renderCalendar() {
   const titleEl = document.getElementById('calTitle');
   const gridEl = document.getElementById('calGrid');
   if(!gridEl) return;
-
   const mn = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
   if(titleEl) titleEl.textContent = calYear+'년 '+mn[calMonth];
-
   const mStr = calYear+'-'+String(calMonth+1).padStart(2,'0');
-
-  // 방문: 업무보고에서 추출
   const reportMsgs = getMyReportMsgs().filter(m=>(m.date||'').startsWith(mStr));
-  // 발주: 발주채널에서
   const orderMsgs = getMyOrderMsgs().filter(m=>(m.date||'').startsWith(mStr));
-
-  // 날짜별 방문지/발주 매핑
-  const visitMap = {}; // {day: [place, place, ...]}
-  const orderMap = {}; // {day: [msg, ...]}
-
+  const visitMap = {};
+  const orderMap = {};
   reportMsgs.forEach(m => {
     const d = parseInt((m.date||'').split('-')[2]||0);
     if(!visitMap[d]) visitMap[d] = {places:[], msgs:[]};
@@ -1894,41 +1379,27 @@ function renderCalendar() {
     visitMap[d].places.push(...places);
     visitMap[d].msgs.push(m);
   });
-
   orderMsgs.forEach(m => {
     const d = parseInt((m.date||'').split('-')[2]||0);
     if(!orderMap[d]) orderMap[d] = [];
     orderMap[d].push(m);
   });
-
-  const firstDay = new Date(calYear,calMonth,1).getDay();
   const lastDate = new Date(calYear,calMonth+1,0).getDate();
   const today = new Date();
   const isTM = today.getFullYear()===calYear && today.getMonth()===calMonth;
-
-  // 7열 (월화수목금토일), 토/일은 회색 공란
   let cells = '';
-
-  // 1일의 요일 (월요일 시작 기준: 월=0,화=1,수=2,목=3,금=4,토=5,일=6)
-  const firstDow = new Date(calYear,calMonth,1).getDay(); // JS: 0=일,1=월,...,6=토
-  const monOffset = firstDow === 0 ? 6 : firstDow - 1; // 월 기준 offset
-
+  const firstDow = new Date(calYear,calMonth,1).getDay();
+  const monOffset = firstDow === 0 ? 6 : firstDow - 1;
   for(let i=0;i<monOffset;i++) cells += '<div style="min-height:90px;border-right:1px solid #dde2ee;border-bottom:1px solid #dde2ee;background:#f8f9fc;"></div>';
-
   for(let d=1;d<=lastDate;d++) {
-    const dow = new Date(calYear,calMonth,d).getDay(); // 0=일,6=토
+    const dow = new Date(calYear,calMonth,d).getDay();
     const isWeekend = dow===0||dow===6;
     const isToday = isTM && d===today.getDate();
     const dateStr = calYear+'-'+String(calMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-
     if(isWeekend) {
-      // 토/일: 회색 공란
-      cells += `<div style="min-height:90px;border-right:1px solid #dde2ee;border-bottom:1px solid #dde2ee;padding:5px;background:#f8f9fc;">
-        <div style="font-size:12px;color:#dde2ee;">${d}</div>
-      </div>`;
+      cells += `<div style="min-height:90px;border-right:1px solid #dde2ee;border-bottom:1px solid #dde2ee;padding:5px;background:#f8f9fc;"><div style="font-size:12px;color:#dde2ee;">${d}</div></div>`;
       continue;
     }
-
     const visits = visitMap[d];
     const orders = orderMap[d]||[];
     let dots = '';
@@ -1953,9 +1424,7 @@ function showCalDetail(dateStr, type, e) {
   const detailEl = document.getElementById('calDetail');
   const contentEl = document.getElementById('calDetailContent');
   if(!detailEl||!contentEl) return;
-
   let html = `<div style="font-size:13px;font-weight:700;margin-bottom:12px;color:#1a1d2e;">📅 ${dateStr}</div>`;
-
   if(type==='visit'||type==='all') {
     const msgs = getMyReportMsgs().filter(m=>m.date===dateStr);
     if(msgs.length) {
@@ -1970,7 +1439,6 @@ function showCalDetail(dateStr, type, e) {
       });
     }
   }
-
   if(type==='order'||type==='all') {
     const msgs = getMyOrderMsgs().filter(m=>m.date===dateStr);
     if(msgs.length) {
@@ -1983,50 +1451,30 @@ function showCalDetail(dateStr, type, e) {
       });
     }
   }
-
   html += '<button class="btn" onclick="document.getElementById(\'calDetail\').style.display=\'none\'" style="margin-top:8px;">닫기</button>';
   contentEl.innerHTML = html;
   detailEl.style.display = 'block';
 }
 
-// 발주 업체별 정리
 function renderOrderVendors() {
   const msgs = getMyOrderMsgs();
   const vendorMap = {};
-
   msgs.forEach(m => {
     const text = m.text||'';
-    // 업체명 추출
     const vM = text.match(/(SUNCHEM|ALCHEM|WENGFU|XINLIN|DSM|NHU|CJ바이오|CJ|BK&?CO|운천화|세인바이오|Evonik|Ajinomoto|Balchem|가림특수사료|프라임사료|부경양돈|오앤티|대한가축약품|김해축협|삼민목장|우일축산약품|[가-힣]{2,8}(?:㈜|상사|무역|화학|축협|농협|목장|축산|약품|사료)?)/i);
     const vendor = vM ? vM[1].trim() : '기타';
     if(!vendorMap[vendor]) vendorMap[vendor] = [];
     vendorMap[vendor].push(m);
   });
-
   const listEl = document.getElementById('orderVendorList');
   if(!listEl) return;
-
   const vendors = Object.keys(vendorMap).sort();
   listEl.innerHTML = vendors.length ? vendors.map(v =>
     `<button onclick="showOrderDetail('${v}')" style="padding:6px 14px;border:1px solid #dde2ee;border-radius:20px;background:#fff;font-size:12px;font-weight:600;color:#4a5068;cursor:pointer;" onmouseover="this.style.background='#eef1f7'" onmouseout="this.style.background='#fff'">
       ${v} <span style="color:#6c4fc2;font-weight:700;">${vendorMap[v].length}</span>
     </button>`
   ).join('') : '<div style="color:#8891aa;font-size:13px;">발주 내역 없음</div>';
-
   window._orderVendorMap = vendorMap;
-}
-
-function searchOrder(kw) {
-  const vendorMap = window._orderVendorMap||{};
-  const listEl = document.getElementById('orderVendorList');
-  if(!listEl) return;
-  const q = kw.toLowerCase();
-  const vendors = Object.keys(vendorMap).filter(v=>v.toLowerCase().includes(q)).sort();
-  listEl.innerHTML = vendors.map(v =>
-    `<button onclick="showOrderDetail('${v}')" style="padding:6px 14px;border:1px solid #dde2ee;border-radius:20px;background:#fff;font-size:12px;font-weight:600;color:#4a5068;cursor:pointer;" onmouseover="this.style.background='#eef1f7'" onmouseout="this.style.background='#fff'">
-      ${v} <span style="color:#6c4fc2;font-weight:700;">${vendorMap[v].length}</span>
-    </button>`
-  ).join('');
 }
 
 function showOrderDetail(vendor) {
@@ -2035,46 +1483,32 @@ function showOrderDetail(vendor) {
   const detailEl = document.getElementById('orderDetail');
   const contentEl = document.getElementById('orderDetailContent');
   if(!detailEl||!contentEl) return;
-
   let html = `<div style="font-size:13px;font-weight:700;color:#1a1d2e;margin-bottom:12px;">📦 ${vendor} 발주/출고 내역</div>`;
   html += msgs.map(m => {
     const text = (m.text||'').replace(/\*[^*]+\*/g,'').replace(/@\S+/g,'').trim();
     const lines = text.split('\n').filter(l=>l.trim().length>2);
-    const summary = lines.slice(0,5).join('<br>');
     return `<div style="background:#f5f3ff;border-radius:8px;padding:12px;margin-bottom:8px;border-left:3px solid #6c4fc2;">
       <div style="font-size:11px;color:#8891aa;margin-bottom:6px;font-family:monospace;">${m.date}</div>
-      <div style="font-size:12px;color:#4a5068;line-height:1.8;">${summary}</div>
+      <div style="font-size:12px;color:#4a5068;line-height:1.8;">${lines.slice(0,5).join('<br>')}</div>
     </div>`;
   }).join('');
-
   contentEl.innerHTML = html;
   detailEl.style.display = 'block';
 }
 
-
-// ── 업체 통합 검색 ──────────────────────────────────────────
 function buildVendorIndex() {
   if(!window._slackMsgs) return;
-  // 박제영 관련 메시지에서 업체명 추출
   const myMsgs = window._slackMsgs.filter(m=>(m.person||'').includes('박제영'));
   const vendorMap = {};
-
+  const knownVendors = ['가림특수사료','프라임사료','부경양돈','오앤티','대한가축약품','김해축협','삼민목장','우일축산약품','대구축협','수협','수협사료','합천축협','SUNCHEM','ALCHEM','WENGFU','XINLIN','DSM','NHU','CJ바이오','CJ','BK&CO','운천화','세인바이오','Evonik','Ajinomoto','Balchem','한국씸벨'];
   myMsgs.forEach(m => {
     const text = m.text||'';
-    // 알려진 거래처 목록에서 찾기
-    const knownVendors = ['가림특수사료','프라임사료','부경양돈','오앤티','대한가축약품',
-      '김해축협','삼민목장','우일축산약품','대구축협','수협','수협사료','합천축협',
-      'SUNCHEM','ALCHEM','WENGFU','XINLIN','DSM','NHU','CJ바이오','CJ',
-      'BK&CO','운천화','세인바이오','Evonik','Ajinomoto','Balchem','한국씸벨'];
-    
     knownVendors.forEach(v => {
       if(text.includes(v)) {
         if(!vendorMap[v]) vendorMap[v] = [];
         vendorMap[v].push(m);
       }
     });
-
-    // 방문 패턴에서도 추출
     text.split('\n').forEach(line => {
       const visitM = line.match(/^\s*[\d]+[)\.\s]\s*([가-힣]{2,10}(?:축협|농협|목장|축산|약품|사료|바이오|병원|수의|동물)?)/);
       if(visitM) {
@@ -2086,17 +1520,14 @@ function buildVendorIndex() {
       }
     });
   });
-
   window._vendorIndex = vendorMap;
-
-  // 버튼 목록 업데이트
   const btnEl = document.getElementById('vendorBtnList');
   if(!btnEl) return;
   const vendors = Object.keys(vendorMap).sort();
   const countEl = document.getElementById('vendorBtnCount');
   if(countEl) countEl.textContent = '업체 '+vendors.length+'개';
   btnEl.innerHTML = vendors.length ? vendors.map(v=>
-    `<button onclick="showVendorDetail('${v.replace(/'/g,"\'")}')"
+    `<button onclick="showVendorDetail('${v.replace(/'/g,"\\\'")}')"
       style="padding:5px 12px;border:1px solid #dde2ee;border-radius:16px;background:#fff;font-size:12px;color:#4a5068;cursor:pointer;white-space:nowrap;"
       onmouseover="this.style.background='#eef1f7';this.style.borderColor='#6c4fc2';this.style.color='#6c4fc2'"
       onmouseout="this.style.background='#fff';this.style.borderColor='#dde2ee';this.style.color='#4a5068'">
@@ -2114,16 +1545,14 @@ function searchVendorAll(kw) {
   const q = kw.trim().toLowerCase();
   const vendorMap = window._vendorIndex||{};
   const matched = Object.keys(vendorMap).filter(v=>v.toLowerCase().includes(q));
-
   if(matched.length === 1) {
     showVendorDetail(matched[0]);
   } else if(matched.length > 1) {
-    // 여러 업체 매칭 - 선택 버튼 표시
     const resultEl = document.getElementById('vendorSearchResult');
     const contentEl = document.getElementById('vendorSearchContent');
     if(!resultEl||!contentEl) return;
     contentEl.innerHTML = '<div style="font-size:12px;color:#8891aa;margin-bottom:8px;">검색 결과:</div>' +
-      matched.map(v=>`<button onclick="showVendorDetail('${v.replace(/'/g,"\'")}')"
+      matched.map(v=>`<button onclick="showVendorDetail('${v.replace(/'/g,"\\\'")}')"
         style="margin:4px;padding:6px 14px;border:1px solid #6c4fc2;border-radius:16px;background:#fff;font-size:13px;font-weight:600;color:#6c4fc2;cursor:pointer;">
         ${v} (${vendorMap[v].length}건)
       </button>`).join('');
@@ -2137,23 +1566,18 @@ function showVendorDetail(vendor) {
   const resultEl = document.getElementById('vendorSearchResult');
   const contentEl = document.getElementById('vendorSearchContent');
   if(!resultEl||!contentEl) return;
-
   let html = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
     <div style="font-size:15px;font-weight:700;color:#1a1d2e;">🏢 ${vendor}</div>
     <span style="font-size:12px;color:#8891aa;">${msgs.length}건</span>
   </div>`;
-
   html += msgs.map(m => {
     const ch = m.channel||'';
     const isOrder = ch.includes('0-04')||ch.includes('2-02');
-    const icon = isOrder ? '📦' : '📝';
     const borderColor = isOrder ? '#6c4fc2' : '#0fa87a';
     const bg = isOrder ? '#f5f3ff' : '#f0faf6';
     const typeLabel = isOrder ? '발주' : '방문/보고';
-
     const text = (m.text||'').replace(/\*[^*]+\*/g,'').replace(/@\S+/g,'').trim();
     const lines = text.split('\n').filter(l=>l.trim().length>2).slice(0,8);
-
     return `<div style="background:${bg};border-radius:8px;padding:12px;margin-bottom:8px;border-left:3px solid ${borderColor};">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
         <span style="font-size:11px;font-family:monospace;color:#8891aa;">${m.date}</span>
@@ -2162,13 +1586,10 @@ function showVendorDetail(vendor) {
       <div style="font-size:12px;color:#4a5068;line-height:1.8;">${lines.join('<br>')}</div>
     </div>`;
   }).join('');
-
   contentEl.innerHTML = html;
   resultEl.style.display = 'block';
   resultEl.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
-
-
 
 function toggleVendorList() {
   const listEl = document.getElementById('vendorBtnList');
@@ -2179,54 +1600,33 @@ function toggleVendorList() {
   btnEl.textContent = isHidden ? '접기 ▲' : '펼치기 ▼';
 }
 
-
-// ── 발주 주기 분석 & 알림 ──────────────────────────────────
 function analyzeOrderCycles() {
   const msgs = getMyOrderMsgs();
   if(!msgs.length) return;
-
-  const matKws = ['황산염라이신','염산염라이신','라이신','DL-메치오닌','메치오닌',
-    'L-트레오닌','트레오닌','트립토판','발린','MDCP','MCP','DCP','TCP',
-    '비타민D3','비타민E','비타민A','비타민C','염화콜린','콜린',
-    '코코넛','ECM','보호지방','BHT','DDGS','대두박','대두유'];
-
-  // 업체+원료 조합별 발주 날짜 수집
-  const orderHistory = {}; // key: "업체_원료"
-
+  const matKws = ['황산염라이신','염산염라이신','라이신','DL-메치오닌','메치오닌','L-트레오닌','트레오닌','트립토판','발린','MDCP','MCP','DCP','TCP','비타민D3','비타민E','비타민A','비타민C','염화콜린','콜린','코코넛','ECM','보호지방','BHT','DDGS','대두박','대두유'];
+  const orderHistory = {};
   msgs.forEach(m => {
     const text = m.text||'';
     const date = m.date||'';
     if(!date) return;
-
-    // 업체명
     const vM = text.match(/(SUNCHEM|ALCHEM|WENGFU|XINLIN|DSM|NHU|CJ바이오|CJ|BK&?CO|운천화|세인바이오|Evonik|Ajinomoto|Balchem|가림특수사료|프라임사료|부경양돈|오앤티|대한가축약품|김해축협|삼민목장|우일축산약품|합천축협|합천|수협|대구축협|[가-힣]{2,8}(?:축협|농협|목장|축산|약품|사료)?)/i);
     const vendor = vM ? vM[1].trim() : '';
     if(!vendor) return;
-
-    // 원료명
     const mat = matKws.find(k=>text.toLowerCase().includes(k.toLowerCase()))||'';
     if(!mat) return;
-
     const key = vendor+'_'+mat;
     if(!orderHistory[key]) orderHistory[key] = {vendor, mat, dates:[]};
-    if(!orderHistory[key].dates.includes(date)) {
-      orderHistory[key].dates.push(date);
-    }
+    if(!orderHistory[key].dates.includes(date)) orderHistory[key].dates.push(date);
   });
-
-  // 각 조합별 평균 발주 주기 계산
   const today = new Date();
   const alerts = [];
   const normal = [];
-
   Object.values(orderHistory).forEach(item => {
     const sortedDates = item.dates.sort();
     const lastDate = new Date(sortedDates[sortedDates.length-1]);
     const daysSinceLast = Math.floor((today - lastDate) / (1000*60*60*24));
-
-    let avgCycle = 0;
+    let avgCycle = 30;
     if(sortedDates.length >= 2) {
-      // 평균 주기 계산
       const gaps = [];
       for(let i=1;i<sortedDates.length;i++) {
         const d1 = new Date(sortedDates[i-1]);
@@ -2234,51 +1634,24 @@ function analyzeOrderCycles() {
         gaps.push(Math.floor((d2-d1)/(1000*60*60*24)));
       }
       avgCycle = Math.round(gaps.reduce((a,b)=>a+b,0)/gaps.length);
-    } else {
-      // 1건만 있으면 30일 기본 주기
-      avgCycle = 30;
     }
-
     const overdueBy = daysSinceLast - avgCycle;
     const pct = avgCycle > 0 ? Math.round((daysSinceLast/avgCycle)*100) : 0;
-
-    const info = {
-      vendor: item.vendor,
-      mat: item.mat,
-      lastDate: sortedDates[sortedDates.length-1],
-      daysSinceLast,
-      avgCycle,
-      overdueBy,
-      pct,
-      orderCount: sortedDates.length
-    };
-
-    if(overdueBy > 0) {
-      alerts.push(info); // 주기 초과
-    } else {
-      normal.push(info); // 정상
-    }
+    const info = { vendor:item.vendor, mat:item.mat, lastDate:sortedDates[sortedDates.length-1], daysSinceLast, avgCycle, overdueBy, pct, orderCount:sortedDates.length };
+    if(overdueBy > 0) alerts.push(info);
+    else normal.push(info);
   });
-
   alerts.sort((a,b)=>b.overdueBy-a.overdueBy);
-  normal.sort((a,b)=>b.pct-a.pct);
-
-  // 알림 렌더링
   const alertEl = document.getElementById('orderAlertList');
   const cntEl = document.getElementById('orderAlertCount');
   if(!alertEl) return;
   if(cntEl) cntEl.textContent = alerts.length ? alerts.length+'건 주의' : '';
-
   if(!alerts.length && !normal.length) {
     alertEl.innerHTML = '<div style="color:#8891aa;font-size:13px;padding:4px;">발주 데이터 분석 중...</div>';
     return;
   }
-
   let html = '';
-
-  // 주의/초과 항목
   if(alerts.length) {
-    html += '<div style="margin-bottom:12px;">';
     html += alerts.map(a => {
       const urgency = a.overdueBy > a.avgCycle ? '#e03e3e' : '#d97706';
       const urgencyLabel = a.overdueBy > a.avgCycle ? '🔴 긴급' : '🟡 주의';
@@ -2289,12 +1662,7 @@ function analyzeOrderCycles() {
             <span style="font-size:15px;font-weight:800;color:#1a1d2e;">${a.vendor}</span>
             <span style="font-size:11px;color:#fff;background:#6c4fc2;padding:2px 8px;border-radius:10px;font-weight:700;">${a.mat}</span>
           </div>
-          <div style="font-size:11px;color:#8891aa;">
-            평균 주기 <b style="color:#4a5068;">${a.avgCycle}일</b> · 
-            마지막 발주 <b style="color:#4a5068;">${a.lastDate}</b> · 
-            경과 <b style="color:${urgency};">${a.daysSinceLast}일</b>
-            (${a.orderCount}건 분석)
-          </div>
+          <div style="font-size:11px;color:#8891aa;">평균 주기 <b>${a.avgCycle}일</b> · 마지막 <b>${a.lastDate}</b> · 경과 <b style="color:${urgency};">${a.daysSinceLast}일</b></div>
         </div>
         <div style="text-align:center;min-width:60px;">
           <div style="font-size:20px;font-weight:700;color:${urgency};">${a.overdueBy > 0 ? '+'+a.overdueBy : a.overdueBy}일</div>
@@ -2302,44 +1670,11 @@ function analyzeOrderCycles() {
         </div>
       </div>`;
     }).join('');
-    html += '</div>';
   }
-
-  // 정상 항목 (주기의 70% 이상 경과)
-  const nearDue = normal.filter(n=>n.pct>=70).sort((a,b)=>b.pct-a.pct);
-  if(nearDue.length) {
-    html += `<div style="margin-bottom:8px;">
-      <div style="font-size:11px;font-weight:600;color:#8891aa;margin-bottom:8px;">📋 곧 발주 예정 (주기 70% 이상 경과)</div>`;
-    html += nearDue.map(n => {
-      const remaining = n.avgCycle - n.daysSinceLast;
-      return `<div style="background:#fff;border:1px solid #dde2ee;border-radius:8px;padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">
-        <div>
-          <span style="font-size:15px;font-weight:800;color:#1a1d2e;">${n.vendor}</span>
-          <span style="font-size:11px;color:#fff;background:#6c4fc2;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px;">${n.mat}</span>
-          <div style="font-size:11px;color:#8891aa;margin-top:2px;">마지막 발주 ${n.lastDate} · 주기 ${n.avgCycle}일</div>
-        </div>
-        <div style="text-align:center;">
-          <div style="font-size:13px;font-weight:700;color:#d97706;">D-${remaining}</div>
-          <div style="font-size:10px;color:#8891aa;">${n.pct}%</div>
-          <!-- 진행바 -->
-          <div style="width:60px;height:4px;background:#eef1f7;border-radius:2px;margin-top:4px;">
-            <div style="width:${Math.min(n.pct,100)}%;height:4px;background:${n.pct>=90?'#d97706':'#2563eb'};border-radius:2px;"></div>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-    html += '</div>';
-  }
-
-  if(!html) {
-    html = '<div style="color:#0fa87a;font-size:13px;padding:4px;">✅ 모든 발주 정상 주기 내</div>';
-  }
-
+  if(!html) html = '<div style="color:#0fa87a;font-size:13px;padding:4px;">✅ 모든 발주 정상 주기 내</div>';
   alertEl.innerHTML = html;
 }
 
-
-// ── 자동 새로고침 설정 ─────────────────────────────────────
 document.getElementById('autoRefresh').addEventListener('change', function() {
   if (autoTimer) clearInterval(autoTimer);
   const mins = parseInt(this.value);
@@ -2351,7 +1686,7 @@ document.getElementById('autoRefresh').addEventListener('change', function() {
   }
 });
 
-// ── 초기화 ─────────────────────────────────────────────────
+// ── 초기화 ──
 loadSettings();
 loadSample();
 checkProxy();
