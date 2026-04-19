@@ -885,21 +885,41 @@ function parsePriceDirect(msgs) {
       const unit = priceM[2]||'';
       const qtyM = line.match(/([\d,]+(?:\.\d+)?)\s*(MT|톤|KG|kg)\b/i);
       const qty = qtyM ? parseFloat(qtyM[1].replace(/,/g,'')).toLocaleString()+qtyM[2].toUpperCase() : '';
-      const ctx = lines.slice(Math.max(0,li-5), li+1).join(' ') + ' ' + line;
+
+      // ★ 핵심 수정: 현재 줄에서만 원료명 찾기 (컨텍스트 사용 안함)
       let mat = '';
-      if(/라이신/i.test(ctx)) {
-        mat = classifyLysine(ctx);
-      } else {
+
+      // 현재 줄에서 라이신 체크
+      if(/라이신/i.test(line)) {
+        mat = classifyLysine(line);
+      }
+
+      // 현재 줄에서 다른 원료 체크
+      if(!mat) {
         for(const [kw, label] of MAT_LIST) {
-          if(line.includes(kw)||line.toLowerCase().includes(kw.toLowerCase())) { mat=label; break; }
-        }
-        if(!mat) {
-          for(const [kw, label] of MAT_LIST) {
-            if(ctx.includes(kw)||ctx.toLowerCase().includes(kw.toLowerCase())) { mat=label; break; }
+          if(line.includes(kw) || line.toLowerCase().includes(kw.toLowerCase())) {
+            mat = label; break;
           }
         }
       }
+
+      // 현재 줄에서 못 찾으면 바로 앞 1~2줄만 체크 (너무 넓은 컨텍스트 금지)
+      if(!mat) {
+        const nearCtx = lines.slice(Math.max(0,li-2), li+1).join(' ');
+        if(/라이신/i.test(nearCtx)) {
+          mat = classifyLysine(nearCtx);
+        }
+        if(!mat) {
+          for(const [kw, label] of MAT_LIST) {
+            if(nearCtx.includes(kw) || nearCtx.toLowerCase().includes(kw.toLowerCase())) {
+              mat = label; break;
+            }
+          }
+        }
+      }
+
       if(!mat) return;
+
       const priceStr = '$'+price.toLocaleString()+(unit?'/'+unit:'');
       const k = m.date+'_'+mat+'_'+price+'_'+qty;
       if(seen.has(k)) return; seen.add(k);
