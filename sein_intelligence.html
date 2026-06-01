@@ -1221,108 +1221,41 @@ function parseOrders(messages) {
 
 // ── 거래처 비교 파싱 ──
 function parseCompare(messages) {
+  // parseOrders와 동일한 로직으로 파싱 후 거래처별 집계
+  var orders = parseOrders(messages);
   var customers = {};
-  var seenTs = new Set();
-  messages.forEach(function(m) {
-    // parseOrders와 동일한 isMyMsg 체크
-    var isMyMsg = m.user === MY_USER_ID;
-    if (!isMyMsg && m.blocks) {
-      if (JSON.stringify(m.blocks).includes(MY_USER_ID)) isMyMsg = true;
-    }
-    // text 필드에 MY_USER_ID 포함 여부도 체크 (일부 Slack 클라이언트)
-    if (!isMyMsg && m.text && m.text.includes(MY_USER_ID)) isMyMsg = true;
-    if (!isMyMsg) return;
-    if (m.ts && seenTs.has(m.ts)) return;
-    if (m.ts) seenTs.add(m.ts);
-    var text = extractTextFromMessage(m);
-    if (!text) return;
-    var text = text.replace(/\n/g, " ").replace(/\s{2,}/g, " ").trim();
-    text = text.replace(/수\s+량/g, "수량").replace(/단\s+가/g, "단가").replace(/품\s+목/g, "품목").replace(/거\s+래\s+처/g, "거래처").replace(/입\s+고/g, "입고");
-    var ts = m.ts ? new Date(parseFloat(m.ts)*1000) : null;
-    if (!ts) return;
-    var month = ts.getMonth();
-    if (month > new Date().getMonth()) return;
-    if (!/발주|선적|수령|입고|LC|ETA|통관|납품|공급|사료수입|주문|오더|출고요청|발주요청/.test(text)) return;
-
-    // 거래처 추출 - 패턴 우선, 없으면 다양한 방법으로 추출
-    var cust = "";
-    // 1. "거래처 : XXX" 패턴
-    var cp = text.match(/거래처\s*[:\s]+\s*([가-힣a-zA-Z0-9\s]{2,20}?)(?=\s*(?:입고지|입고일|입고|품목|수량|단가|연락처|\n|$))/);
-    if (cp) cust = cp[1].trim();
-    // 2. "@이름" 다음에 오는 거래처 패턴
-    if (!cust) {
-      var cp2 = text.match(/거래처\s*[:\s]+([가-힣]{2,15})/);
-      if (cp2) cust = cp2[1].trim();
-    }
-    // 3. 알려진 거래처명 포함 여부
-    if (!cust) {
-      var KNOWN = ["합천돼지자가","부산사료","부경양돈","오앤티","김해축협","코리아에프앤에프","광주축협","우일축산약품","경북수산","은진바이오","시내바이오","네오베미스","오케이","시현축산","성창농원","영광육수","이오와이즈","전풍준사장","서울우유","노엘목장","장유수산","조아수산","경남양돈","코코시스","함안축협","한성동물병원","삼솔농장","거창축협","노엘","영천","영주","진주","창원","마산","진해","통영","거제","함안","합천","창녕","밀양","양산","김해","사천","고성","남해","하동","산청","함양","거창","의령","하남","경주","포항","구미","안동","영주","문경","상주","예천","영양","청송","영덕","울진","봉화","울릉","칠곡","성주","고령","달성","청도","경산","군위","의성","청송"];
-      var found = KNOWN.find(function(k){ return text.includes(k); });
-      if (found) cust = found;
-    }
-    // 4. XXX 입고 패턴
-    if (!cust) {
-      var mp = text.match(/([가-힣]{2,10})\s*(?:입고|발주|출고)/);
-      if (mp) cust = mp[1].trim();
-    }
-    if (!cust) return;
-
+  var thisMonth = new Date().getMonth();
+  orders.forEach(function(o) {
+    var cust = o.customer;
+    if (!cust || cust === "—") return;
     if (!customers[cust]) {
-      var thisM = new Date().getMonth();
       var initMonths = [];
-      for (var i=0; i<=thisM; i++) initMonths.push([]);
+      for (var i = 0; i <= thisMonth; i++) initMonths.push([]);
       customers[cust] = {name:cust, months:initMonths, products:new Set(), lastOrder:null};
     }
-    // 이번달 인덱스까지 배열 확장
+    // 날짜에서 월 추출
+    var month = -1;
+    if (o.orderDate && o.orderDate !== "—") {
+      month = parseInt(o.orderDate.split("-")[0]) - 1;
+    }
+    if (month < 0 || month > thisMonth) return;
     while (customers[cust].months.length <= month) customers[cust].months.push([]);
-
-    // 품목
-    var prod = "—";
-    var pm = text.match(/품목\s*:\s*(.+?)(?=\s+수량|\s+단가|\s+입고|$)/);
-    if (pm) prod = pm[1].trim();
-    if (prod === "—") {
-      var prods=[];
-      for (var key in PRICE_KEYWORDS) {
-        if (PRICE_KEYWORDS[key].some(function(k){return text.toLowerCase().includes(k);})) prods.push(key);
-      }
-      if (prods.length) prod = prods.join(", ");
-    }
-
-    // 수량
-    var qty = "—";
-    var qm = text.match(/수\s*량\s*[:\s]\s*([\d,]+\s*(?:포|kg|톤|ton|MT|mt|bag|bags))/i);
-    if (qm) qty = qm[1].trim();
-    if (qty==="—") { var qm2=text.match(/([\d,]+)\s*MT/i); if(qm2) qty=qm2[1]+"MT"; }
-    if (qty==="—") { var qm3=text.match(/([\d,]+)\s*톤/); if(qm3) qty=qm3[1]+"톤"; }
-    if (qty==="—") { var qm4=text.match(/([\d,]+)\s*(?:ton)/i); if(qm4) qty=qm4[1]+"ton"; }
-    if (qty==="—") { var qm5=text.match(/([\d,]+)\s*포/); if(qm5) qty=qm5[1]+"포"; }
-    if (qty==="—") { var qm6=text.match(/([\d,]+)\s*kg/i); if(qm6) qty=qm6[1]+"kg"; }
-
-    // 단가
-    var price = "—";
-    var dm = text.match(/단가\s*[:\s]\s*([\d,]+)\s*원/);
-    if (dm) price = dm[1] + "원/kg";
-    if (price==="—") { var dm2=text.match(/\(([\d,]+)\s*원\/kg\)/); if(dm2) price=dm2[1]+"원/kg"; }
-    if (price==="—") { var dm3=text.match(/([\d,]+)\s*원\/kg/); if(dm3) price=dm3[1]+"원/kg"; }
-    if (price==="—") { var dm4=text.match(/(?:kg|톤)\s*([\d,]+)\s*원/i); if(dm4) price=dm4[1]+"원/kg"; }
-    if (price==="—") { var dm5=text.match(/\$([\d,]+(?:\.\d+)?)(?:\/(?:kg|mt|ton))?/i); if(dm5) price="$"+dm5[1]; }
-    if (price==="—") { var dm6=text.match(/USD\s*([\d,]+(?:\.\d+)?)/i); if(dm6) price="$"+dm6[1]; }
-    if (price==="—") { var dm7=text.match(/([\d,]+(?:\.\d+)?)\s*(?:USD|달러)/i); if(dm7) price="$"+dm7[1]; }
-
-    var dateLabel = (month+1) + "/" + ts.getDate();
-    // 포 단위 → kg 변환 (파인애플분말 1포=20kg)
-    if (qty !== "—" && /포/.test(qty)) {
-      var poCnt2 = parseInt(qty.replace(/[^\d]/g,""));
-      if (!isNaN(poCnt2)) qty = (poCnt2 * 20) + "kg";
-    }
-    customers[cust].months[month].push({date:dateLabel, products:prod, qty:qty, price:price, raw:text.slice(0,80)});
+    var ts = new Date(2026, month, parseInt((o.orderDate||"0-0").split("-")[1])||1);
+    customers[cust].months[month].push({
+      date: o.orderDate,
+      products: o.product,
+      qty: o.qty,
+      price: o.unitPrice,
+      raw: o.raw
+    });
     if (!customers[cust].lastOrder || ts > customers[cust].lastOrder) customers[cust].lastOrder = ts;
-    if (prod && prod !== "—") customers[cust].products.add(prod);
+    if (o.product && o.product !== "—") {
+      o.product.split(",").forEach(function(p){ customers[cust].products.add(p.trim()); });
+    }
   });
   return Object.values(customers);
 }
 
-// ── 입찰 파싱 ──
 function parseBids(messages) {
   var bids = [];
   var today = new Date();
