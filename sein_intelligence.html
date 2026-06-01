@@ -1149,18 +1149,47 @@ function parseOrders(messages) {
     var dateStr = ts ? String(ts.getMonth()+1).padStart(2,"0") + "-" + String(ts.getDate()).padStart(2,"0") : "—";
     if (!/발주|선적|수령|입고|LC|ETA|통관|납품|공급|사료수입|주문|오더|출고요청|발주요청/.test(text)) return;
 
-    // 거래처
+    // 거래처 추출 - 여러 패턴 시도
     var customer = "—";
-    // "거래처 : XXX" 또는 "거래처: XXX" - 뒤에 오는 모든 텍스트를 거래처로
-    var cp = text.match(/거래처\s*[:\s]\s*(.+?)(?=\s+입고|\s+품목|\s+수량|\s+단가|\s+입고지|\s+\d{4}|$)/);
+    // 1. "거래처 : XXX" 패턴
+    var cp = text.match(/거래처\s*[:\s]+\s*([가-힣a-zA-Z0-9]+(?:\s[가-힣a-zA-Z0-9]+)?)/);
     if (cp) customer = cp[1].trim();
+    // 2. 출고요청의건 다음줄 패턴 - "@멘션" 다음에 오는 줄이 거래처
     if (customer === "—") {
-      var KNOWN = ["합천돼지자가","부산사료","부경양돈","오앤티","김해축협","코리아에프앤에프","광주축협","우일축산약품","경북수산","은진바이오","시내바이오","네오베미스","오케이","시현축산","성창농원","영광육수","이오와이즈","전풍준사장","서울우유","노엘목장","장유수산","조아수산","경남양돈","파인애플","코코시스","네오베미스","조아수산","함안축협"];
+      // 원본 메시지에서 줄단위로 파싱 (text는 이미 공백처리됨, 원본 재추출)
+      var rawLines = (m.text||"").replace(/\*/g,"").split("\n").map(function(l){return l.trim();}).filter(Boolean);
+      var mentionIdx = rawLines.findIndex(function(l){return /^@/.test(l)||/<@/.test(l);});
+      if (mentionIdx >= 0 && rawLines[mentionIdx+1]) {
+        var nextLine = rawLines[mentionIdx+1].replace(/<@[A-Z0-9]+>/g,"").trim();
+        if (nextLine && !/^[0-9]/.test(nextLine) && !/출고|발주|입고|수량|단가|품목/.test(nextLine)) {
+          customer = nextLine;
+        }
+      }
+      // blocks에서도 시도
+      if (customer === "—") {
+        var allLines = [];
+        (m.blocks||[]).forEach(function(b){
+          if (b.type==="rich_text") b.elements.forEach(function(elem){
+            var line = (elem.elements||[]).map(function(x){return x.type==="text"?x.text:"";}).join("").replace(/\*/g,"").trim();
+            if(line) allLines.push(line);
+          });
+        });
+        var mIdx = allLines.findIndex(function(l){return /<@/.test(l)||/^@/.test(l);});
+        if (mIdx>=0 && allLines[mIdx+1]) {
+          var nl = allLines[mIdx+1].trim();
+          if (nl && !/^[0-9]/.test(nl) && !/출고|발주|입고|수량|단가|품목/.test(nl)) customer = nl;
+        }
+      }
+    }
+    // 3. 알려진 거래처명
+    if (customer === "—" || customer.length > 15) {
+      var KNOWN = ["합천돼지자가","부산사료","부경양돈","오앤티","김해축협","코리아에프앤에프","광주축협","우일축산약품","경북수산","은진바이오","시내바이오","네오베미스","오케이","시현축산","성창농원","영광육수","이오와이즈","전풍준사장","서울우유","노엘목장","장유수산","조아수산","경남양돈","코코시스","함안축협","YK목장","yk목장"];
       var f = KNOWN.find(function(k){return text.includes(k);});
       if (f) customer = f;
     }
+    // 4. XXX 입고 패턴
     if (customer === "—") {
-      var mp = text.match(/([\w가-힣]{2,10})\s*입고/);
+      var mp = text.match(/([가-힣]{2,8})\s*입고/);
       if (mp) customer = mp[1].trim();
     }
 
