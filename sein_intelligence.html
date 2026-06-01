@@ -1214,25 +1214,27 @@ function parseCompare(messages) {
   var customers = {};
   var seenTs = new Set();
   messages.forEach(function(m) {
+    var text = extractTextFromMessage(m);
+    if (!text) return;
+    var text = text.replace(/\n/g, " ").replace(/\s{2,}/g, " ").trim();
+    text = text.replace(/수\s+량/g, "수량").replace(/단\s+가/g, "단가").replace(/품\s+목/g, "품목").replace(/거\s+래\s+처/g, "거래처").replace(/입\s+고/g, "입고");
+    // 노엘목장 포함 메시지 전수 로그
+    if (text.includes("노엘")) console.log("[Sein DEBUG] 노엘 원문:", "user="+m.user, "myId="+MY_USER_ID, text.slice(0,80));
     var isMyMsg = m.user === MY_USER_ID;
     if (!isMyMsg && m.blocks) {
       if (JSON.stringify(m.blocks).includes(MY_USER_ID)) isMyMsg = true;
     }
+    if (!isMyMsg && text.includes("노엘")) console.log("[Sein DEBUG] 노엘 isMyMsg=false, user="+m.user);
     if (!isMyMsg) return;
     if (m.ts && seenTs.has(m.ts)) return;
     if (m.ts) seenTs.add(m.ts);
-    var text = extractTextFromMessage(m);
-    if (!text) return;
-    var text = text.replace(/\n/g, " ").replace(/\s{2,}/g, " ").trim();
-    // "수 량", "단 가" 등 글자 사이 공백 제거
-    text = text.replace(/수\s+량/g, "수량").replace(/단\s+가/g, "단가").replace(/품\s+목/g, "품목").replace(/거\s+래\s+처/g, "거래처").replace(/입\s+고/g, "입고");
     var ts = m.ts ? new Date(parseFloat(m.ts)*1000) : null;
     if (!ts) return;
     var month = ts.getMonth();
     if (month > new Date().getMonth()) return;
     var hasKeyword = /발주|선적|수령|입고|LC|ETA|통관|납품|공급|사료수입|주문|오더|출고요청|발주요청/.test(text);
     if (!hasKeyword) return;
-    if (text.includes("노엘")) console.log("[Sein DEBUG] 노엘 메시지 발견:", month+1+"월", text.slice(0,60));
+    if (text.includes("노엘")) console.log("[Sein DEBUG] 노엘 통과:", month+1+"월", text.slice(0,60));
 
     // 거래처
     var cust = "";
