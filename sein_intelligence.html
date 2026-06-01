@@ -2104,7 +2104,12 @@ async function loadSlackFeeds() {
     });
     renderOrders(myOrders);
     updateOverviewSales(myOrders);
-    renderCompare(parseCompare(orders));
+    var compareResult = parseCompare(orders);
+    console.log("[Sein] parseCompare 결과:", compareResult.length, "거래처");
+    compareResult.forEach(function(c) {
+      console.log("[Sein]", c.name, "months:", c.months.map(function(m,i){return (i+1)+"월:"+m.length+"건";}));
+    });
+    renderCompare(compareResult);
   }
   var bs = await fetchSlack(CHANNELS["세인BS"], 200);
   console.log("[Sein] 세인BS:", bs.length, "건");
