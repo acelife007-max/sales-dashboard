@@ -1138,72 +1138,73 @@ function parseOrders(messages) {
     if (!isMyMsg && m.blocks) {
       if (JSON.stringify(m.blocks).includes(MY_USER_ID)) isMyMsg = true;
     }
+    if (!isMyMsg && m.text && m.text.includes(MY_USER_ID)) isMyMsg = true;
     if (!isMyMsg) return;
+
     var text = extractTextFromMessage(m);
     if (!text) return;
-    // 줄바꿈을 공백으로 변환해서 파싱 편의성 향상
-    var text = text.replace(/\n/g, " ").replace(/\s{2,}/g, " ").trim();
-    // "수 량", "단 가" 등 글자 사이 공백 제거
-    text = text.replace(/수\s+량/g, "수량").replace(/단\s+가/g, "단가").replace(/품\s+목/g, "품목").replace(/거\s+래\s+처/g, "거래처").replace(/입\s+고/g, "입고");
+    text = text.replace(/\n/g, " ").replace(/\s{2,}/g, " ").trim();
+    text = text.replace(/수\s+량/g,"수량").replace(/단\s+가/g,"단가").replace(/품\s+목/g,"품목").replace(/거\s+래\s+처/g,"거래처").replace(/입\s+고/g,"입고");
+
     var ts = m.ts ? new Date(parseFloat(m.ts)*1000) : null;
-    var dateStr = ts ? String(ts.getMonth()+1).padStart(2,"0") + "-" + String(ts.getDate()).padStart(2,"0") : "—";
+    var dateStr = ts ? String(ts.getMonth()+1).padStart(2,"0")+"-"+String(ts.getDate()).padStart(2,"0") : "—";
+
     if (!/발주|선적|수령|입고|LC|ETA|통관|납품|공급|사료수입|주문|오더|출고요청|발주요청/.test(text)) return;
 
-    // 거래처 추출 - 여러 패턴 시도
+    // ── 거래처 추출 ──
     var customer = "—";
 
-    // 원본 줄 단위 파싱 (blocks 우선, text 보조)
-    var rawLines = [];
+    // blocks에서 줄 단위 추출 (user element는 빈칸으로)
+    var blockLines = [];
     (m.blocks||[]).forEach(function(b){
       if (b.type==="rich_text") b.elements.forEach(function(elem){
         var line = (elem.elements||[]).map(function(x){
-          return x.type==="text" ? x.text : (x.type==="user" ? "" : "");
-        }).join("").replace(/\*/g,"").trim();
-        if (line) rawLines.push(line);
+          if (x.type==="text") return (x.text||"").replace(/\*/g,"");
+          if (x.type==="user") return "@멘션";
+          return "";
+        }).join("").trim();
+        if (line) blockLines.push(line);
       });
     });
-    if (!rawLines.length) {
-      rawLines = (m.text||"").replace(/\*/g,"").split("\n").map(function(l){return l.trim();}).filter(Boolean);
-    }
+    // text 필드도 줄 단위로
+    var textLines = (m.text||"").replace(/\*/g,"").replace(/<@[A-Z0-9]+>/g,"@멘션").split("\n").map(function(l){return l.trim();}).filter(Boolean);
+    var rawLines = blockLines.length ? blockLines : textLines;
 
     // 1. "거래처 : XXX" 패턴
-    var cp = text.match(/거래처\s*[:\s]+\s*([가-힣a-zA-Z0-9]+(?:\s[가-힣a-zA-Z0-9]+)?)/);
-    if (cp) customer = cp[1].trim().replace(/\s*(입고일|입고지|입고|발주|출고|대표|사장|원장|부장|과장|팀장|이사).*$/,'').trim();
+    var cp = text.replace(/\*/g,"").match(/거래처\s*[:\s]+([가-힣a-zA-Z0-9\s]{2,15}?)(?=\s*(?:입고지|입고일|입고|품목|수량|단가|연락처|$))/);
+    if (cp) customer = cp[1].trim();
 
-    // 2. "출고요청의건" or "@멘션" 다음줄 = 거래처
+    // 2. @멘션 다음줄 = 거래처 (출고요청의건 형식)
     if (customer === "—") {
-      // 출고요청의건 있는 줄 찾기
-      var startIdx = rawLines.findIndex(function(l){ return /출고요청의건|출고요청/.test(l); });
-      if (startIdx < 0) startIdx = -1;
-      // @멘션 줄 찾기
-      var mentionIdx = rawLines.findIndex(function(l){ return /^@|<@[A-Z0-9]/.test(l); });
-      // 멘션 다음줄이 거래처
-      var checkIdx = mentionIdx >= 0 ? mentionIdx + 1 : startIdx + 1;
-      if (checkIdx > 0 && rawLines[checkIdx]) {
-        var candidate = rawLines[checkIdx].replace(/<@[A-Z0-9]+>/g,"").replace(/\*/g,"").trim();
-        // 숫자로 시작하거나 발주/입고 키워드면 제외
-        if (candidate && candidate.length >= 2 && candidate.length <= 20 &&
-            !/^[0-9]/.test(candidate) &&
-            !/^(출고|발주|입고|수량|단가|품목|비타민|ECM|DCP|MCP|TCP|하이맷|보호지방)/.test(candidate)) {
-          customer = candidate;
+      var mentionIdx = rawLines.findIndex(function(l){ return /@멘션|<@[A-Z0-9]/.test(l); });
+      if (mentionIdx >= 0) {
+        for (var ni = mentionIdx+1; ni < Math.min(mentionIdx+3, rawLines.length); ni++) {
+          var cand = rawLines[ni].replace(/<@[A-Z0-9]+>/g,"").replace(/\*/g,"").trim();
+          if (cand.length >= 2 && cand.length <= 20 &&
+              !/^[0-9\(]/.test(cand) &&
+              !/^(출고|발주|입고|수량|단가|품목|비타민|ECM|DCP|MCP|TCP|하이맷|보호지방|출고 부탁|부탁)/.test(cand)) {
+            customer = cand;
+            break;
+          }
         }
       }
     }
 
-    // 3. 알려진 거래처명 (텍스트 어디든 포함되면)
+    // 3. KNOWN 거래처명 포함 여부
     if (customer === "—" || customer.length > 20) {
-      var KNOWN = ["합천돼지자가","부산사료","부경양돈","오앤티","김해축협","코리아에프앤에프","광주축협","우일축산약품","경북수산","은진바이오","시내바이오","네오베미스","오케이","시현축산","성창농원","영광육수","이오와이즈","전풍준사장","서울우유","노엘목장","장유수산","조아수산","경남양돈","코코시스","함안축협","YK목장","yk목장","한성동물병원","삼솔농장","거창축협","시현농장","담주"];
-      var f = KNOWN.find(function(k){ return text.replace(/\*/g,"").includes(k); });
+      var cleanText = text.replace(/\*/g,"");
+      var KNOWN = ["합천돼지자가","부산사료","부경양돈","오앤티","김해축협","코리아에프앤에프","광주축협","우일축산약품","경북수산","은진바이오","시내바이오","네오베미스","오케이","시현축산","성창농원","영광육수","이오와이즈","전풍준사장","서울우유","노엘목장","장유수산","조아수산","경남양돈","코코시스","함안축협","YK목장","한성동물병원","삼솔농장","거창축협","시현농장","담주","부산사료","시내바이오"];
+      var f = KNOWN.find(function(k){ return cleanText.includes(k); });
       if (f) customer = f;
     }
 
-    // 4. XXX 입고 패턴
+    // 4. XXX 입고/납품 패턴
     if (customer === "—") {
       var mp = text.match(/([가-힣]{2,8})\s*(?:입고|납품)/);
       if (mp) customer = mp[1].trim();
     }
 
-    // 품목
+    // ── 품목 ──
     var product = "—";
     var pm = text.match(/품목\s*:\s*(.+?)(?=\s+수량|\s+단가|\s+입고|$)/);
     if (pm) product = pm[1].trim();
@@ -1215,44 +1216,46 @@ function parseOrders(messages) {
       if (prods.length) product = prods.join(", ");
     }
 
-    // 수량
+    // ── 수량 ──
     var qty = "—";
     var qm = text.match(/수\s*량\s*[:\s]\s*([\d,]+\s*(?:포|kg|톤|ton|MT|mt|bag|bags))/i);
     if (qm) qty = qm[1].trim();
-    if (qty === "—") { var qm2=text.match(/([\d,]+)\s*MT/i); if(qm2) qty=qm2[1]+"MT"; }
-    if (qty === "—") { var qm3=text.match(/([\d,]+)\s*톤/); if(qm3) qty=qm3[1]+"톤"; }
-    if (qty === "—") { var qm4=text.match(/([\d,]+)\s*(?:ton)/i); if(qm4) qty=qm4[1]+"ton"; }
-    if (qty === "—") { var qm5=text.match(/([\d,]+)\s*포/); if(qm5) qty=qm5[1]+"포"; }
-    if (qty === "—") { var qm6=text.match(/([\d,]+)\s*kg/i); if(qm6) qty=qm6[1]+"kg"; }
+    if (qty==="—") { var r=text.match(/([\d,]+)\s*MT/i); if(r) qty=r[1]+"MT"; }
+    if (qty==="—") { var r=text.match(/([\d,]+)\s*톤/); if(r) qty=r[1]+"톤"; }
+    if (qty==="—") { var r=text.match(/([\d,]+)\s*포/); if(r) qty=r[1]+"포"; }
+    if (qty==="—") { var r=text.match(/([\d,]+)\s*(?:ton)/i); if(r) qty=r[1]+"ton"; }
+    if (qty==="—") { var r=text.match(/([\d,]+)\s*bag/i); if(r) qty=r[1]+"bag"; }
+    if (qty==="—") { var r=text.match(/([\d,]+)\s*kg/i); if(r) qty=r[1]+"kg"; }
 
-    // 단가
+    // ── 단가 ──
     var unitPrice = "—";
-    var dm = text.match(/단\s*가\s*[:\s]\s*([\d,]+)\s*원/);
-    if (dm) unitPrice = dm[1] + "원/kg";
-    if (unitPrice === "—") { var dm2=text.match(/\(([\d,]+)\s*원\/kg\)/); if(dm2) unitPrice=dm2[1]+"원/kg"; }
-    if (unitPrice === "—") { var dm3=text.match(/([\d,]+)\s*원\/kg/); if(dm3) unitPrice=dm3[1]+"원/kg"; }
-    if (unitPrice === "—") { var dm4=text.match(/단\s*가\s*[:\s]\s*([\d,]+)\/kg/i); if(dm4) unitPrice=dm4[1]+"원/kg"; }
-    if (unitPrice === "—") { var dm5=text.match(/([\d,]+)\/kg/i); if(dm5) unitPrice=dm5[1]+"원/kg"; }
-    if (unitPrice === "—") { var dm6=text.match(/(?:kg|톤)\s*([\d,]+)\s*원/i); if(dm6) unitPrice=dm6[1]+"원/kg"; }
-    if (unitPrice === "—") { var dm7=text.match(/\$([\d,]+(?:\.\d+)?)(?:\/(?:kg|mt|ton))?/i); if(dm7) unitPrice="$"+dm7[1]; }
-    if (unitPrice === "—") { var dm8=text.match(/USD\s*([\d,]+(?:\.\d+)?)/i); if(dm8) unitPrice="$"+dm8[1]; }
-    if (unitPrice === "—") { var dm9=text.match(/([\d,]+(?:\.\d+)?)\s*(?:USD|달러)/i); if(dm9) unitPrice="$"+dm9[1]; }
+    if (unitPrice==="—") { var r=text.match(/단\s*가\s*[:\s]\s*([\d,]+)\s*원/); if(r) unitPrice=r[1]+"원/kg"; }
+    if (unitPrice==="—") { var r=text.match(/\(([\d,]+)\s*원\/kg\)/); if(r) unitPrice=r[1]+"원/kg"; }
+    if (unitPrice==="—") { var r=text.match(/([\d,]+)\s*원\/kg/); if(r) unitPrice=r[1]+"원/kg"; }
+    if (unitPrice==="—") { var r=text.match(/단\s*가\s*[:\s]\s*([\d,]+)\/kg/i); if(r) unitPrice=r[1]+"원/kg"; }
+    if (unitPrice==="—") { var r=text.match(/([\d,]+)\/kg/i); if(r) unitPrice=r[1]+"원/kg"; }
+    if (unitPrice==="—") { var r=text.match(/\(([\d,]+)원\)/); if(r) unitPrice=r[1]+"원/kg"; }
+    if (unitPrice==="—") { var r=text.match(/(?:kg|톤)\s*([\d,]+)\s*원/i); if(r) unitPrice=r[1]+"원/kg"; }
+    if (unitPrice==="—") { var r=text.match(/\$([\d,]+(?:\.\d+)?)(?:\/(?:kg|mt|ton))?/i); if(r) unitPrice="$"+r[1]; }
+    if (unitPrice==="—") { var r=text.match(/USD\s*([\d,]+(?:\.\d+)?)/i); if(r) unitPrice="$"+r[1]; }
+    if (unitPrice==="—") { var r=text.match(/([\d,]+(?:\.\d+)?)\s*(?:USD|달러)/i); if(r) unitPrice="$"+r[1]; }
 
-    // 납기
+    // ── 납기 ──
     var deadline = "—";
-    var dlm = text.match(/(?:납기|ETA|입항|입고일)[\s:.]*(\d{1,2}[\/\.\-]\d{1,2})/i);
+    var dlm = text.match(/(?:납기|ETA|입항|입고일)[\s:.]*([\d]{1,2}월[\d]{1,2}일|\d{1,2}[\/\.\-]\d{1,2})/i);
     if (dlm) deadline = dlm[1];
 
-    // 상태
+    // ── 상태 ──
     var status = "처리중";
     if (/완료|입고완료|통관완료|수령완료/.test(text)) status = "완료";
     else if (/지연/.test(text)) status = "지연";
 
-    // 포 단위 → kg 변환 (파인애플분말 1포=20kg)
+    // 포 → kg 변환 (1포=20kg)
     if (qty !== "—" && /포/.test(qty)) {
       var poCnt = parseInt(qty.replace(/[^\d]/g,""));
-      if (!isNaN(poCnt)) qty = (poCnt * 20) + "kg";
+      if (!isNaN(poCnt)) qty = (poCnt*20)+"kg";
     }
+
     orders.push({customer:customer, product:product, qty:qty, unitPrice:unitPrice, orderDate:dateStr, deadline:deadline, status:status, raw:text.slice(0,80)});
   });
   return orders;
