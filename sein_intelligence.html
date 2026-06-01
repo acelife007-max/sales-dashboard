@@ -1151,45 +1151,55 @@ function parseOrders(messages) {
 
     // 거래처 추출 - 여러 패턴 시도
     var customer = "—";
+
+    // 원본 줄 단위 파싱 (blocks 우선, text 보조)
+    var rawLines = [];
+    (m.blocks||[]).forEach(function(b){
+      if (b.type==="rich_text") b.elements.forEach(function(elem){
+        var line = (elem.elements||[]).map(function(x){
+          return x.type==="text" ? x.text : (x.type==="user" ? "" : "");
+        }).join("").replace(/\*/g,"").trim();
+        if (line) rawLines.push(line);
+      });
+    });
+    if (!rawLines.length) {
+      rawLines = (m.text||"").replace(/\*/g,"").split("\n").map(function(l){return l.trim();}).filter(Boolean);
+    }
+
     // 1. "거래처 : XXX" 패턴
     var cp = text.match(/거래처\s*[:\s]+\s*([가-힣a-zA-Z0-9]+(?:\s[가-힣a-zA-Z0-9]+)?)/);
-    if (cp) customer = cp[1].trim();
-    // 2. 출고요청의건 다음줄 패턴 - "@멘션" 다음에 오는 줄이 거래처
+    if (cp) customer = cp[1].trim().replace(/\s*(입고일|입고지|입고|발주|출고|대표|사장|원장|부장|과장|팀장|이사).*$/,'').trim();
+
+    // 2. "출고요청의건" or "@멘션" 다음줄 = 거래처
     if (customer === "—") {
-      // 원본 메시지에서 줄단위로 파싱 (text는 이미 공백처리됨, 원본 재추출)
-      var rawLines = (m.text||"").replace(/\*/g,"").split("\n").map(function(l){return l.trim();}).filter(Boolean);
-      var mentionIdx = rawLines.findIndex(function(l){return /^@/.test(l)||/<@/.test(l);});
-      if (mentionIdx >= 0 && rawLines[mentionIdx+1]) {
-        var nextLine = rawLines[mentionIdx+1].replace(/<@[A-Z0-9]+>/g,"").trim();
-        if (nextLine && !/^[0-9]/.test(nextLine) && !/출고|발주|입고|수량|단가|품목/.test(nextLine)) {
-          customer = nextLine;
-        }
-      }
-      // blocks에서도 시도
-      if (customer === "—") {
-        var allLines = [];
-        (m.blocks||[]).forEach(function(b){
-          if (b.type==="rich_text") b.elements.forEach(function(elem){
-            var line = (elem.elements||[]).map(function(x){return x.type==="text"?x.text:"";}).join("").replace(/\*/g,"").trim();
-            if(line) allLines.push(line);
-          });
-        });
-        var mIdx = allLines.findIndex(function(l){return /<@/.test(l)||/^@/.test(l);});
-        if (mIdx>=0 && allLines[mIdx+1]) {
-          var nl = allLines[mIdx+1].trim();
-          if (nl && !/^[0-9]/.test(nl) && !/출고|발주|입고|수량|단가|품목/.test(nl)) customer = nl;
+      // 출고요청의건 있는 줄 찾기
+      var startIdx = rawLines.findIndex(function(l){ return /출고요청의건|출고요청/.test(l); });
+      if (startIdx < 0) startIdx = -1;
+      // @멘션 줄 찾기
+      var mentionIdx = rawLines.findIndex(function(l){ return /^@|<@[A-Z0-9]/.test(l); });
+      // 멘션 다음줄이 거래처
+      var checkIdx = mentionIdx >= 0 ? mentionIdx + 1 : startIdx + 1;
+      if (checkIdx > 0 && rawLines[checkIdx]) {
+        var candidate = rawLines[checkIdx].replace(/<@[A-Z0-9]+>/g,"").replace(/\*/g,"").trim();
+        // 숫자로 시작하거나 발주/입고 키워드면 제외
+        if (candidate && candidate.length >= 2 && candidate.length <= 20 &&
+            !/^[0-9]/.test(candidate) &&
+            !/^(출고|발주|입고|수량|단가|품목|비타민|ECM|DCP|MCP|TCP|하이맷|보호지방)/.test(candidate)) {
+          customer = candidate;
         }
       }
     }
-    // 3. 알려진 거래처명
-    if (customer === "—" || customer.length > 15) {
-      var KNOWN = ["합천돼지자가","부산사료","부경양돈","오앤티","김해축협","코리아에프앤에프","광주축협","우일축산약품","경북수산","은진바이오","시내바이오","네오베미스","오케이","시현축산","성창농원","영광육수","이오와이즈","전풍준사장","서울우유","노엘목장","장유수산","조아수산","경남양돈","코코시스","함안축협","YK목장","yk목장"];
-      var f = KNOWN.find(function(k){return text.includes(k);});
+
+    // 3. 알려진 거래처명 (텍스트 어디든 포함되면)
+    if (customer === "—" || customer.length > 20) {
+      var KNOWN = ["합천돼지자가","부산사료","부경양돈","오앤티","김해축협","코리아에프앤에프","광주축협","우일축산약품","경북수산","은진바이오","시내바이오","네오베미스","오케이","시현축산","성창농원","영광육수","이오와이즈","전풍준사장","서울우유","노엘목장","장유수산","조아수산","경남양돈","코코시스","함안축협","YK목장","yk목장","한성동물병원","삼솔농장","거창축협","시현농장","담주"];
+      var f = KNOWN.find(function(k){ return text.replace(/\*/g,"").includes(k); });
       if (f) customer = f;
     }
+
     // 4. XXX 입고 패턴
     if (customer === "—") {
-      var mp = text.match(/([가-힣]{2,8})\s*입고/);
+      var mp = text.match(/([가-힣]{2,8})\s*(?:입고|납품)/);
       if (mp) customer = mp[1].trim();
     }
 
