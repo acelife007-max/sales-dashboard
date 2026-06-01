@@ -1217,22 +1217,13 @@ function parseCompare(messages) {
     if (!text) return;
     var text = text.replace(/\n/g, " ").replace(/\s{2,}/g, " ").trim();
     text = text.replace(/수\s+량/g, "수량").replace(/단\s+가/g, "단가").replace(/품\s+목/g, "품목").replace(/거\s+래\s+처/g, "거래처").replace(/입\s+고/g, "입고");
-    if (text.includes("노엘")) console.log("[Sein DEBUG] 노엘 원문:", "user="+m.user, "myId="+MY_USER_ID, "ts="+m.ts, text.slice(0,80));
-    var isMyMsg = m.user === MY_USER_ID;
-    if (!isMyMsg && m.blocks) {
-      if (JSON.stringify(m.blocks).includes(MY_USER_ID)) isMyMsg = true;
-    }
-    if (text.includes("노엘")) console.log("[Sein DEBUG] 노엘 isMyMsg="+isMyMsg, "seenTs="+seenTs.has(m.ts));
-    if (!isMyMsg) return;
-    if (m.ts && seenTs.has(m.ts)) { if(text.includes("노엘")) console.log("[Sein DEBUG] 노엘 seenTs 중복 걸림"); return; }
+    if (m.ts && seenTs.has(m.ts)) return;
     if (m.ts) seenTs.add(m.ts);
     var ts = m.ts ? new Date(parseFloat(m.ts)*1000) : null;
     if (!ts) return;
     var month = ts.getMonth();
-    if (month > new Date().getMonth()) { if(text.includes("노엘")) console.log("[Sein DEBUG] 노엘 month 필터:", month); return; }
-    var hasKeyword = /발주|선적|수령|입고|LC|ETA|통관|납품|공급|사료수입|주문|오더|출고요청|발주요청/.test(text);
-    if (!hasKeyword) { if(text.includes("노엘")) console.log("[Sein DEBUG] 노엘 키워드 없음"); return; }
-    console.log("[Sein DEBUG] 노엘 최종통과:", month+1+"월", text.slice(0,60));
+    if (month > new Date().getMonth()) return;
+    if (!/발주|선적|수령|입고|LC|ETA|통관|납품|공급|사료수입|주문|오더|출고요청|발주요청/.test(text)) return;
 
     // 거래처
     var cust = "";
