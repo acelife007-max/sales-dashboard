@@ -1224,12 +1224,20 @@ function parseCompare(messages) {
   var customers = {};
   var seenTs = new Set();
   messages.forEach(function(m) {
+    // parseOrders와 동일한 isMyMsg 체크
+    var isMyMsg = m.user === MY_USER_ID;
+    if (!isMyMsg && m.blocks) {
+      if (JSON.stringify(m.blocks).includes(MY_USER_ID)) isMyMsg = true;
+    }
+    // text 필드에 MY_USER_ID 포함 여부도 체크 (일부 Slack 클라이언트)
+    if (!isMyMsg && m.text && m.text.includes(MY_USER_ID)) isMyMsg = true;
+    if (!isMyMsg) return;
+    if (m.ts && seenTs.has(m.ts)) return;
+    if (m.ts) seenTs.add(m.ts);
     var text = extractTextFromMessage(m);
     if (!text) return;
     var text = text.replace(/\n/g, " ").replace(/\s{2,}/g, " ").trim();
     text = text.replace(/수\s+량/g, "수량").replace(/단\s+가/g, "단가").replace(/품\s+목/g, "품목").replace(/거\s+래\s+처/g, "거래처").replace(/입\s+고/g, "입고");
-    if (m.ts && seenTs.has(m.ts)) return;
-    if (m.ts) seenTs.add(m.ts);
     var ts = m.ts ? new Date(parseFloat(m.ts)*1000) : null;
     if (!ts) return;
     var month = ts.getMonth();
