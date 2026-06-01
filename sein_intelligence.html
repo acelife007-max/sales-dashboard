@@ -377,6 +377,7 @@ select.calc-input{cursor:pointer;}
   <div class="tick"><span class="tick-lbl">Vit.E 50%</span><span class="tick-val" id="tick-3">—</span><span class="tick-chg flat" id="tick-chg-3">📡</span></div>
   <div class="tick"><span class="tick-lbl">Vit.D3</span><span class="tick-val" id="tick-4">—</span><span class="tick-chg flat" id="tick-chg-4">📡</span></div>
   <div class="tick"><span class="tick-lbl">MCP</span><span class="tick-val" id="tick-5">—</span><span class="tick-chg flat" id="tick-chg-5">📡</span></div>
+  <div class="tick"><span class="tick-lbl">비테인</span><span class="tick-val" id="tick-8">—</span><span class="tick-chg flat" id="tick-chg-8">📡</span></div>
   <div class="tick"><span class="tick-lbl">USD/KRW</span><span class="tick-val" id="tick-6">—</span><span class="tick-chg flat" id="tick-chg-6">📡</span></div>
   <div class="tick"><span class="tick-lbl">CNY/KRW</span><span class="tick-val" id="tick-7">—</span><span class="tick-chg flat" id="tick-chg-7">📡</span></div>
 </div>
@@ -433,32 +434,7 @@ select.calc-input{cursor:pointer;}
           </div>
         </div>
 
-        <!-- 공포/탐욕 스타일 영업 스코어 -->
-        <div class="card">
-          <div class="card-hd">
-            <div class="card-title">🎯 영업 스코어</div>
-          </div>
-          <div class="card-body" style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-            <svg width="120" height="70" viewBox="0 0 120 70">
-              <defs>
-                <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style="stop-color:#f85149"/>
-                  <stop offset="40%" style="stop-color:#f0c000"/>
-                  <stop offset="100%" style="stop-color:#3fb950"/>
-                </linearGradient>
-              </defs>
-              <path d="M10,65 A50,50 0 0,1 110,65" fill="none" stroke="#21262d" stroke-width="10" stroke-linecap="round"/>
-              <path d="M10,65 A50,50 0 0,1 110,65" fill="none" stroke="url(#gaugeGrad)" stroke-width="10" stroke-linecap="round" stroke-dasharray="157" stroke-dashoffset="47"/>
-              <text x="60" y="62" text-anchor="middle" font-size="22" font-weight="700" fill="#e6edf3" font-family="JetBrains Mono">72</text>
-            </svg>
-            <div style="font-size:13px;font-weight:600;color:var(--green);">양호 (Good)</div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
-              <span class="chip cg">목표달성률 84%</span>
-              <span class="chip cb">방문율 ↑</span>
-            </div>
-            <div style="width:100%;font-size:11px;color:var(--text3);text-align:center;">경상총괄팀 · 5월 기준</div>
-          </div>
-        </div>
+
       </div>
 
       <!-- 가격 트렌드 미니 + 방문 캘린더 -->
@@ -604,12 +580,6 @@ select.calc-input{cursor:pointer;}
           <div class="card-title">📦 발주 목록 <span style="font-size:10px;color:var(--text3);font-weight:400;">Slack #발주 자동 추출</span></div>
           <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
             <div style="display:flex;gap:3px;" id="ord-month-tabs">
-              <button class="chip cb" onclick="filterOrderMonth(5,this)" id="ord-btn-5">5월</button>
-              <button class="chip cgr" onclick="filterOrderMonth(4,this)" id="ord-btn-4">4월</button>
-              <button class="chip cgr" onclick="filterOrderMonth(3,this)" id="ord-btn-3">3월</button>
-              <button class="chip cgr" onclick="filterOrderMonth(2,this)" id="ord-btn-2">2월</button>
-              <button class="chip cgr" onclick="filterOrderMonth(1,this)" id="ord-btn-1">1월</button>
-              <button class="chip cgr" onclick="filterOrderMonth(0,this)" id="ord-btn-0">전체</button>
             </div>
             <div id="ord-update-time" style="font-size:10px;color:var(--text3);font-family:var(--mono);"></div>
             <div class="card-act" onclick="loadSlackFeeds()">🔄</div>
@@ -711,7 +681,7 @@ select.calc-input{cursor:pointer;}
     <div class="panel" id="p-compare">
       <div class="card">
         <div class="card-hd">
-          <div class="card-title">📊 거래처별 월별 공급 현황 (1월~5월)</div>
+          <div class="card-title">📊 거래처별 월별 공급 현황</div>
           <div style="display:flex;gap:6px;align-items:center;">
             <span style="display:none"> </span>
             <div class="card-act" onclick="loadSlackFeeds()">🔄 새로고침</div>
@@ -723,18 +693,7 @@ select.calc-input{cursor:pointer;}
           </div>
           <div id="compare-table-wrap" style="display:none;overflow-x:auto;">
             <table class="tbl" id="compare-table">
-              <thead>
-                <tr>
-                  <th>거래처</th>
-                  <th class="r">1월</th>
-                  <th class="r">2월</th>
-                  <th class="r">3월</th>
-                  <th class="r">4월</th>
-                  <th class="r">5월</th>
-                  <th class="r">합계</th>
-                  <th>주요품목</th>
-                  <th>최근발주</th>
-                </tr>
+              <thead id="compare-thead">
               </thead>
               <tbody id="compare-tbody"></tbody>
             </table>
@@ -746,12 +705,6 @@ select.calc-input{cursor:pointer;}
         <div class="card-hd">
           <div class="card-title">📅 거래처별 발주 타임라인</div>
           <div style="display:flex;gap:3px;flex-wrap:wrap;" id="timeline-month-tabs">
-            <button class="chip cb" onclick="filterTimeline(5,this)" id="tl-btn-5">5월</button>
-            <button class="chip cgr" onclick="filterTimeline(4,this)" id="tl-btn-4">4월</button>
-            <button class="chip cgr" onclick="filterTimeline(3,this)" id="tl-btn-3">3월</button>
-            <button class="chip cgr" onclick="filterTimeline(2,this)" id="tl-btn-2">2월</button>
-            <button class="chip cgr" onclick="filterTimeline(1,this)" id="tl-btn-1">1월</button>
-            <button class="chip cgr" onclick="filterTimeline(0,this)" id="tl-btn-0">전체</button>
           </div>
         </div>
         <div class="card-body" id="compare-timeline">
@@ -910,8 +863,8 @@ const PRICE_KEYWORDS = {
   "MDCP":       ["mdcp","모노디칼슘"],
   "DL-메티오닌":  ["메치오닌","메티오닌","methionine"],
   "L-트레오닌":   ["트레오닌","threonine"],
-  "황산염라이신":  ["라이신황산염","황산염 라이신","황산라이신","lys 70","라이신"],
-  "염산염라이신":  ["염산염 라이신","염산라이신","hcl lysine","lys 55"],
+  "황산염라이신":  ["라이신황산염","황산염 라이신","황산라이신","lys 70","황산 라이신"],
+  "염산염라이신":  ["염산염 라이신","염산라이신","hcl lysine","lys 55","라이신"],
   "발린":        ["발린","valine"],
   "Vit.C 35%":  ["비타민c 35%","vitc35","vc35","vc 35%","vc 35","비타민c35"],
   "Vit.C 98%":  ["비타민c 98%","vitc98","vc98","vc 98%","vc 98","비타민c98"],
@@ -1215,20 +1168,26 @@ function parseOrders(messages) {
 
     // 수량
     var qty = "—";
-    var qm = text.match(/수량\s*:\s*([\d,]+\s*(?:kg|톤|ton))/i);
+    var qm = text.match(/수\s*량\s*[:\s]\s*([\d,]+\s*(?:포|kg|톤|ton|MT|mt|bag|bags))/i);
     if (qm) qty = qm[1].trim();
-    if (qty === "—") {
-      var qm2 = text.match(/([\d,]+\s*(?:톤|ton|kg))/i);
-      if (qm2) qty = qm2[1].trim();
-    }
+    if (qty === "—") { var qm2=text.match(/([\d,]+)\s*MT/i); if(qm2) qty=qm2[1]+"MT"; }
+    if (qty === "—") { var qm3=text.match(/([\d,]+)\s*톤/); if(qm3) qty=qm3[1]+"톤"; }
+    if (qty === "—") { var qm4=text.match(/([\d,]+)\s*(?:ton)/i); if(qm4) qty=qm4[1]+"ton"; }
+    if (qty === "—") { var qm5=text.match(/([\d,]+)\s*포/); if(qm5) qty=qm5[1]+"포"; }
+    if (qty === "—") { var qm6=text.match(/([\d,]+)\s*kg/i); if(qm6) qty=qm6[1]+"kg"; }
 
     // 단가
     var unitPrice = "—";
-    var dm = text.match(/단가\s*:\s*([\d,]+)\s*원/);
+    var dm = text.match(/단\s*가\s*[:\s]\s*([\d,]+)\s*원/);
     if (dm) unitPrice = dm[1] + "원/kg";
     if (unitPrice === "—") { var dm2=text.match(/\(([\d,]+)\s*원\/kg\)/); if(dm2) unitPrice=dm2[1]+"원/kg"; }
     if (unitPrice === "—") { var dm3=text.match(/([\d,]+)\s*원\/kg/); if(dm3) unitPrice=dm3[1]+"원/kg"; }
-    if (unitPrice === "—") { var dm4=text.match(/(?:kg|톤)\s*([\d,]+)\s*원/i); if(dm4) unitPrice=dm4[1]+"원/kg"; }
+    if (unitPrice === "—") { var dm4=text.match(/단\s*가\s*[:\s]\s*([\d,]+)\/kg/i); if(dm4) unitPrice=dm4[1]+"원/kg"; }
+    if (unitPrice === "—") { var dm5=text.match(/([\d,]+)\/kg/i); if(dm5) unitPrice=dm5[1]+"원/kg"; }
+    if (unitPrice === "—") { var dm6=text.match(/(?:kg|톤)\s*([\d,]+)\s*원/i); if(dm6) unitPrice=dm6[1]+"원/kg"; }
+    if (unitPrice === "—") { var dm7=text.match(/\$([\d,]+(?:\.\d+)?)(?:\/(?:kg|mt|ton))?/i); if(dm7) unitPrice="$"+dm7[1]; }
+    if (unitPrice === "—") { var dm8=text.match(/USD\s*([\d,]+(?:\.\d+)?)/i); if(dm8) unitPrice="$"+dm8[1]; }
+    if (unitPrice === "—") { var dm9=text.match(/([\d,]+(?:\.\d+)?)\s*(?:USD|달러)/i); if(dm9) unitPrice="$"+dm9[1]; }
 
     // 납기
     var deadline = "—";
@@ -1240,6 +1199,11 @@ function parseOrders(messages) {
     if (/완료|입고완료|통관완료|수령완료/.test(text)) status = "완료";
     else if (/지연/.test(text)) status = "지연";
 
+    // 포 단위 → kg 변환 (파인애플분말 1포=20kg)
+    if (qty !== "—" && /포/.test(qty)) {
+      var poCnt = parseInt(qty.replace(/[^\d]/g,""));
+      if (!isNaN(poCnt)) qty = (poCnt * 20) + "kg";
+    }
     orders.push({customer:customer, product:product, qty:qty, unitPrice:unitPrice, orderDate:dateStr, deadline:deadline, status:status, raw:text.slice(0,80)});
   });
   return orders;
@@ -1265,7 +1229,7 @@ function parseCompare(messages) {
     var ts = m.ts ? new Date(parseFloat(m.ts)*1000) : null;
     if (!ts) return;
     var month = ts.getMonth();
-    if (month > 4) return;
+    if (month > new Date().getMonth()) return;
     if (!/발주|선적|수령|입고|LC|ETA|통관|납품|공급|사료수입|주문|오더|출고요청|발주요청/.test(text)) return;
 
     // 거래처
@@ -1279,7 +1243,14 @@ function parseCompare(messages) {
     if (!cust) { var mp=text.match(/([\w가-힣]{2,10})\s*입고/); if(mp) cust=mp[1].trim(); }
     if (!cust) return;
 
-    if (!customers[cust]) customers[cust] = {name:cust, months:[[],[],[],[],[]], products:new Set(), lastOrder:null};
+    if (!customers[cust]) {
+      var thisM = new Date().getMonth();
+      var initMonths = [];
+      for (var i=0; i<=thisM; i++) initMonths.push([]);
+      customers[cust] = {name:cust, months:initMonths, products:new Set(), lastOrder:null};
+    }
+    // 이번달 인덱스까지 배열 확장
+    while (customers[cust].months.length <= month) customers[cust].months.push([]);
 
     // 품목
     var prod = "—";
@@ -1295,19 +1266,31 @@ function parseCompare(messages) {
 
     // 수량
     var qty = "—";
-    var qm = text.match(/수량\s*:\s*([\d,]+\s*(?:kg|톤|ton))/i);
+    var qm = text.match(/수\s*량\s*[:\s]\s*([\d,]+\s*(?:포|kg|톤|ton|MT|mt|bag|bags))/i);
     if (qm) qty = qm[1].trim();
-    if (qty==="—") { var qm2=text.match(/([\d,]+\s*(?:톤|ton|kg))/i); if(qm2) qty=qm2[1].trim(); }
+    if (qty==="—") { var qm2=text.match(/([\d,]+)\s*MT/i); if(qm2) qty=qm2[1]+"MT"; }
+    if (qty==="—") { var qm3=text.match(/([\d,]+)\s*톤/); if(qm3) qty=qm3[1]+"톤"; }
+    if (qty==="—") { var qm4=text.match(/([\d,]+)\s*(?:ton)/i); if(qm4) qty=qm4[1]+"ton"; }
+    if (qty==="—") { var qm5=text.match(/([\d,]+)\s*포/); if(qm5) qty=qm5[1]+"포"; }
+    if (qty==="—") { var qm6=text.match(/([\d,]+)\s*kg/i); if(qm6) qty=qm6[1]+"kg"; }
 
     // 단가
     var price = "—";
-    var dm = text.match(/단가\s*:\s*([\d,]+)\s*원/);
+    var dm = text.match(/단가\s*[:\s]\s*([\d,]+)\s*원/);
     if (dm) price = dm[1] + "원/kg";
     if (price==="—") { var dm2=text.match(/\(([\d,]+)\s*원\/kg\)/); if(dm2) price=dm2[1]+"원/kg"; }
     if (price==="—") { var dm3=text.match(/([\d,]+)\s*원\/kg/); if(dm3) price=dm3[1]+"원/kg"; }
     if (price==="—") { var dm4=text.match(/(?:kg|톤)\s*([\d,]+)\s*원/i); if(dm4) price=dm4[1]+"원/kg"; }
+    if (price==="—") { var dm5=text.match(/\$([\d,]+(?:\.\d+)?)(?:\/(?:kg|mt|ton))?/i); if(dm5) price="$"+dm5[1]; }
+    if (price==="—") { var dm6=text.match(/USD\s*([\d,]+(?:\.\d+)?)/i); if(dm6) price="$"+dm6[1]; }
+    if (price==="—") { var dm7=text.match(/([\d,]+(?:\.\d+)?)\s*(?:USD|달러)/i); if(dm7) price="$"+dm7[1]; }
 
     var dateLabel = (month+1) + "/" + ts.getDate();
+    // 포 단위 → kg 변환 (파인애플분말 1포=20kg)
+    if (qty !== "—" && /포/.test(qty)) {
+      var poCnt2 = parseInt(qty.replace(/[^\d]/g,""));
+      if (!isNaN(poCnt2)) qty = (poCnt2 * 20) + "kg";
+    }
     customers[cust].months[month].push({date:dateLabel, products:prod, qty:qty, price:price, raw:text.slice(0,80)});
     if (!customers[cust].lastOrder || ts > customers[cust].lastOrder) customers[cust].lastOrder = ts;
     if (prod && prod !== "—") customers[cust].products.add(prod);
@@ -1520,11 +1503,28 @@ function renderCompare(customers) {
   }
   if (noData) noData.style.display = "none";
   if (wrap) wrap.style.display = "block";
+
+  // 현재달 기준 헤더 동적 생성
+  var thisMonth = new Date().getMonth() + 1;
+  var thead = document.getElementById("compare-thead");
+  if (thead) {
+    var hdr = "<tr><th>거래처</th>";
+    for (var mi=1; mi<=thisMonth; mi++) hdr += "<th class=\"r\">" + mi + "월</th>";
+    hdr += "<th class=\"r\">합계</th><th>주요품목</th><th>최근발주</th></tr>";
+    thead.innerHTML = hdr;
+  }
+
+  // 카드 타이틀 업데이트
+  var titleEl = document.querySelector("#p-compare .card-title");
+  if (titleEl && titleEl.textContent.includes("거래처별")) titleEl.textContent = "📊 거래처별 월별 공급 현황 (1월~" + thisMonth + "월)";
+
   tbody.innerHTML = customers.map(function(c) {
+    // months 배열을 thisMonth 길이로 맞춤
+    while (c.months.length < thisMonth) c.months.push([]);
     var total = c.months.reduce(function(a,b){return a+b.length;},0);
     var lastDate = c.lastOrder ? String(c.lastOrder.getMonth()+1).padStart(2,"0")+"-"+String(c.lastOrder.getDate()).padStart(2,"0") : "—";
     var prods = Array.from(c.products).slice(0,3).join(", ") || "—";
-    var monthCells = c.months.map(function(events, mi) {
+    var monthCells = c.months.slice(0, thisMonth).map(function(events, mi) {
       if (!events.length) return "<td class=\"r mono\" style=\"color:var(--text3)\">—</td>";
       return "<td class=\"r mono\" style=\"color:var(--accent);cursor:pointer;\" onclick=\"showTimeline('" + encodeURIComponent(c.name) + "'," + mi + ")\" title=\"클릭하면 상세보기\"><span style=\"text-decoration:underline dotted\">" + events.length + "건</span></td>";
     }).join("");
@@ -1810,9 +1810,10 @@ function renderOverviewAlerts(orders, bids) {
     });
   }
 
-  // 달러 가격 등락 알림
+  // 달러 가격 등락 알림 (비테인 제외)
   var priceAlerts = [];
   Object.keys(dollarPriceHistory).forEach(function(prod) {
+    if (prod === "비테인") return; // 비테인 알림 제외
     var hist = dollarPriceHistory[prod];
     if (!hist || hist.length < 2) return;
     var latest = hist[hist.length-1].usd;
@@ -2147,8 +2148,7 @@ async function loadSlackFeeds() {
       {date:"2026-05-19", month:"5월", usd:975, qty:"", raw:"WEUGFU MDCP USD975/MT CIF (업무보고)", ts:1747612800}
     ];
   }
-  // 비테인: $1900은 체리부로 입찰용 특수건 → 일반 매입가는 $1600 유지
-  // $1900 데이터 제거
+  // 비테인: Slack 추출값만 사용 ($1900 제거)
   if (dollarPriceHistory["비테인"]) {
     dollarPriceHistory["비테인"] = dollarPriceHistory["비테인"].filter(function(e){
       return e.usd !== 1900;
@@ -2174,8 +2174,6 @@ async function loadSlackFeeds() {
     ];
   }
 
-  // 비테인: $1900 → $1600 (하락) 순서 확인 및 교정
-  // 실제: 과거 $1900 → 최근 $1600 (하락이 맞음)
   // 레시틴 데이터 제거 (이상값)
   delete dollarPriceHistory["레시틴"];
 
@@ -2183,24 +2181,68 @@ async function loadSlackFeeds() {
   showPriceChart(currentPriceProduct, null);
 
   // ticker 업데이트
-  var tickMap = {"염산염라이신":"tick-0","DL-메티오닌":"tick-1","L-트레오닌":"tick-2","Vit.E 50%":"tick-3","Vit.D3":"tick-4","MCP":"tick-5"};
+  var tickMap = {"염산염라이신":"tick-0","DL-메티오닌":"tick-1","L-트레오닌":"tick-2","Vit.E 50%":"tick-3","Vit.D3":"tick-4","MCP":"tick-5","비테인":"tick-8"};
   for (var prod in tickMap) {
     var hist = dollarPriceHistory[prod];
     if (hist && hist.length) {
       var tEl = document.getElementById(tickMap[prod]);
       if (tEl) tEl.textContent = "$" + hist[hist.length-1].usd;
+      var chgEl = document.getElementById(tickMap[prod].replace("tick-","tick-chg-"));
+      if (chgEl && hist.length >= 2) {
+        var diff = hist[hist.length-1].usd - hist[hist.length-2].usd;
+        if (diff > 0) { chgEl.textContent = "▲"; chgEl.className = "tick-chg up"; }
+        else if (diff < 0) { chgEl.textContent = "▼"; chgEl.className = "tick-chg dn"; }
+        else { chgEl.textContent = "—"; chgEl.className = "tick-chg flat"; }
+      }
     }
   }
   // Slack 달러 수급동향 업데이트
   loadCBOT();
   // ticker 두번째 줄 업데이트
-  var tickMap = {"염산염라이신":"tick-0","DL-메티오닌":"tick-1","L-트레오닌":"tick-2","Vit.E 50%":"tick-3","Vit.D3":"tick-4","MCP":"tick-5"};
-  for (var prod in tickMap) {
+  var tickMap2 = {"염산염라이신":"tick-0","DL-메티오닌":"tick-1","L-트레오닌":"tick-2","Vit.E 50%":"tick-3","Vit.D3":"tick-4","MCP":"tick-5","비테인":"tick-8"};
+  for (var prod in tickMap2) {
     var hist = dollarPriceHistory[prod];
     if (hist && hist.length) {
-      var tEl = document.getElementById(tickMap[prod]);
+      var tEl = document.getElementById(tickMap2[prod]);
       if (tEl) tEl.textContent = "$" + hist[hist.length-1].usd;
+      var chgEl = document.getElementById(tickMap2[prod].replace("tick-","tick-chg-"));
+      if (chgEl && hist.length >= 2) {
+        var diff = hist[hist.length-1].usd - hist[hist.length-2].usd;
+        if (diff > 0) { chgEl.textContent = "▲"; chgEl.className = "tick-chg up"; }
+        else if (diff < 0) { chgEl.textContent = "▼"; chgEl.className = "tick-chg dn"; }
+        else { chgEl.textContent = "—"; chgEl.className = "tick-chg flat"; }
+      }
     }
+  }
+}
+
+// ── 월 버튼 동적 생성 ──
+function buildMonthButtons() {
+  var now = new Date();
+  var thisMonth = now.getMonth() + 1; // 현재 월 (1~12)
+  
+  // 발주 목록 버튼
+  var ordTabs = document.getElementById("ord-month-tabs");
+  if (ordTabs) {
+    var html = "";
+    for (var m = thisMonth; m >= 1; m--) {
+      var active = m === thisMonth ? "cb" : "cgr";
+      html += '<button class="chip ' + active + '" onclick="filterOrderMonth(' + m + ',this)" id="ord-btn-' + m + '">' + m + '월</button>';
+    }
+    html += '<button class="chip cgr" onclick="filterOrderMonth(0,this)" id="ord-btn-0">전체</button>';
+    ordTabs.innerHTML = html;
+  }
+
+  // 타임라인 버튼
+  var tlTabs = document.getElementById("timeline-month-tabs");
+  if (tlTabs) {
+    var html2 = "";
+    for (var m2 = thisMonth; m2 >= 1; m2--) {
+      var active2 = m2 === thisMonth ? "cb" : "cgr";
+      html2 += '<button class="chip ' + active2 + '" onclick="filterTimeline(' + m2 + ',this)" id="tl-btn-' + m2 + '">' + m2 + '월</button>';
+    }
+    html2 += '<button class="chip cgr" onclick="filterTimeline(0,this)" id="tl-btn-0">전체</button>';
+    tlTabs.innerHTML = html2;
   }
 }
 
@@ -2235,6 +2277,9 @@ function toggleSidebar() {
 
 // ── 초기화 ──
 window.addEventListener("DOMContentLoaded", function() {
+  buildMonthButtons();
+  var lbl = document.getElementById("score-month-label");
+  if (lbl) lbl.textContent = "경상총괄팀 · " + (new Date().getMonth()+1) + "월 기준";
   switchTab("overview");
   renderCalendar({});
   loadMarketData();
