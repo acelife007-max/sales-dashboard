@@ -1230,7 +1230,9 @@ function parseCompare(messages) {
     if (!ts) return;
     var month = ts.getMonth();
     if (month > new Date().getMonth()) return;
-    if (!/발주|선적|수령|입고|LC|ETA|통관|납품|공급|사료수입|주문|오더|출고요청|발주요청/.test(text)) return;
+    var hasKeyword = /발주|선적|수령|입고|LC|ETA|통관|납품|공급|사료수입|주문|오더|출고요청|발주요청/.test(text);
+    if (!hasKeyword) return;
+    if (text.includes("노엘")) console.log("[Sein DEBUG] 노엘 메시지 발견:", month+1+"월", text.slice(0,60));
 
     // 거래처
     var cust = "";
