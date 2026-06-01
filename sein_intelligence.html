@@ -413,16 +413,10 @@ select.calc-input{cursor:pointer;}
           <div class="kpi-meta" id="ov-sales-meta" style="color:var(--text3)">Slack 집계중</div>
           <div class="kpi-icon">💰</div>
         </div>
-        <div class="kpi r">
-          <div class="kpi-lbl">입찰 마감 임박</div>
-          <div class="kpi-val" id="ov-bid-cnt">—</div>
-          <div class="kpi-meta" id="ov-bid-info" style="color:var(--red);font-size:10px;">Slack 집계중</div>
-          <div class="kpi-icon">⚠️</div>
-        </div>
       </div>
 
-      <!-- 알림 + 가격요약 -->
-      <div class="g23">
+      <!-- 알림 + 입찰마감 -->
+      <div class="g2">
         <!-- 알림 -->
         <div class="card">
           <div class="card-hd">
@@ -433,8 +427,16 @@ select.calc-input{cursor:pointer;}
             <div style="display:none"> </div>
           </div>
         </div>
-
-
+        <!-- 입찰 마감 임박 (기존 KPI 카드와 연동) -->
+        <div class="card" style="border-color:var(--red2);">
+          <div class="card-hd">
+            <div class="card-title">⚠️ 입찰 마감 임박</div>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;justify-content:center;">
+            <div class="kpi-val" id="ov-bid-cnt">—</div>
+            <div class="kpi-meta" id="ov-bid-info" style="color:var(--red);font-size:10px;">Slack 집계중</div>
+          </div>
+        </div>
       </div>
 
       <!-- 가격 트렌드 미니 + 방문 캘린더 -->
@@ -1215,23 +1217,22 @@ function parseCompare(messages) {
     if (!text) return;
     var text = text.replace(/\n/g, " ").replace(/\s{2,}/g, " ").trim();
     text = text.replace(/수\s+량/g, "수량").replace(/단\s+가/g, "단가").replace(/품\s+목/g, "품목").replace(/거\s+래\s+처/g, "거래처").replace(/입\s+고/g, "입고");
-    // 노엘목장 포함 메시지 전수 로그
-    if (text.includes("노엘")) console.log("[Sein DEBUG] 노엘 원문:", "user="+m.user, "myId="+MY_USER_ID, text.slice(0,80));
+    if (text.includes("노엘")) console.log("[Sein DEBUG] 노엘 원문:", "user="+m.user, "myId="+MY_USER_ID, "ts="+m.ts, text.slice(0,80));
     var isMyMsg = m.user === MY_USER_ID;
     if (!isMyMsg && m.blocks) {
       if (JSON.stringify(m.blocks).includes(MY_USER_ID)) isMyMsg = true;
     }
-    if (!isMyMsg && text.includes("노엘")) console.log("[Sein DEBUG] 노엘 isMyMsg=false, user="+m.user);
+    if (text.includes("노엘")) console.log("[Sein DEBUG] 노엘 isMyMsg="+isMyMsg, "seenTs="+seenTs.has(m.ts));
     if (!isMyMsg) return;
-    if (m.ts && seenTs.has(m.ts)) return;
+    if (m.ts && seenTs.has(m.ts)) { if(text.includes("노엘")) console.log("[Sein DEBUG] 노엘 seenTs 중복 걸림"); return; }
     if (m.ts) seenTs.add(m.ts);
     var ts = m.ts ? new Date(parseFloat(m.ts)*1000) : null;
     if (!ts) return;
     var month = ts.getMonth();
-    if (month > new Date().getMonth()) return;
+    if (month > new Date().getMonth()) { if(text.includes("노엘")) console.log("[Sein DEBUG] 노엘 month 필터:", month); return; }
     var hasKeyword = /발주|선적|수령|입고|LC|ETA|통관|납품|공급|사료수입|주문|오더|출고요청|발주요청/.test(text);
-    if (!hasKeyword) return;
-    if (text.includes("노엘")) console.log("[Sein DEBUG] 노엘 통과:", month+1+"월", text.slice(0,60));
+    if (!hasKeyword) { if(text.includes("노엘")) console.log("[Sein DEBUG] 노엘 키워드 없음"); return; }
+    console.log("[Sein DEBUG] 노엘 최종통과:", month+1+"월", text.slice(0,60));
 
     // 거래처
     var cust = "";
