@@ -903,24 +903,21 @@ function pct(n) { return n.toFixed(1) + "%"; }
 
 // ── 텍스트 추출 (bot_message 포함) ──
 function extractTextFromMessage(m) {
-  var text = (m.text || "").trim();
-  // bot_message의 경우 username 저장 (캘린더 등에서 활용)
-  if (m.subtype === "bot_message" || !text) {
-    var lines = [];
-    (m.blocks || []).forEach(function(b) {
-      if (b.type === "rich_text") {
-        b.elements.forEach(function(elem) {
-          var parts = (elem.elements || []).map(function(x) {
-            return x.type === "text" ? (x.text || "") : (x.type === "link" ? (x.text || x.url || "") : "");
-          }).join("");
-          if (parts.trim()) lines.push(parts);
-        });
-      } else if (b.type === "section" && b.text) {
-        lines.push(b.text.text || "");
-      }
-    });
-    if (lines.length) text = lines.join("\n");
-  }
+  // blocks에서 먼저 텍스트 추출 (rich_text가 더 정확함)
+  var lines = [];
+  (m.blocks || []).forEach(function(b) {
+    if (b.type === "rich_text") {
+      b.elements.forEach(function(elem) {
+        var parts = (elem.elements || []).map(function(x) {
+          return x.type === "text" ? (x.text || "") : (x.type === "link" ? (x.text || x.url || "") : "");
+        }).join("");
+        if (parts.trim()) lines.push(parts);
+      });
+    } else if (b.type === "section" && b.text) {
+      lines.push(b.text.text || "");
+    }
+  });
+  var text = lines.length ? lines.join("\n") : (m.text || "").trim();
   return text.replace(/<@[A-Z0-9]+>/g, "").replace(/[ \t]{2,}/g, " ").trim();
 }
 
