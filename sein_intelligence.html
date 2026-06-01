@@ -1214,6 +1214,7 @@ function parseOrders(messages) {
       var poCnt = parseInt(qty.replace(/[^\d]/g,""));
       if (!isNaN(poCnt)) qty = (poCnt * 20) + "kg";
     }
+    if (text.includes("노엘")) console.log("[ORDER] 노엘 customer="+customer+" product="+product+" qty="+qty+" price="+unitPrice+" date="+dateStr);
     orders.push({customer:customer, product:product, qty:qty, unitPrice:unitPrice, orderDate:dateStr, deadline:deadline, status:status, raw:text.slice(0,80)});
   });
   return orders;
