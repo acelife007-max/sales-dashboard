@@ -905,21 +905,32 @@ function pct(n) { return n.toFixed(1) + "%"; }
 
 // ── 텍스트 추출 (bot_message 포함) ──
 function extractTextFromMessage(m) {
-  // blocks에서 먼저 텍스트 추출 (rich_text가 더 정확함)
-  var lines = [];
+  var combined = [];
+  // 1. text 필드
+  var rawText = (m.text || "").trim();
+  if (rawText) combined.push(rawText);
+  // 2. blocks에서 추출
   (m.blocks || []).forEach(function(b) {
     if (b.type === "rich_text") {
       b.elements.forEach(function(elem) {
         var parts = (elem.elements || []).map(function(x) {
-          return x.type === "text" ? (x.text || "") : (x.type === "link" ? (x.text || x.url || "") : "");
+          if (x.type === "text") return x.text || "";
+          if (x.type === "link") return x.text || x.url || "";
+          if (x.type === "user") return "";
+          return "";
         }).join("");
-        if (parts.trim()) lines.push(parts);
+        if (parts.trim()) combined.push(parts);
       });
     } else if (b.type === "section" && b.text) {
-      lines.push(b.text.text || "");
+      combined.push(b.text.text || "");
     }
   });
-  var text = lines.length ? lines.join("\n") : (m.text || "").trim();
+  // 3. attachments fallback
+  (m.attachments || []).forEach(function(a) {
+    if (a.text) combined.push(a.text);
+    if (a.fallback) combined.push(a.fallback);
+  });
+  var text = combined.join("\n");
   return text.replace(/<@[A-Z0-9]+>/g, "").replace(/[ \t]{2,}/g, " ").trim();
 }
 
@@ -1225,15 +1236,27 @@ function parseCompare(messages) {
     if (month > new Date().getMonth()) return;
     if (!/발주|선적|수령|입고|LC|ETA|통관|납품|공급|사료수입|주문|오더|출고요청|발주요청/.test(text)) return;
 
-    // 거래처
+    // 거래처 추출 - 패턴 우선, 없으면 다양한 방법으로 추출
     var cust = "";
-    var cp = text.match(/거래처\s*[:\s]\s*(.+?)(?=\s+입고|\s+품목|\s+수량|\s+단가|\s+입고지|\s+\d{4}|$)/);
+    // 1. "거래처 : XXX" 패턴
+    var cp = text.match(/거래처\s*[:\s]+\s*([가-힣a-zA-Z0-9\s]{2,20}?)(?=\s*(?:입고지|입고일|입고|품목|수량|단가|연락처|\n|$))/);
     if (cp) cust = cp[1].trim();
+    // 2. "@이름" 다음에 오는 거래처 패턴
     if (!cust) {
-      var KNOWN = ["합천돼지자가","부산사료","부경양돈","오앤티","김해축협","코리아에프앤에프","광주축협","우일축산약품","경북수산","은진바이오","시내바이오","네오베미스","오케이","시현축산","성창농원","영광육수","이오와이즈","전풍준사장","서울우유","노엘목장","장유수산","조아수산","경남양돈","파인애플","코코시스","네오베미스","조아수산","함안축협"];
-      cust = KNOWN.find(function(k){return text.includes(k);}) || "";
+      var cp2 = text.match(/거래처\s*[:\s]+([가-힣]{2,15})/);
+      if (cp2) cust = cp2[1].trim();
     }
-    if (!cust) { var mp=text.match(/([\w가-힣]{2,10})\s*입고/); if(mp) cust=mp[1].trim(); }
+    // 3. 알려진 거래처명 포함 여부
+    if (!cust) {
+      var KNOWN = ["합천돼지자가","부산사료","부경양돈","오앤티","김해축협","코리아에프앤에프","광주축협","우일축산약품","경북수산","은진바이오","시내바이오","네오베미스","오케이","시현축산","성창농원","영광육수","이오와이즈","전풍준사장","서울우유","노엘목장","장유수산","조아수산","경남양돈","코코시스","함안축협","한성동물병원","삼솔농장","거창축협","노엘","영천","영주","진주","창원","마산","진해","통영","거제","함안","합천","창녕","밀양","양산","김해","사천","고성","남해","하동","산청","함양","거창","의령","하남","경주","포항","구미","안동","영주","문경","상주","예천","영양","청송","영덕","울진","봉화","울릉","칠곡","성주","고령","달성","청도","경산","군위","의성","청송"];
+      var found = KNOWN.find(function(k){ return text.includes(k); });
+      if (found) cust = found;
+    }
+    // 4. XXX 입고 패턴
+    if (!cust) {
+      var mp = text.match(/([가-힣]{2,10})\s*(?:입고|발주|출고)/);
+      if (mp) cust = mp[1].trim();
+    }
     if (!cust) return;
 
     if (!customers[cust]) {
