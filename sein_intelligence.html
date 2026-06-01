@@ -1269,7 +1269,13 @@ function parseCompare(messages) {
   var thisMonth = new Date().getMonth();
   orders.forEach(function(o) {
     var cust = o.customer;
-    if (!cust || cust === "—") return;
+    // customer가 "—"이면 raw에서 재추출 시도
+    if (!cust || cust === "—") {
+      var KNOWN2 = ["합천돼지자가","부산사료","부경양돈","오앤티","김해축협","코리아에프앤에프","광주축협","우일축산약품","경북수산","은진바이오","시내바이오","네오베미스","오케이","시현축산","성창농원","영광육수","이오와이즈","서울우유","노엘목장","장유수산","조아수산","경남양돈","코코시스","함안축협","YK목장","한성동물병원","삼솔농장","거창축협","담주"];
+      var found = KNOWN2.find(function(k){ return (o.raw||"").includes(k); });
+      if (found) cust = found;
+      else return;
+    }
     if (!customers[cust]) {
       var initMonths = [];
       for (var i = 0; i <= thisMonth; i++) initMonths.push([]);
