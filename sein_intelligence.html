@@ -1194,8 +1194,9 @@ function parseOrders(messages) {
           if (line.length >= 2 && line.length <= 20 &&
               !/^[0-9]/.test(line) &&
               !/^(출고|발주|입고지|입고일|입고|수량|단가|품목|연락처|비고|부탁|경상|경기|서울|부산)/.test(line)) {
-            customer = line;
-            break;
+            // 숫자/수량/단가 앞에서 잘라내기
+            var custClean = line.replace(/\s*[0-9,]+\s*(kg|MT|톤|포|원|bag|\().*$/i,"").replace(/\s*(대표|사장|원장|부장|과장).*$/,"").trim();
+            if (custClean.length >= 2) { customer = custClean; break; }
           }
         }
       }
@@ -1216,8 +1217,8 @@ function parseOrders(messages) {
           if (xtext.length >= 2 && xtext.length <= 20 &&
               !/^[0-9\s]/.test(xtext) &&
               !/^(출고|발주|입고|수량|단가|품목|연락처|비고|부탁|경상|경기|서울|부산|\n)/.test(xtext)) {
-            customer = xtext;
-            break;
+            var xtClean = xtext.replace(/\s*[0-9,]+\s*(kg|MT|톤|포|원|bag|\().*$/i,"").replace(/\s*(대표|사장|원장).*$/,"").trim();
+            if (xtClean.length >= 2) { customer = xtClean; break; }
           }
         }
       }
