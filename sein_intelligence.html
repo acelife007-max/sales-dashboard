@@ -1549,7 +1549,7 @@ function renderCompare(customers) {
     var prods = Array.from(c.products).filter(Boolean).slice(0,3).join(", ") || "—";
     var cells = c.months.slice(0, thisMonth).map(function(events, mi) {
       if (!events.length) return "<td class='r mono' style='color:var(--text3)'>—</td>";
-      return "<td class='r mono' style='color:var(--accent);cursor:pointer;' onclick='showTimeline(""+encodeURIComponent(c.name)+"","+mi+")' title='상세보기'><span style='text-decoration:underline dotted'>"+events.length+"건</span></td>";
+      return "<td class=\"r mono\" style=\"color:var(--accent);cursor:pointer;\" onclick=\"showTimeline('"+encodeURIComponent(c.name)+"',"+mi+")\" title=\"상세보기\"><span style=\"text-decoration:underline dotted\">"+events.length+"건</span></td>";
     }).join("");
     return "<tr><td><strong>"+c.name+"</strong></td>"+cells+
       "<td class='r mono' style='color:var(--green);font-weight:600'>"+total+"건</td>"+
