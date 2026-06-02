@@ -909,17 +909,18 @@ function extractTextFromMessage(m) {
   // 1. text 필드
   var rawText = (m.text || "").trim();
   if (rawText) combined.push(rawText);
-  // 2. blocks에서 추출
+  // 2. blocks에서 추출 - rich_text_section 내 user element 다음 텍스트도 포함
   (m.blocks || []).forEach(function(b) {
     if (b.type === "rich_text") {
       b.elements.forEach(function(elem) {
-        var parts = (elem.elements || []).map(function(x) {
+        // 각 element를 줄로 처리 (user는 개행으로)
+        var line = (elem.elements || []).map(function(x) {
           if (x.type === "text") return x.text || "";
           if (x.type === "link") return x.text || x.url || "";
-          if (x.type === "user") return "";
+          if (x.type === "user") return "\n";
           return "";
         }).join("");
-        if (parts.trim()) combined.push(parts);
+        if (line.trim()) combined.push(line);
       });
     } else if (b.type === "section" && b.text) {
       combined.push(b.text.text || "");
@@ -931,7 +932,7 @@ function extractTextFromMessage(m) {
     if (a.fallback) combined.push(a.fallback);
   });
   var text = combined.join("\n");
-  return text.replace(/<@[A-Z0-9]+>/g, "").replace(/\*/g, "").replace(/[ \t]{2,}/g, " ").trim();
+  return text.replace(/<@[A-Z0-9]+>/g, "\n").replace(/\*/g, "").replace(/[ \t]{2,}/g, " ").replace(/\n{3,}/g,"\n").trim();
 }
 
 // ── Slack 호출 ──
