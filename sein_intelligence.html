@@ -1272,9 +1272,8 @@ function parseOrders(messages) {
 }
 
 // ── 거래처 비교 파싱 ──
-function parseCompare(messages) {
-  // parseOrders와 동일한 로직으로 파싱 후 거래처별 집계
-  var orders = parseOrders(messages);
+function parseCompare(orders) {
+  // parseOrders 결과를 직접 받아서 거래처별 집계
   var customers = {};
   var thisMonth = new Date().getMonth();
   orders.forEach(function(o) {
@@ -1294,14 +1293,18 @@ function parseCompare(messages) {
       for (var i = 0; i <= thisMonth; i++) initMonths.push([]);
       customers[cust] = {name:cust, months:initMonths, products:new Set(), lastOrder:null};
     }
-    // 날짜에서 월 추출
+    // 날짜에서 월 추출 - "06-01", "6-1", "06/01" 등 처리
     var month = -1;
     if (o.orderDate && o.orderDate !== "—") {
-      month = parseInt(o.orderDate.split("-")[0]) - 1;
+      var dateParts = o.orderDate.split(/[-\/]/);
+      if (dateParts.length >= 2) {
+        month = parseInt(dateParts[0]) - 1;
+      }
     }
     if (month < 0 || month > thisMonth) return;
     while (customers[cust].months.length <= month) customers[cust].months.push([]);
-    var ts = new Date(2026, month, parseInt((o.orderDate||"0-0").split("-")[1])||1);
+    var tsParts = (o.orderDate||"").split(/[-\/]/);
+    var ts = new Date(2026, month, parseInt(tsParts[1])||1);
     customers[cust].months[month].push({
       date: o.orderDate,
       products: o.product,
@@ -2122,7 +2125,7 @@ async function loadSlackFeeds() {
     });
     renderOrders(myOrders);
     updateOverviewSales(myOrders);
-    var compareResult = parseCompare(orders);
+    var compareResult = parseCompare(myOrders);
     console.log("[Sein] parseCompare 결과:", compareResult.length, "거래처");
     compareResult.forEach(function(c) {
       console.log("[Sein]", c.name, "months:", c.months.map(function(m,i){return (i+1)+"월:"+m.length+"건";}));
