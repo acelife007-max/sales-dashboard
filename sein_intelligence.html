@@ -1154,35 +1154,38 @@ function parseOrders(messages) {
     // ── 거래처 추출 ──
     var customer = "—";
 
-    // blocks에서 줄 단위 추출 (user element는 빈칸으로)
-    var blockLines = [];
+    // blocks에서 줄 단위 추출
+    var rawLines = [];
     (m.blocks||[]).forEach(function(b){
       if (b.type==="rich_text") b.elements.forEach(function(elem){
         var line = (elem.elements||[]).map(function(x){
           if (x.type==="text") return (x.text||"").replace(/\*/g,"");
-          if (x.type==="user") return "@멘션";
+          if (x.type==="user") return "@u";
           return "";
         }).join("").trim();
-        if (line) blockLines.push(line);
+        if (line) rawLines.push(line);
       });
     });
-    // text 필드도 줄 단위로
-    var textLines = (m.text||"").replace(/\*/g,"").replace(/<@[A-Z0-9]+>/g,"@멘션").split("\n").map(function(l){return l.trim();}).filter(Boolean);
-    var rawLines = blockLines.length ? blockLines : textLines;
+    if (!rawLines.length) {
+      rawLines = (m.text||"").replace(/\*/g,"").replace(/<@[A-Z0-9]+>/g,"@u").split("\n").map(function(l){return l.trim();}).filter(Boolean);
+    }
 
-    // 1. "거래처 : XXX" 패턴
-    var cp = text.replace(/\*/g,"").match(/거래처\s*[:\s]+([가-힣a-zA-Z0-9\s]{2,15}?)(?=\s*(?:입고지|입고일|입고|품목|수량|단가|연락처|$))/);
-    if (cp) customer = cp[1].trim();
+    // 1. "거래처 : XXX" 명시 패턴 (가장 신뢰)
+    var cp = text.replace(/\*/g,"").match(/거래처\s*[:\s]+([가-힣a-zA-Z0-9]+(?:[\s·][가-힣a-zA-Z0-9]+)?)/);
+    if (cp) {
+      var cand = cp[1].trim();
+      if (!/비고|작성자|긴급|요청|사항|입고지|입고일|연락처/.test(cand)) customer = cand;
+    }
 
-    // 2. @멘션 다음줄 = 거래처 (출고요청의건 형식)
+    // 2. @멘션 다음줄 = 거래처
     if (customer === "—") {
-      var mentionIdx = rawLines.findIndex(function(l){ return /@멘션|<@[A-Z0-9]/.test(l); });
-      if (mentionIdx >= 0) {
-        for (var ni = mentionIdx+1; ni < Math.min(mentionIdx+3, rawLines.length); ni++) {
-          var cand = rawLines[ni].replace(/<@[A-Z0-9]+>/g,"").replace(/\*/g,"").trim();
+      var mIdx = rawLines.findIndex(function(l){ return /@u/.test(l); });
+      if (mIdx >= 0) {
+        for (var ni = mIdx+1; ni < Math.min(mIdx+3, rawLines.length); ni++) {
+          var cand = rawLines[ni].replace(/@u/g,"").trim();
           if (cand.length >= 2 && cand.length <= 20 &&
               !/^[0-9\(]/.test(cand) &&
-              !/^(출고|발주|입고|수량|단가|품목|비타민|ECM|DCP|MCP|TCP|하이맷|보호지방|출고 부탁|부탁)/.test(cand)) {
+              !/^(출고|발주|입고|수량|단가|품목|비타민|ECM|DCP|MCP|TCP|하이맷|보호지방|출고 부탁|부탁|긴급|비고|작성자|연락처|주소)/.test(cand)) {
             customer = cand;
             break;
           }
@@ -1190,19 +1193,25 @@ function parseOrders(messages) {
       }
     }
 
-    // 3. KNOWN 거래처명 포함 여부
-    if (customer === "—" || customer.length > 20) {
-      var cleanText = text.replace(/\*/g,"");
-      var KNOWN = ["합천돼지자가","부산사료","부경양돈","오앤티","김해축협","코리아에프앤에프","광주축협","우일축산약품","경북수산","은진바이오","시내바이오","네오베미스","오케이","시현축산","성창농원","영광육수","이오와이즈","전풍준사장","서울우유","노엘목장","장유수산","조아수산","경남양돈","코코시스","함안축협","YK목장","한성동물병원","삼솔농장","거창축협","시현농장","담주","부산사료","시내바이오"];
-      var f = KNOWN.find(function(k){ return cleanText.includes(k); });
+    // 3. "작성자 : 거래처 : XXX" 패턴 (발주 접수 형식)
+    if (customer === "—") {
+      var cp2 = text.match(/거래처\s*[:\s]+([가-힣a-zA-Z0-9\s]{2,15}?)(?=\s*(?:입고지|입고일|입고|품목|수량|단가|연락처|$))/);
+      if (cp2) {
+        var cand2 = cp2[1].trim();
+        if (!/비고|작성자|긴급|요청/.test(cand2)) customer = cand2;
+      }
+    }
+
+    // 4. KNOWN 거래처명 포함 여부
+    if (customer === "—" || /비고|작성자|긴급/.test(customer)) {
+      var cleanT = text.replace(/\*/g,"");
+      var KNOWN = ["합천돼지자가","부산사료","부경양돈","오앤티","김해축협","코리아에프앤에프","광주축협","우일축산약품","경북수산","은진바이오","시내바이오","네오베미스","오케이","시현축산","성창농원","영광육수","이오와이즈","서울우유","노엘목장","장유수산","조아수산","경남양돈","코코시스","함안축협","YK목장","한성동물병원","삼솔농장","거창축협","담주","영광축산","영광축산T","송우열","우일가축약품","성창","시현","영천","경주","경산","합천","진주","창원","함안","부경"];
+      var f = KNOWN.find(function(k){ return cleanT.includes(k); });
       if (f) customer = f;
     }
 
-    // 4. XXX 입고/납품 패턴
-    if (customer === "—") {
-      var mp = text.match(/([가-힣]{2,8})\s*(?:입고|납품)/);
-      if (mp) customer = mp[1].trim();
-    }
+    // 5. 거래처명 정제 (잘못된 값 제거)
+    if (/비고|작성자|긴급|요청사항|black_small/.test(customer)) customer = "—";
 
     // ── 품목 ──
     var product = "—";
