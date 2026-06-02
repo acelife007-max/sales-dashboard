@@ -1167,64 +1167,64 @@ function parseOrders(messages) {
     // ── 거래처 추출 ──
     var customer = "—";
 
-    // blocks에서 줄 단위 추출
-    var rawLines = [];
-    (m.blocks||[]).forEach(function(b){
-      if (b.type==="rich_text") b.elements.forEach(function(elem){
-        var line = (elem.elements||[]).map(function(x){
-          if (x.type==="text") return (x.text||"").replace(/\*/g,"");
-          if (x.type==="user") return "@u";
-          return "";
-        }).join("").trim();
-        if (line) rawLines.push(line);
-      });
-    });
-    if (!rawLines.length) {
-      rawLines = (m.text||"").replace(/\*/g,"").replace(/<@[A-Z0-9]+>/g,"@u").split("\n").map(function(l){return l.trim();}).filter(Boolean);
-    }
-
-    // 1. "거래처 : XXX" 명시 패턴 (가장 신뢰)
-    var cp = text.replace(/\*/g,"").match(/거래처\s*[:\s]+([가-힣a-zA-Z0-9]+(?:[\s·][가-힣a-zA-Z0-9]+)?)/);
+    // 규칙1: "거래처 : XXX" 명시 패턴 (가장 신뢰)
+    var cp = text.replace(/\*/g,"").match(/거래처\s*[:\s]+([가-힣a-zA-Z0-9·]+(?:\s[가-힣a-zA-Z0-9·]+)?)/);
     if (cp) {
-      var cand = cp[1].trim();
-      if (!/비고|작성자|긴급|요청|사항|입고지|입고일|연락처/.test(cand)) customer = cand;
+      var cand = cp[1].trim().replace(/\s*(입고지|입고일|입고|품목|수량|단가|연락처).*$/,"").trim();
+      if (cand.length >= 2 && !/비고|작성자|긴급|요청/.test(cand)) customer = cand;
     }
 
-    // 2. @멘션 다음줄 = 거래처
+    // 규칙2: m.text에서 줄 단위로 "@멘션 다음줄 = 거래처"
     if (customer === "—") {
-      var mIdx = rawLines.findIndex(function(l){ return /@u/.test(l); });
+      var rawLines = (m.text || "")
+        .replace(/\*/g, "")
+        .split("\n")
+        .map(function(l){ return l.trim(); })
+        .filter(Boolean);
+      var mIdx = -1;
+      for (var li = 0; li < rawLines.length; li++) {
+        if (/<@[A-Z0-9]+>/.test(rawLines[li]) || /^@[가-힣a-zA-Z]/.test(rawLines[li])) {
+          mIdx = li; break;
+        }
+      }
       if (mIdx >= 0) {
-        for (var ni = mIdx+1; ni < Math.min(mIdx+3, rawLines.length); ni++) {
-          var cand = rawLines[ni].replace(/@u/g,"").trim();
-          if (cand.length >= 2 && cand.length <= 20 &&
-              !/^[0-9\(]/.test(cand) &&
-              !/^(출고|발주|입고|수량|단가|품목|비타민|ECM|DCP|MCP|TCP|하이맷|보호지방|출고 부탁|부탁|긴급|비고|작성자|연락처|주소)/.test(cand)) {
-            customer = cand;
+        for (var ni = mIdx+1; ni < Math.min(mIdx+4, rawLines.length); ni++) {
+          var line = rawLines[ni].replace(/<@[A-Z0-9]+>/g,"").trim();
+          // 거래처명 조건: 2~20자, 숫자로 시작X, 발주키워드X
+          if (line.length >= 2 && line.length <= 20 &&
+              !/^[0-9]/.test(line) &&
+              !/^(출고|발주|입고지|입고일|입고|수량|단가|품목|연락처|비고|부탁|경상|경기|서울|부산)/.test(line)) {
+            customer = line;
             break;
           }
         }
       }
     }
 
-    // 3. "작성자 : 거래처 : XXX" 패턴 (발주 접수 형식)
+    // 규칙3: blocks에서 "@멘션 다음 element = 거래처"
     if (customer === "—") {
-      var cp2 = text.match(/거래처\s*[:\s]+([가-힣a-zA-Z0-9\s]{2,15}?)(?=\s*(?:입고지|입고일|입고|품목|수량|단가|연락처|$))/);
-      if (cp2) {
-        var cand2 = cp2[1].trim();
-        if (!/비고|작성자|긴급|요청/.test(cand2)) customer = cand2;
+      var allElems = [];
+      (m.blocks||[]).forEach(function(b){
+        if (b.type==="rich_text") b.elements.forEach(function(elem){
+          (elem.elements||[]).forEach(function(x){ allElems.push(x); });
+        });
+      });
+      var uIdx = allElems.findIndex(function(x){ return x.type==="user"; });
+      if (uIdx >= 0) {
+        for (var ei = uIdx+1; ei < Math.min(uIdx+5, allElems.length); ei++) {
+          var xtext = (allElems[ei].text || allElems[ei].url || "").replace(/\*/g,"").trim();
+          if (xtext.length >= 2 && xtext.length <= 20 &&
+              !/^[0-9\s]/.test(xtext) &&
+              !/^(출고|발주|입고|수량|단가|품목|연락처|비고|부탁|경상|경기|서울|부산|\n)/.test(xtext)) {
+            customer = xtext;
+            break;
+          }
+        }
       }
     }
 
-    // 4. KNOWN 거래처명 포함 여부
-    if (customer === "—" || /비고|작성자|긴급/.test(customer)) {
-      var cleanT = text.replace(/\*/g,"");
-      var KNOWN = ["합천돼지자가","부산사료","부경양돈","오앤티","김해축협","코리아에프앤에프","광주축협","우일축산약품","경북수산","은진바이오","시내바이오","네오베미스","오케이","시현축산","성창농원","영광육수","이오와이즈","서울우유","노엘목장","장유수산","조아수산","경남양돈","코코시스","함안축협","YK목장","한성동물병원","삼솔농장","거창축협","담주","영광축산","영광축산T","송우열","우일가축약품","성창","시현","영천","경주","경산","합천","진주","창원","함안","부경"];
-      var f = KNOWN.find(function(k){ return cleanT.includes(k); });
-      if (f) customer = f;
-    }
-
-    // 5. 거래처명 정제 (잘못된 값 제거)
-    if (/비고|작성자|긴급|요청사항|black_small/.test(customer)) customer = "—";
+    // 잘못된 거래처 최종 정제
+    if (/비고|작성자|긴급|요청사항|black_small|출고 부탁|부탁드립/.test(customer)) customer = "—";
 
     // ── 품목 ──
     var product = "—";
