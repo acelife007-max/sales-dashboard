@@ -1266,7 +1266,7 @@ function parseOrders(messages) {
       if (!isNaN(poCnt)) qty = (poCnt*20)+"kg";
     }
 
-    orders.push({customer:customer, product:product, qty:qty, unitPrice:unitPrice, orderDate:dateStr, deadline:deadline, status:status, raw:text.slice(0,200)});
+    orders.push({customer:customer, product:product, qty:qty, unitPrice:unitPrice, orderDate:dateStr, deadline:deadline, status:status, raw:text.slice(0,200), ts:m.ts});
   });
   return orders;
 }
@@ -1285,8 +1285,12 @@ function parseCompare(myOrders) {
     // orderDate에서 월 추출 (MM-DD 형식)
     var month = -1;
     if (o.orderDate && o.orderDate !== "—") {
-      var m = parseInt(o.orderDate.split(/[-\/]/)[0]);
-      if (!isNaN(m)) month = m - 1; // 0-based
+      var mp = parseInt(o.orderDate.split(/[-\/]/)[0]);
+      if (!isNaN(mp)) month = mp - 1;
+    }
+    // orderDate 없으면 ts 기반 월 사용
+    if (month < 0 && o.ts) {
+      month = new Date(parseFloat(o.ts)*1000).getMonth();
     }
     if (month < 0 || month > thisMonth) return;
 
