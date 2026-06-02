@@ -1272,39 +1272,33 @@ function parseOrders(messages) {
 }
 
 // ── 거래처 비교 파싱 ──
-function parseCompare(orders) {
-  // parseOrders 결과를 직접 받아서 거래처별 집계
+function parseCompare(myOrders) {
+  // parseOrders가 이미 뽑은 결과를 그대로 받아서 거래처별로 집계
   var customers = {};
-  var thisMonth = new Date().getMonth();
-  orders.forEach(function(o) {
+  var thisMonth = new Date().getMonth(); // 0-based
+
+  myOrders.forEach(function(o) {
     var cust = o.customer;
-    // customer가 "—"이면 raw에서 재추출 시도
-    if (!cust || cust === "—") {
-      var KNOWN2 = ["합천돼지자가","부산사료","부경양돈","오앤티","김해축협","코리아에프앤에프","광주축협","우일축산약품","경북수산","은진바이오","시내바이오","네오베미스","오케이","시현축산","성창농원","영광육수","이오와이즈","서울우유","노엘목장","장유수산","조아수산","경남양돈","코코시스","함안축협","YK목장","한성동물병원","삼솔농장","거창축협","담주","우일가축약품","영광축산","송우열","우일축산약품"];
-      var found = KNOWN2.find(function(k){ return (o.raw||"").includes(k); });
-      if (found) { cust = found; }
-      // raw에도 없으면 customer가 실제로 채워진 건지 확인
-      else return;
-    }
-    // "비고", "작성자" 등 잘못된 거래처 제거
-    if (/비고|작성자|긴급|요청사항|black_small|출고 부탁/.test(cust)) return;
-    if (!customers[cust]) {
-      var initMonths = [];
-      for (var i = 0; i <= thisMonth; i++) initMonths.push([]);
-      customers[cust] = {name:cust, months:initMonths, products:new Set(), lastOrder:null};
-    }
-    // 날짜에서 월 추출 - "06-01", "6-1", "06/01" 등 처리
+    if (!cust || cust === "—") return;
+    if (/비고|작성자|긴급|요청사항|black_small/.test(cust)) return;
+
+    // orderDate에서 월 추출 (MM-DD 형식)
     var month = -1;
     if (o.orderDate && o.orderDate !== "—") {
-      var dateParts = o.orderDate.split(/[-\/]/);
-      if (dateParts.length >= 2) {
-        month = parseInt(dateParts[0]) - 1;
-      }
+      var m = parseInt(o.orderDate.split(/[-\/]/)[0]);
+      if (!isNaN(m)) month = m - 1; // 0-based
     }
     if (month < 0 || month > thisMonth) return;
+
+    if (!customers[cust]) {
+      var slots = [];
+      for (var i = 0; i <= thisMonth; i++) slots.push([]);
+      customers[cust] = {name:cust, months:slots, products:new Set(), lastOrder:null};
+    }
     while (customers[cust].months.length <= month) customers[cust].months.push([]);
-    var tsParts = (o.orderDate||"").split(/[-\/]/);
-    var ts = new Date(2026, month, parseInt(tsParts[1])||1);
+
+    var day = parseInt((o.orderDate||"").split(/[-\/]/)[1]) || 1;
+    var ts = new Date(2026, month, day);
     customers[cust].months[month].push({
       date: o.orderDate,
       products: o.product,
@@ -1312,12 +1306,18 @@ function parseCompare(orders) {
       price: o.unitPrice,
       raw: o.raw
     });
-    if (!customers[cust].lastOrder || ts > customers[cust].lastOrder) customers[cust].lastOrder = ts;
+    if (!customers[cust].lastOrder || ts > customers[cust].lastOrder) {
+      customers[cust].lastOrder = ts;
+    }
     if (o.product && o.product !== "—") {
       o.product.split(",").forEach(function(p){ customers[cust].products.add(p.trim()); });
     }
   });
-  return Object.values(customers);
+
+  // 최근 발주순 정렬
+  return Object.values(customers).sort(function(a,b){
+    return (b.lastOrder||0) - (a.lastOrder||0);
+  });
 }
 
 function parseBids(messages) {
@@ -1512,133 +1512,118 @@ function renderBids(bids) {
 // ── 렌더링: 거래처 비교 ──
 var _compareData = [];
 function renderCompare(customers) {
-  _compareData = customers;
   var tbody = document.getElementById("compare-tbody");
-  var wrap = document.getElementById("compare-table-wrap");
-  var noData = document.getElementById("compare-no-data");
+  var wrap  = document.getElementById("compare-table-wrap");
+  var noData= document.getElementById("compare-no-data");
   if (!tbody) return;
-  if (!customers.length) {
+
+  if (!customers || !customers.length) {
     if (noData) noData.style.display = "block";
-    if (wrap) wrap.style.display = "none";
+    if (wrap)   wrap.style.display   = "none";
     return;
   }
   if (noData) noData.style.display = "none";
-  if (wrap) wrap.style.display = "block";
+  if (wrap)   wrap.style.display   = "block";
 
-  // 현재달 기준 헤더 동적 생성
-  var thisMonth = new Date().getMonth() + 1;
+  var thisMonth = new Date().getMonth() + 1; // 1-based 표시용
+
+  // 헤더 동적 생성
   var thead = document.getElementById("compare-thead");
   if (thead) {
     var hdr = "<tr><th>거래처</th>";
-    for (var mi=1; mi<=thisMonth; mi++) hdr += "<th class=\"r\">" + mi + "월</th>";
-    hdr += "<th class=\"r\">합계</th><th>주요품목</th><th>최근발주</th></tr>";
+    for (var i = 1; i <= thisMonth; i++) hdr += "<th class='r'>" + i + "월</th>";
+    hdr += "<th class='r'>합계</th><th>주요품목</th><th>최근발주</th></tr>";
     thead.innerHTML = hdr;
   }
 
-  // 카드 타이틀 업데이트
+  // 카드 타이틀
   var titleEl = document.querySelector("#p-compare .card-title");
-  if (titleEl && titleEl.textContent.includes("거래처별")) titleEl.textContent = "📊 거래처별 월별 공급 현황 (1월~" + thisMonth + "월)";
+  if (titleEl) titleEl.textContent = "📊 거래처별 월별 공급 현황 (1월~" + thisMonth + "월)";
 
   tbody.innerHTML = customers.map(function(c) {
-    // months 배열을 thisMonth 길이로 맞춤
     while (c.months.length < thisMonth) c.months.push([]);
-    var total = c.months.reduce(function(a,b){return a+b.length;},0);
-    var lastDate = c.lastOrder ? String(c.lastOrder.getMonth()+1).padStart(2,"0")+"-"+String(c.lastOrder.getDate()).padStart(2,"0") : "—";
-    var prods = Array.from(c.products).slice(0,3).join(", ") || "—";
-    var monthCells = c.months.slice(0, thisMonth).map(function(events, mi) {
-      if (!events.length) return "<td class=\"r mono\" style=\"color:var(--text3)\">—</td>";
-      return "<td class=\"r mono\" style=\"color:var(--accent);cursor:pointer;\" onclick=\"showTimeline('" + encodeURIComponent(c.name) + "'," + mi + ")\" title=\"클릭하면 상세보기\"><span style=\"text-decoration:underline dotted\">" + events.length + "건</span></td>";
+    var total = c.months.reduce(function(s,m){ return s + m.length; }, 0);
+    var lastDate = c.lastOrder
+      ? String(c.lastOrder.getMonth()+1).padStart(2,"0")+"-"+String(c.lastOrder.getDate()).padStart(2,"0")
+      : "—";
+    var prods = Array.from(c.products).filter(Boolean).slice(0,3).join(", ") || "—";
+    var cells = c.months.slice(0, thisMonth).map(function(events, mi) {
+      if (!events.length) return "<td class='r mono' style='color:var(--text3)'>—</td>";
+      return "<td class='r mono' style='color:var(--accent);cursor:pointer;' onclick='showTimeline(""+encodeURIComponent(c.name)+"","+mi+")' title='상세보기'><span style='text-decoration:underline dotted'>"+events.length+"건</span></td>";
     }).join("");
-    return "<tr><td><strong>" + c.name + "</strong></td>" + monthCells +
-      "<td class=\"r mono\" style=\"color:var(--green);font-weight:600\">" + total + "건</td>" +
-      "<td style=\"font-size:11px;color:var(--text2)\">" + prods + "</td>" +
-      "<td class=\"mono\" style=\"color:var(--text3)\">" + lastDate + "</td></tr>";
+    return "<tr><td><strong>"+c.name+"</strong></td>"+cells+
+      "<td class='r mono' style='color:var(--green);font-weight:600'>"+total+"건</td>"+
+      "<td style='font-size:11px;color:var(--text2)'>"+prods+"</td>"+
+      "<td class='mono' style='color:var(--text3)'>"+lastDate+"</td></tr>";
   }).join("");
-  // 기본: 이번달(5월) 표시
-  var thisM = new Date().getMonth();
-  renderTimeline(customers, null, thisM, thisM+1);
-  // 5월 버튼 활성화
+
+  // 이번달 타임라인 기본 표시
+  renderTimeline(customers, null, new Date().getMonth(), new Date().getMonth()+1);
   document.querySelectorAll("#timeline-month-tabs button").forEach(function(b){ b.className="chip cgr"; });
-  var tb = document.getElementById("tl-btn-"+(thisM+1));
+  var tb = document.getElementById("tl-btn-"+(new Date().getMonth()+1));
   if (tb) tb.className = "chip cb";
   renderScreener(customers);
 }
 
 function showTimeline(custEncoded, monthIdx) {
-  var custName = decodeURIComponent(custEncoded);
-  renderTimeline(_compareData, custName, monthIdx);
-  var tl = document.getElementById("compare-timeline");
-  if (tl) tl.scrollIntoView({behavior:"smooth", block:"start"});
+  var cust = decodeURIComponent(custEncoded);
+  var customers = window._compareData || [];
+  renderTimeline(customers, cust, monthIdx, monthIdx+1);
 }
 
 function filterTimeline(month, btn) {
-  // 버튼 스타일
-  document.querySelectorAll("#timeline-month-tabs button").forEach(function(b) {
-    b.className = "chip cgr";
-  });
+  document.querySelectorAll("#timeline-month-tabs button").forEach(function(b){ b.className="chip cgr"; });
   if (btn) btn.className = "chip cb";
-  // 월 필터 적용해서 렌더링
-  renderTimeline(_compareData, null, month === 0 ? null : month - 1, month);
+  var customers = window._compareData || [];
+  if (month === 0) renderTimeline(customers, null, -1, -1);
+  else renderTimeline(customers, null, month-1, month);
 }
 
 function renderTimeline(customers, filterCust, filterMonth, displayMonth) {
-  _compareData = customers;
-  var timeline = document.getElementById("compare-timeline");
-  if (!timeline) return;
+  window._compareData = customers;
+  var box = document.getElementById("compare-timeline");
+  if (!box) return;
 
-  var events = [];
+  var items = [];
   customers.forEach(function(c) {
     if (filterCust && c.name !== filterCust) return;
-    c.months.forEach(function(monthEvents, mi) {
-      if (filterMonth !== null && filterMonth !== undefined && mi !== filterMonth) return;
-      monthEvents.forEach(function(e) {
-        events.push(Object.assign({}, e, {cust: c.name, monthIdx: mi}));
+    c.months.forEach(function(events, mi) {
+      if (filterMonth >= 0 && mi !== filterMonth) return;
+      events.forEach(function(e) {
+        items.push({cust:c.name, month:mi+1, event:e});
       });
     });
   });
 
-  if (!events.length) {
-    timeline.innerHTML = "<div style=\"color:var(--text3);font-size:11px;text-align:center;padding:16px\">데이터 없음</div>";
+  if (!items.length) {
+    box.innerHTML = "<div style='color:var(--text3);font-size:11px;text-align:center;padding:16px;'>데이터 없음</div>";
     return;
   }
 
-  // 날짜순 정렬
-  events.sort(function(a,b) {
-    var ad = a.date ? a.date.split("/") : [0,0];
-    var bd = b.date ? b.date.split("/") : [0,0];
-    var am = parseInt(ad[0])||0, aday = parseInt(ad[1])||0;
-    var bm = parseInt(bd[0])||0, bday = parseInt(bd[1])||0;
-    return (bm*100+bday) - (am*100+aday); // 최신순
+  // 날짜 내림차순 정렬
+  items.sort(function(a,b){
+    var da = (a.event.date||"").replace(/[-\/]/g,"");
+    var db = (b.event.date||"").replace(/[-\/]/g,"");
+    return db.localeCompare(da);
   });
 
-  var titleStr = "";
-  if (filterCust) {
-    titleStr = "<div style=\"padding:6px 0 8px;font-size:12px;font-weight:600;color:var(--accent)\">" +
-      filterCust + " 발주 내역 " +
-      "<span style=\"cursor:pointer;color:var(--text3);font-size:11px\" onclick=\"renderTimeline(_compareData,null,null,null)\">✕ 전체보기</span></div>";
-  }
-
-  timeline.innerHTML = titleStr + events.map(function(e) {
-    var priceTag = (e.price && e.price !== "—")
-      ? "<span class=\"chip cy\" style=\"font-size:11px;font-weight:600;\">" + e.price + "</span>"
-      : "<span style=\"font-size:11px;color:var(--text3)\">단가미기재</span>";
-    var qtyTag = (e.qty && e.qty !== "—")
-      ? "<span class=\"chip cgr\" style=\"font-size:11px;\">" + e.qty + "</span>"
-      : "";
-    return "<div class=\"news-item\" style=\"padding:8px 0;border-bottom:1px solid var(--border2);align-items:flex-start;\">" +
-      "<div class=\"news-nd\" style=\"background:var(--accent);margin-top:4px\"></div>" +
-      "<div style=\"flex:1;\">" +
-        "<div style=\"display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:3px;\">" +
-          "<span class=\"chip cb\" style=\"font-size:11px;\">" + e.cust + "</span>" +
-          "<span style=\"font-size:13px;font-weight:600;color:var(--text)\">" + (e.products||"—") + "</span>" +
-          qtyTag + priceTag +
-        "</div>" +
-        "<div style=\"font-size:10px;color:var(--text3);line-height:1.4;\">" + (e.raw||"") + "</div>" +
+  box.innerHTML = items.map(function(item) {
+    var e = item.event;
+    var dateLabel = item.month + "/" + (e.date ? e.date.split(/[-\/]/)[1] : "?");
+    var priceTag = e.price && e.price !== "—" ? "<span class='chip cb' style='font-size:10px;padding:1px 6px;'>"+e.price+"</span>" : "";
+    var qtyTag   = e.qty   && e.qty   !== "—" ? "<span style='font-size:11px;color:var(--text2);margin-left:4px;'>"+e.qty+"</span>" : "";
+    return "<div style='display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);'>" +
+      "<span style='color:var(--text3);font-size:10px;min-width:32px;'>"+dateLabel+"</span>" +
+      "<div style='flex:1;'>" +
+        "<span style='font-weight:600;color:var(--accent);margin-right:8px;'>"+item.cust+"</span>" +
+        "<span style='font-size:12px;color:var(--text1);'>"+((e.products&&e.products!=="—")?e.products:"")+"</span>" +
+        qtyTag + " " + priceTag +
+        (e.raw ? "<div style='font-size:10px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:600px;'>"+e.raw+"</div>" : "") +
       "</div>" +
-      "<div class=\"news-meta\" style=\"white-space:nowrap;\">" + (e.monthIdx+1) + "/" + (e.date||"").split("/")[1] + "</div>" +
     "</div>";
   }).join("");
 }
+
 function renderScreener(customers) {
   var tbody = document.getElementById("screener-tbody");
   if (!tbody || !customers.length) return;
