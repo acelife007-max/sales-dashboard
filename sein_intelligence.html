@@ -1167,70 +1167,17 @@ function parseOrders(messages) {
     // ── 거래처 추출 ──
     var customer = "—";
 
-    // 규칙1: "거래처 : XXX" 명시 패턴 (가장 신뢰)
-    var cp = text.replace(/\*/g,"").match(/거래처\s*[:\s]+([가-힣a-zA-Z0-9·]+(?:\s[가-힣a-zA-Z0-9·]+)?)/);
+    // "거래처 : XXX" 패턴만 사용 (가장 신뢰)
+    var cp = text.match(/거래처\s*[:\s]+([가-힣a-zA-Z0-9·]+(?:\s[가-힣a-zA-Z0-9·]+)?)/);
     if (cp) {
-      var cand = cp[1].trim().replace(/\s*(입고지|입고일|입고|품목|수량|단가|연락처).*$/,"").trim();
-      if (cand.length >= 2 && !/비고|작성자|긴급|요청/.test(cand)) customer = cand;
-    }
-
-    // 규칙2: m.text에서 줄 단위로 "@멘션 다음줄 = 거래처"
-    if (customer === "—") {
-      var rawLines = (m.text || "")
-        .replace(/\*/g, "")
-        .split("\n")
-        .map(function(l){ return l.trim(); })
-        .filter(Boolean);
-      var mIdx = -1;
-      for (var li = 0; li < rawLines.length; li++) {
-        if (/<@[A-Z0-9]+>/.test(rawLines[li]) || /^@[가-힣a-zA-Z]/.test(rawLines[li])) {
-          mIdx = li; break;
-        }
-      }
-      if (mIdx >= 0) {
-        for (var ni = mIdx+1; ni < Math.min(mIdx+4, rawLines.length); ni++) {
-          var line = rawLines[ni].replace(/<@[A-Z0-9]+>/g,"").trim();
-          // 거래처명 조건: 2~20자, 숫자로 시작X, 발주키워드X
-          if (line.length >= 2 && line.length <= 20 &&
-              !/^[0-9]/.test(line) &&
-              !/^(출고|발주|입고지|입고일|입고|수량|단가|품목|연락처|비고|부탁|경상|경기|서울|부산)/.test(line) &&
-              !/^(염산염|황산염|DL-|L-|비타민|하이맷|보호지방|ECM|DCP|MCP|TCP|MDCP|나노|이지|낙산|세인|파인애플)/.test(line)) {
-            // 숫자/수량/단가/대표자명 잘라내기
-            var custClean = line
-              .replace(/\s*[0-9,]+\s*(kg|MT|톤|포|원|bag|\().*$/i,"")
-              .replace(/\s+(박[가-힣]+|김[가-힣]+|이[가-힣]+|최[가-힣]+|정[가-힣]+|강[가-힣]+|조[가-힣]+|윤[가-힣]+|장[가-힣]+|임[가-힣]+)\s*대표.*$/,"")
-              .replace(/\s+(대표|사장|원장|부장|과장|팀장|이사|원|님).*$/,"")
-              .trim();
-            if (custClean.length >= 2 && custClean.length <= 15) { customer = custClean; break; }
-          }
-        }
+      var cand = cp[1].trim()
+        .replace(/\s*(입고지|입고일|입고|품목|수량|단가|연락처).*$/,"")
+        .replace(/\s+(대표|사장|원장|부장|과장|팀장).*$/,"")
+        .trim();
+      if (cand.length >= 2 && cand.length <= 15 && !/비고|작성자|긴급/.test(cand)) {
+        customer = cand;
       }
     }
-
-    // 규칙3: blocks에서 "@멘션 다음 element = 거래처"
-    if (customer === "—") {
-      var allElems = [];
-      (m.blocks||[]).forEach(function(b){
-        if (b.type==="rich_text") b.elements.forEach(function(elem){
-          (elem.elements||[]).forEach(function(x){ allElems.push(x); });
-        });
-      });
-      var uIdx = allElems.findIndex(function(x){ return x.type==="user"; });
-      if (uIdx >= 0) {
-        for (var ei = uIdx+1; ei < Math.min(uIdx+5, allElems.length); ei++) {
-          var xtext = (allElems[ei].text || allElems[ei].url || "").replace(/\*/g,"").trim();
-          if (xtext.length >= 2 && xtext.length <= 20 &&
-              !/^[0-9\s]/.test(xtext) &&
-              !/^(출고|발주|입고|수량|단가|품목|연락처|비고|부탁|경상|경기|서울|부산|\n)/.test(xtext)) {
-            var xtClean = xtext.replace(/\s*[0-9,]+\s*(kg|MT|톤|포|원|bag|\().*$/i,"").replace(/\s*(대표|사장|원장).*$/,"").trim();
-            if (xtClean.length >= 2) { customer = xtClean; break; }
-          }
-        }
-      }
-    }
-
-    // 잘못된 거래처 최종 정제
-    if (/비고|작성자|긴급|요청사항|black_small|출고 부탁|부탁드립/.test(customer)) customer = "—";
 
     // ── 품목 ──
     var product = "—";
@@ -1295,26 +1242,23 @@ function parseCompare(myOrders) {
   var customers = {};
   var thisMonth = new Date().getMonth(); // 0-based
 
-  console.log('[CMP] 전달받은 orders customer목록:', myOrders.map(function(o){return o.customer+'('+o.orderDate+')'}).join(', '));
   myOrders.forEach(function(o) {
     var cust = o.customer;
     if (!cust || cust === "—") return;
     if (/비고|작성자|긴급|요청사항|black_small/.test(cust)) return;
 
-    // orderDate에서 월 추출 - 올해(2026) 데이터만
+    // ts(메시지 전송시간) 기준으로 월 추출 - 가장 정확
     var month = -1;
-    if (o.orderDate && o.orderDate !== "—") {
-      var mp = parseInt(o.orderDate.split(/[-\/]/)[0]);
-      if (!isNaN(mp) && mp >= 1 && mp <= 12) month = mp - 1;
-    }
-    // ts에서 월 추출 (orderDate 없는 경우)
-    if (month < 0 && o.ts) {
+    if (o.ts) {
       var tDate = new Date(parseFloat(o.ts)*1000);
       if (tDate.getFullYear() === 2026) month = tDate.getMonth();
     }
-    // 그래도 없으면 이번달
-    if (month < 0) month = new Date().getMonth();
-    // 올해(2026) 범위 벗어나면 스킵
+    // ts 없으면 orderDate 사용
+    if (month < 0 && o.orderDate && o.orderDate !== "—") {
+      var mp = parseInt(o.orderDate.split(/[-\/]/)[0]);
+      if (!isNaN(mp) && mp >= 1 && mp <= 12) month = mp - 1;
+    }
+    if (month < 0) return;
     if (month > new Date().getMonth()) return;
 
     if (!customers[cust]) {
