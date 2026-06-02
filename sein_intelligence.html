@@ -915,10 +915,16 @@ function extractTextFromMessage(m) {
       b.elements.forEach(function(elem) {
         // 각 element를 줄로 처리 (user는 개행으로)
         var line = (elem.elements || []).map(function(x) {
-          if (x.type === "text") return x.text || "";
-          if (x.type === "link") return x.text || x.url || "";
+          if (x.type === "text") return (x.text || "").replace(/\*/g,"");
+          if (x.type === "link") {
+            // url이 http로 시작하면 텍스트만, 아니면 url도 사용
+            var linkText = x.text || "";
+            if (!linkText && x.url && !x.url.startsWith("http")) linkText = x.url;
+            return linkText.replace(/\*/g,"");
+          }
           if (x.type === "user") return "\n";
-          return "";
+          if (x.type === "emoji") return "";
+          return (x.text || "").replace(/\*/g,"");
         }).join("");
         if (line.trim()) combined.push(line);
       });
