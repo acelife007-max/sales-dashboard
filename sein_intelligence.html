@@ -1294,17 +1294,16 @@ function parseCompare(myOrders) {
     if (!cust || cust === "—") return;
     if (/비고|작성자|긴급|요청사항|black_small/.test(cust)) return;
 
-    // orderDate에서 월 추출 (MM-DD 형식)
+    // orderDate에서 월 추출
     var month = -1;
     if (o.orderDate && o.orderDate !== "—") {
       var mp = parseInt(o.orderDate.split(/[-\/]/)[0]);
-      if (!isNaN(mp)) month = mp - 1;
+      if (!isNaN(mp) && mp >= 1 && mp <= 12) month = mp - 1;
     }
-    // orderDate 없으면 ts 기반 월 사용
     if (month < 0 && o.ts) {
       month = new Date(parseFloat(o.ts)*1000).getMonth();
     }
-    if (month < 0 || month > thisMonth) return;
+    if (month < 0) month = new Date().getMonth();
 
     if (!customers[cust]) {
       var slots = [];
