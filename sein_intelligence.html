@@ -905,40 +905,35 @@ function pct(n) { return n.toFixed(1) + "%"; }
 
 // ── 텍스트 추출 (bot_message 포함) ──
 function extractTextFromMessage(m) {
-  var combined = [];
-  // 1. text 필드
-  var rawText = (m.text || "").trim();
-  if (rawText) combined.push(rawText);
-  // 2. blocks에서 추출 - rich_text_section 내 user element 다음 텍스트도 포함
-  (m.blocks || []).forEach(function(b) {
-    if (b.type === "rich_text") {
-      b.elements.forEach(function(elem) {
-        // 각 element를 줄로 처리 (user는 개행으로)
-        var line = (elem.elements || []).map(function(x) {
-          if (x.type === "text") return (x.text || "").replace(/\*/g,"");
-          if (x.type === "link") {
-            // url이 http로 시작하면 텍스트만, 아니면 url도 사용
-            var linkText = x.text || "";
-            if (!linkText && x.url && !x.url.startsWith("http")) linkText = x.url;
-            return linkText.replace(/\*/g,"");
-          }
-          if (x.type === "user") return "\n";
-          if (x.type === "emoji") return "";
-          return (x.text || "").replace(/\*/g,"");
-        }).join("");
-        if (line.trim()) combined.push(line);
-      });
-    } else if (b.type === "section" && b.text) {
-      combined.push(b.text.text || "");
-    }
-  });
-  // 3. attachments fallback
-  (m.attachments || []).forEach(function(a) {
-    if (a.text) combined.push(a.text);
-    if (a.fallback) combined.push(a.fallback);
-  });
-  var text = combined.join("\n");
-  return text.replace(/<@[A-Z0-9]+>/g, "\n").replace(/\*/g, "").replace(/[ \t]{2,}/g, " ").replace(/\n{3,}/g,"\n").trim();
+  // m.text 필드 우선 사용 (Slack API가 항상 제공)
+  var text = (m.text || "").trim();
+  
+  // blocks에서 추가 텍스트 보완 (text 필드 없는 경우)
+  if (!text) {
+    var lines = [];
+    (m.blocks || []).forEach(function(b) {
+      if (b.type === "rich_text") {
+        b.elements.forEach(function(elem) {
+          var line = (elem.elements || []).map(function(x) {
+            if (x.type === "text") return x.text || "";
+            if (x.type === "link") return x.text || x.url || "";
+            if (x.type === "user") return "\n";
+            return "";
+          }).join("");
+          if (line.trim()) lines.push(line);
+        });
+      }
+    });
+    if (lines.length) text = lines.join("\n");
+  }
+
+  // 정제: 멘션→개행, *, 중복공백 제거
+  return text
+    .replace(/<@[A-Z0-9]+>/g, "\n")
+    .replace(/\*/g, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/\n{3,}/g, "\n")
+    .trim();
 }
 
 // ── Slack 호출 ──
