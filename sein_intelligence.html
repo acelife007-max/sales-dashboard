@@ -905,29 +905,40 @@ function pct(n) { return n.toFixed(1) + "%"; }
 
 // ── 텍스트 추출 (bot_message 포함) ──
 function extractTextFromMessage(m) {
-  // m.text 필드 우선 사용 (Slack API가 항상 제공)
-  var text = (m.text || "").trim();
-  
-  // blocks에서 추가 텍스트 보완 (text 필드 없는 경우)
-  if (!text) {
-    var lines = [];
-    (m.blocks || []).forEach(function(b) {
-      if (b.type === "rich_text") {
-        b.elements.forEach(function(elem) {
-          var line = (elem.elements || []).map(function(x) {
-            if (x.type === "text") return x.text || "";
-            if (x.type === "link") return x.text || x.url || "";
-            if (x.type === "user") return "\n";
-            return "";
-          }).join("");
-          if (line.trim()) lines.push(line);
+  // blocks에서 모든 텍스트 추출 (링크/멘션 포함)
+  var lines = [];
+  (m.blocks || []).forEach(function(b) {
+    if (b.type === "rich_text") {
+      b.elements.forEach(function(elem) {
+        var parts = (elem.elements || []).map(function(x) {
+          if (x.type === "text") return (x.text || "");
+          if (x.type === "link") return (x.text || x.url || "");
+          if (x.type === "user") return "\n";
+          if (x.type === "emoji") return "";
+          return (x.text || "");
         });
-      }
-    });
-    if (lines.length) text = lines.join("\n");
+        var line = parts.join("");
+        if (line.trim()) lines.push(line);
+      });
+    } else if (b.type === "section" && b.text) {
+      lines.push(b.text.text || "");
+    }
+  });
+  
+  // blocks에서 못 뽑으면 m.text 사용
+  var text = lines.length ? lines.join("\n") : (m.text || "");
+  
+  // m.text도 합치기 (blocks와 m.text 둘 다 있는 경우 합침)
+  if (lines.length && m.text) {
+    // m.text에만 있는 내용 추가
+    var blockText = lines.join(" ");
+    var mText = (m.text || "");
+    // 거래처 키워드가 blocks에 없고 m.text에 있으면 m.text 추가
+    if (!/거래처/.test(blockText) && /거래처/.test(mText)) {
+      text = mText + "\n" + lines.join("\n");
+    }
   }
 
-  // 정제: 멘션→개행, *, 중복공백 제거
   return text
     .replace(/<@[A-Z0-9]+>/g, "\n")
     .replace(/\*/g, "")
