@@ -1193,10 +1193,15 @@ function parseOrders(messages) {
           // 거래처명 조건: 2~20자, 숫자로 시작X, 발주키워드X
           if (line.length >= 2 && line.length <= 20 &&
               !/^[0-9]/.test(line) &&
-              !/^(출고|발주|입고지|입고일|입고|수량|단가|품목|연락처|비고|부탁|경상|경기|서울|부산)/.test(line)) {
-            // 숫자/수량/단가 앞에서 잘라내기
-            var custClean = line.replace(/\s*[0-9,]+\s*(kg|MT|톤|포|원|bag|\().*$/i,"").replace(/\s*(대표|사장|원장|부장|과장).*$/,"").trim();
-            if (custClean.length >= 2) { customer = custClean; break; }
+              !/^(출고|발주|입고지|입고일|입고|수량|단가|품목|연락처|비고|부탁|경상|경기|서울|부산)/.test(line) &&
+              !/^(염산염|황산염|DL-|L-|비타민|하이맷|보호지방|ECM|DCP|MCP|TCP|MDCP|나노|이지|낙산|세인|파인애플)/.test(line)) {
+            // 숫자/수량/단가/대표자명 잘라내기
+            var custClean = line
+              .replace(/\s*[0-9,]+\s*(kg|MT|톤|포|원|bag|\().*$/i,"")
+              .replace(/\s+(박[가-힣]+|김[가-힣]+|이[가-힣]+|최[가-힣]+|정[가-힣]+|강[가-힣]+|조[가-힣]+|윤[가-힣]+|장[가-힣]+|임[가-힣]+)\s*대표.*$/,"")
+              .replace(/\s+(대표|사장|원장|부장|과장|팀장|이사|원|님).*$/,"")
+              .trim();
+            if (custClean.length >= 2 && custClean.length <= 15) { customer = custClean; break; }
           }
         }
       }
@@ -1290,6 +1295,7 @@ function parseCompare(myOrders) {
   var customers = {};
   var thisMonth = new Date().getMonth(); // 0-based
 
+  console.log('[CMP] 전달받은 orders customer목록:', myOrders.map(function(o){return o.customer+'('+o.orderDate+')'}).join(', '));
   myOrders.forEach(function(o) {
     var cust = o.customer;
     if (!cust || cust === "—") return;
