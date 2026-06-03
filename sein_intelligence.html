@@ -947,53 +947,6 @@ function extractTextFromMessage(m) {
 }
 
 // ── Slack 호출 ──
-async function fetchSlack(channel, limit) {
-  // 2026-01-01 00:00 KST = unix 1735657200
-  var YEAR_START = "1735657200";
-  var allMessages = [];
-  var seen = {};
-
-  // 1차: oldest=2026-01-01부터 200건 수집
-  try {
-    var url1 = PROXY_URL + "/slack/messages?channel=" + channel + "&limit=200&oldest=" + YEAR_START;
-    var r1 = await fetch(url1);
-    var d1 = await r1.json();
-    if (d1.ok && d1.messages) {
-      d1.messages.forEach(function(m){ if(!seen[m.ts]){ allMessages.push(m); seen[m.ts]=true; } });
-      console.log("[Sein] 1차(oldest):", d1.messages.length, "건");
-      // cursor 있으면 추가 페이지 수집 (최대 8페이지 = 최대 1600건)
-      var cursor = d1.response_metadata && d1.response_metadata.next_cursor;
-      var pageCount = 0;
-      while (cursor && pageCount < 8) {
-        try {
-          var urlC = PROXY_URL + "/slack/messages?channel=" + channel + "&limit=200&cursor=" + encodeURIComponent(cursor);
-          var rC = await fetch(urlC);
-          var dC = await rC.json();
-          if (!dC.ok || !dC.messages || !dC.messages.length) break;
-          dC.messages.forEach(function(m){ if(!seen[m.ts]){ allMessages.push(m); seen[m.ts]=true; } });
-          console.log("[Sein] cursor페이지" + (pageCount+1) + ":", dC.messages.length, "건");
-          cursor = dC.response_metadata && dC.response_metadata.next_cursor;
-          pageCount++;
-        } catch(e2){ break; }
-      }
-    }
-  } catch(e){ console.warn("[Sein] 1차 실패:", e.message); }
-
-  // 2차: 최신 200건 (중복 제거 후 합산)
-  try {
-    var url2 = PROXY_URL + "/slack/messages?channel=" + channel + "&limit=200";
-    var r2 = await fetch(url2);
-    var d2 = await r2.json();
-    if (d2.ok && d2.messages) {
-      var added = 0;
-      d2.messages.forEach(function(m){ if(!seen[m.ts]){ allMessages.push(m); seen[m.ts]=true; added++; } });
-      console.log("[Sein] 2차(최신):", d2.messages.length, "건 (신규:", added, "건)");
-    }
-  } catch(e){ console.warn("[Sein] 2차 실패:", e.message); }
-
-  console.log("[Sein] fetchSlack 최종:", channel, "→", allMessages.length, "건");
-  return allMessages;
-}
 
 // ── 달러 매입가 추출 ──
 function extractDollarPrices(messages) {
@@ -1012,14 +965,50 @@ function extractDollarPrices(messages) {
       // 시세/참고/송금 제외
       if (/시세|참고|tt\d|외화송금|해외송금/.test(ll)) return;
 
-      // 품목 키워드 위치 수집
-      var found = [];
-      for (var prod in PRICE_KEYWORDS) {
-        PRICE_KEYWORDS[prod].forEach(function(kw) {
-          var idx = ll.indexOf(kw);
-          if (idx >= 0) found.push({pos: idx, len: kw.length, prod: prod, kw: kw});
-        });
+async function fetchSlack(channel, limit) {
+  // 월별 oldest+latest 조합으로 1월~현재월 전체 수집
+  var MONTH_RANGES = [
+    {label:"1월", oldest:"1735657200", latest:"1738335600"},
+    {label:"2월", oldest:"1738335600", latest:"1740754800"},
+    {label:"3월", oldest:"1740754800", latest:"1743429600"},
+    {label:"4월", oldest:"1743429600", latest:"1746021600"},
+    {label:"5월", oldest:"1746021600", latest:"1748700000"},
+    {label:"6월", oldest:"1748700000", latest:"1751292000"},
+  ];
+  var allMessages = [];
+  var seen = {};
+  var nowMonth = new Date().getMonth();
+  for (var mi = 0; mi <= nowMonth; mi++) {
+    var range = MONTH_RANGES[mi];
+    if (!range) continue;
+    try {
+      var url = PROXY_URL + "/slack/messages?channel=" + channel + "&limit=200&oldest=" + range.oldest + "&latest=" + range.latest;
+      var r = await fetch(url);
+      var d = await r.json();
+      if (d.ok && d.messages && d.messages.length) {
+        var added = 0;
+        d.messages.forEach(function(m){ if(!seen[m.ts]){ allMessages.push(m); seen[m.ts]=true; added++; } });
+        console.log("[Sein]", range.label, ":", added, "건");
+        var cursor = d.response_metadata && d.response_metadata.next_cursor;
+        var pc = 0;
+        while (cursor && pc < 5) {
+          try {
+            var urlC = PROXY_URL + "/slack/messages?channel=" + channel + "&limit=200&cursor=" + encodeURIComponent(cursor);
+            var rC = await fetch(urlC); var dC = await rC.json();
+            if (!dC.ok || !dC.messages || !dC.messages.length) break;
+            dC.messages.forEach(function(m){ if(!seen[m.ts]){ allMessages.push(m); seen[m.ts]=true; } });
+            cursor = dC.response_metadata && dC.response_metadata.next_cursor;
+            pc++;
+          } catch(e2){ break; }
+        }
+      } else {
+        console.log("[Sein]", range.label, ": 0건");
       }
+    } catch(e){ console.warn("[Sein]", range.label, "실패:", e.message); }
+  }
+  console.log("[Sein] fetchSlack 최종:", channel, "→", allMessages.length, "건");
+  return allMessages;
+}
       if (!found.length) return;
 
       // 위치순 정렬, 긴 키워드 우선
@@ -1317,7 +1306,7 @@ function parseOrders(messages) {
     if (product==="—") { var prods=[]; for(var key in PRICE_KEYWORDS){if(PRICE_KEYWORDS[key].some(function(k){return flatText.toLowerCase().includes(k);}))prods.push(key);} if(prods.length) product=prods.slice(0,3).join(", "); }
     var qty = "—";
     var qp = [
-      /수\s*렉\s*[::\uFF1A]\s*([\d,]+\s*(?:포|kg|톤|ton|MT|mt|bag|bags))/i,
+      /수\s*량\s*[::\uFF1A]\s*([\d,]+\s*(?:포|kg|톤|ton|MT|mt|bag|bags))/i,
       /([\d,]+)\s*MT/i, /([\d,]+)\s*톤/, /([\d,]+)\s*포(?!\w)/, /([\d,]+)\s*kg/i
     ];
     for(var qi=0;qi<qp.length;qi++){var qm=flatText.match(qp[qi]);if(qm){qty=qm[1]?qm[1].trim():qm[0].trim();break;}}
@@ -1416,7 +1405,7 @@ function renderCompare(customers) {
     var prods=Array.from(c.products).filter(Boolean).slice(0,4).join(", ")||"—";
     var cells=c.months.slice(0,thisMonthNum).map(function(events,mi){
       if(!events.length) return "<td class=\"r mono\" style=\"color:var(--text3)\">—</td>";
-      return "<td class=\"r mono\" style=\"color:var(--accent);cursor:pointer;\" onclick=\"showTimeline(\'"+encodeURIComponent(c.name)+"\',"+mi+")\" title=\"클릭: 상체\">상체</span><span style=\"text-decoration:underline dotted\">"+events.length+"건</span></td>";
+      return "<td class=\"r mono\" style=\"color:var(--accent);cursor:pointer;\" onclick=\"showTimeline(\'"+encodeURIComponent(c.name)+"\',"+mi+")\" <span style=\"text-decoration:underline dotted\">"+events.length+"건</span></td>";
     }).join("");
     return "<tr><td><strong style=\"cursor:pointer;\" onclick=\"renderTimeline(_compareData,\'"+c.name+"\',null,-1)\">"+c.name+"</strong></td>"+cells+"<td class=\"r mono\" style=\"color:var(--green);font-weight:700;\">"+total+"건</td><td style=\"font-size:11px;color:var(--text2)\">"+prods+"</td><td class=\"mono\" style=\"color:var(--text3)\">"+lastDate+"</td></tr>";
   }).join("");
