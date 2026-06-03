@@ -1404,9 +1404,11 @@ function renderCompare(customers) {
     var prods=Array.from(c.products).filter(Boolean).slice(0,4).join(", ")||"—";
     var cells=c.months.slice(0,tmn).map(function(events,mi){
       if(!events.length) return "<td class='r mono' style='color:var(--text3)'>—</td>";
-      return "<td class='r mono' style='color:var(--accent);cursor:pointer;' onclick='showTimeline(""+encodeURIComponent(c.name)+"","+mi+")' title='상츸 보기'><span style='text-decoration:underline dotted'>"+events.length+"건</span></td>";
+      var enc=encodeURIComponent(c.name);
+      return "<td class='r mono' style='color:var(--accent);cursor:pointer;' onclick='showTimeline(&quot;"+enc+"&quot;,"+mi+")' title='상체 보기'><span style='text-decoration:underline dotted'>"+events.length+"건</span></td>";
     }).join("");
-    return "<tr><td><strong style='cursor:pointer;' onclick='filterTimeline("+(now.getMonth()+1)+",null);renderTimeline(_compareData,""+c.name+"",now.getMonth(),-1)'>"+c.name+"</strong></td>"+cells+"<td class='r mono' style='color:var(--green);font-weight:700;'>"+total+"건</td><td style='font-size:11px;color:var(--text2)'>"+prods+"</td><td class='mono' style='color:var(--text3)'>"+lastDate+"</td></tr>";
+    var nm=c.name.replace(/'/g,"\\'");
+    return "<tr><td><strong style='cursor:pointer;' onclick='renderTimeline(_compareData,\""+nm+"\",now.getMonth(),now.getMonth()+1)'>"+c.name+"</strong></td>"+cells+"<td class='r mono' style='color:var(--green);font-weight:700;'>"+total+"건</td><td style='font-size:11px;color:var(--text2)'>"+prods+"</td><td class='mono' style='color:var(--text3)'>"+lastDate+"</td></tr>";
   }).join("");
   _compareData=customers;
   renderTimeline(customers,null,now.getMonth(),now.getMonth()+1);
