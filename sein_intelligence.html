@@ -1147,11 +1147,15 @@ function parseCalendar(messages) {
 function parseOrders(messages) {
   var orders = [];
   messages.forEach(function(m) {
-    var isMyMsg = m.user === MY_USER_ID;
+    var MY_IDS = [MY_USER_ID, "U08QM7TR6G1"];
+    var isMyMsg = MY_IDS.includes(m.user);
     if (!isMyMsg && m.blocks) {
-      if (JSON.stringify(m.blocks).includes(MY_USER_ID)) isMyMsg = true;
+      var bStr = JSON.stringify(m.blocks);
+      if (MY_IDS.some(function(id){ return bStr.includes(id); })) isMyMsg = true;
     }
-    if (!isMyMsg && m.text && m.text.includes(MY_USER_ID)) isMyMsg = true;
+    if (!isMyMsg && m.text) {
+      if (MY_IDS.some(function(id){ return m.text.includes(id); })) isMyMsg = true;
+    }
     if (!isMyMsg) return;
 
     var text = extractTextFromMessage(m);
