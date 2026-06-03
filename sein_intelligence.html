@@ -1294,19 +1294,18 @@ function parseOrders(messages) {
     if (!ts || ts.getFullYear() !== 2026) return;
     var monthNum = ts.getMonth() + 1;
     var dateStr = String(monthNum).padStart(2,"0") + "-" + String(ts.getDate()).padStart(2,"0");
-    var flat = text.replace(/?
-/g," ").replace(/\s{2,}/g," ").trim();
-    flat = flat.replace(/수\s+렉/g,"수렉").replace(/단\s+가/g,"단가").replace(/품\s+목/g,"품목").replace(/거\s+래\s+처/g,"거래처");
+    var flat = text.replace(/[\r\n]+/g," ").replace(/\s{2,}/g," ").trim();
+    flat = flat.replace(/수\s+렉/g,"수량").replace(/단\s+가/g,"단가").replace(/품\s+목/g,"품목").replace(/거\s+래\s+처/g,"거래처");
     // 거래처
     var customer = "—";
-    var cp = flat.match(/거래처\s*[::\uFF1A]\s*([\uAC00-\uD7A3a-zA-Z0-9·\s]{2,15}?)(?:\s+입고|\s+품목|\s+수렉|\s+대표|$)/);
-    if (cp) { var c2=cp[1].trim().replace(/\s+(입고|품목|수렉|대표|사장).*$/,"").trim(); if(c2.length>=2&&c2.length<=15&&!/비고|작성자|긴급/.test(c2)) customer=c2; }
+    var cp = flat.match(/거래처\s*[::\uFF1A]\s*([\uAC00-\uD7A3a-zA-Z0-9·\s]{2,15}?)(?:\s+입고|\s+품목|\s+수량|\s+대표|$)/);
+    if (cp) { var c2=cp[1].trim().replace(/\s+(입고|품목|수량|대표|사장).*$/,"").trim(); if(c2.length>=2&&c2.length<=15&&!/비고|작성자|긴급/.test(c2)) customer=c2; }
     // 품목
     var product = "—";
-    var pm = flat.match(/품목\s*[::]\s*([^\s:]+(?:\s[^\s:]+)*?)(?:\s+수렉|\s+단가|\s+입고|$)/);
+    var pm = flat.match(/품목\s*[::]\s*([^\s:]+(?:\s[^\s:]+)*?)(?:\s+수량|\s+단가|\s+입고|$)/);
     if (pm) product = pm[1].trim();
     if (product==="—") { var prods=[]; for(var key in PRICE_KEYWORDS){if(PRICE_KEYWORDS[key].some(function(k){return flat.toLowerCase().includes(k);}))prods.push(key);} if(prods.length) product=prods.slice(0,3).join(", "); }
-    // 수렉
+    // 수량
     var qty = "—";
     var qp=[/수\s*렉\s*[::]\s*([\d,]+\s*(?:포|kg|톤|ton|MT|mt))/i,/([\d,]+)\s*MT/i,/([\d,]+)\s*톤/,/([\d,]+)\s*포(?!\w)/,/([\d,]+)\s*kg/i];
     for(var qi=0;qi<qp.length;qi++){var qm=flat.match(qp[qi]);if(qm){qty=qm[1]?qm[1].trim():qm[0].trim();break;}}
