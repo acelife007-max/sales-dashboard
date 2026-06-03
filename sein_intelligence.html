@@ -1404,7 +1404,7 @@ function renderCompare(customers) {
     var prods=Array.from(c.products).filter(Boolean).slice(0,4).join(", ")||"—";
     var cells=c.months.slice(0,thisMonthNum).map(function(events,mi){
       if(!events.length) return "<td class=\"r mono\" style=\"color:var(--text3)\">—</td>";
-      return "<td class=\"r mono\" style=\"color:var(--accent);cursor:pointer;\" onclick=\"showTimeline(\'"+encodeURIComponent(c.name)+"\',"+mi+")\" <span style=\"text-decoration:underline dotted\">"+events.length+"건</span></td>";
+      return "<td class=\"r mono\" style=\"color:var(--accent);cursor:pointer;\" onclick=\"showTimeline(\'"+encodeURIComponent(c.name)+"\',"+mi+")\"><span style=\"text-decoration:underline dotted\">"+events.length+"건</span></td>";
     }).join("");
     return "<tr><td><strong style=\"cursor:pointer;\" onclick=\"renderTimeline(_compareData,\'"+c.name+"\',null,-1)\">"+c.name+"</strong></td>"+cells+"<td class=\"r mono\" style=\"color:var(--green);font-weight:700;\">"+total+"건</td><td style=\"font-size:11px;color:var(--text2)\">"+prods+"</td><td class=\"mono\" style=\"color:var(--text3)\">"+lastDate+"</td></tr>";
   }).join("");
