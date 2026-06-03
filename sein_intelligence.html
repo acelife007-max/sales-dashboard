@@ -1147,15 +1147,11 @@ function parseCalendar(messages) {
 function parseOrders(messages) {
   var orders = [];
   messages.forEach(function(m) {
-    var MY_IDS = [MY_USER_ID, "U08QM7TR6G1"];
-    var isMyMsg = MY_IDS.includes(m.user);
+    var isMyMsg = m.user === MY_USER_ID;
     if (!isMyMsg && m.blocks) {
-      var bStr = JSON.stringify(m.blocks);
-      if (MY_IDS.some(function(id){ return bStr.includes(id); })) isMyMsg = true;
+      if (JSON.stringify(m.blocks).includes(MY_USER_ID)) isMyMsg = true;
     }
-    if (!isMyMsg && m.text) {
-      if (MY_IDS.some(function(id){ return m.text.includes(id); })) isMyMsg = true;
-    }
+    if (!isMyMsg && m.text && m.text.includes(MY_USER_ID)) isMyMsg = true;
     if (!isMyMsg) return;
 
     var text = extractTextFromMessage(m);
@@ -1251,16 +1247,19 @@ function parseCompare(myOrders) {
     if (!cust || cust === "—") return;
     if (/비고|작성자|긴급|요청사항|black_small/.test(cust)) return;
 
-    // orderDate 기준 월 추출
+    // ts(메시지 전송시간) 기준으로 월 추출 - 가장 정확
     var month = -1;
-    if (o.orderDate && o.orderDate !== "—") {
+    if (o.ts) {
+      var tDate = new Date(parseFloat(o.ts)*1000);
+      if (tDate.getFullYear() === 2026) month = tDate.getMonth();
+    }
+    // ts 없으면 orderDate 사용
+    if (month < 0 && o.orderDate && o.orderDate !== "—") {
       var mp = parseInt(o.orderDate.split(/[-\/]/)[0]);
       if (!isNaN(mp) && mp >= 1 && mp <= 12) month = mp - 1;
     }
-    if (month < 0 && o.ts) {
-      month = new Date(parseFloat(o.ts)*1000).getMonth();
-    }
-    if (month < 0 || month > new Date().getMonth()) return;
+    if (month < 0) return;
+    if (month > new Date().getMonth()) return;
 
     if (!customers[cust]) {
       var slots = [];
@@ -2059,7 +2058,7 @@ async function loadSlackFeeds() {
   } else {
     renderCalendar({});
   }
-  var orders = await fetchSlack(CHANNELS["발주"], 500);
+  var orders = await fetchSlack(CHANNELS["발주"], 200);
   console.log("[Sein] 발주:", orders.length, "건, 박제영:", orders.filter(function(m){return m.user===MY_USER_ID;}).length, "건");
   if (orders.length) {
     extractDollarPrices(orders);
