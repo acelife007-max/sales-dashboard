@@ -571,32 +571,31 @@ select.calc-input{cursor:pointer;}
 
     <!-- ══ PANEL: 발주 현황 ══ -->
     <div class="panel" id="p-order">
-      <!-- KPI -->
       <div class="kpi-grid">
-        <div class="kpi b"><div class="kpi-lbl">1~6월 출고요청 합계</div><div class="kpi-val" id="ord-total">—</div><div class="kpi-meta">박제영 전체</div><div class="kpi-icon">📋</div></div>
-        <div class="kpi g"><div class="kpi-lbl">거래처 수</div><div class="kpi-val" id="ord-cust-cnt">—</div><div class="kpi-meta" style="color:var(--green)">발주 거래처</div><div class="kpi-icon">🏢</div></div>
-        <div class="kpi y"><div class="kpi-lbl">이번달 출고요청</div><div class="kpi-val" id="ord-this-month">—</div><div class="kpi-meta" style="color:var(--yellow)">당월 기준</div><div class="kpi-icon">📦</div></div>
-        <div class="kpi r"><div class="kpi-lbl">품목 종류</div><div class="kpi-val" id="ord-prod-cnt">—</div><div class="kpi-meta" style="color:var(--red)">취급품목</div><div class="kpi-icon">🧪</div></div>
+        <div class="kpi b"><div class="kpi-lbl">전체 발주</div><div class="kpi-val" id="ord-total">—</div><div class="kpi-meta">이번달</div><div class="kpi-icon">📋</div></div>
+        <div class="kpi y"><div class="kpi-lbl">처리 대기</div><div class="kpi-val" id="ord-pending">—</div><div class="kpi-meta" style="color:var(--yellow)">확인 필요</div><div class="kpi-icon">⏳</div></div>
+        <div class="kpi g"><div class="kpi-lbl">완료</div><div class="kpi-val" id="ord-done">—</div><div class="kpi-meta" style="color:var(--green)">정상 처리</div><div class="kpi-icon">✅</div></div>
+        <div class="kpi r"><div class="kpi-lbl">지연</div><div class="kpi-val" id="ord-delay">—</div><div class="kpi-meta" style="color:var(--red)">조치 필요</div><div class="kpi-icon">🚨</div></div>
       </div>
-      <!-- 출고요청 목록 -->
       <div class="card">
         <div class="card-hd">
-          <div class="card-title">📦 박제영 출고요청 목록 <span style="font-size:10px;color:var(--text3);font-weight:400;">Slack #발주 · 박제영 메시지만</span></div>
+          <div class="card-title">📦 발주 목록 <span style="font-size:10px;color:var(--text3);font-weight:400;">Slack #발주 자동 추출</span></div>
           <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-            <div style="display:flex;gap:3px;flex-wrap:wrap;" id="ord-month-tabs"></div>
+            <div style="display:flex;gap:3px;" id="ord-month-tabs">
+            </div>
             <div id="ord-update-time" style="font-size:10px;color:var(--text3);font-family:var(--mono);"></div>
             <div class="card-act" onclick="loadSlackFeeds()">🔄</div>
           </div>
         </div>
         <div class="card-body" style="padding:0;">
           <div id="ord-no-data" style="padding:20px;text-align:center;font-size:12px;color:var(--text3);">
-            📡 Slack #발주 채널에서 박제영 출고요청을 수집중...
+            📡 Slack #발주 채널에서 데이터를 읽어오는 중...
           </div>
           <div id="ord-table-wrap" style="display:none;overflow-x:auto;">
             <table class="tbl">
               <thead>
                 <tr>
-                  <th>월</th><th>날짜</th><th>거래처</th><th>품목</th><th>수량</th><th>단가</th><th>납기</th><th>원문 (출고요청 내용)</th>
+                  <th>거래처</th><th>품목</th><th>수량</th><th>단가(kg)</th><th>발주일</th><th>납기일</th><th>상태</th><th>원문</th>
                 </tr>
               </thead>
               <tbody id="ord-tbody"></tbody>
@@ -682,21 +681,22 @@ select.calc-input{cursor:pointer;}
 
     <!-- ══ PANEL: 거래처 비교 ══ -->
     <div class="panel" id="p-compare">
-      <!-- 거래처별 월별 공급 현황 표 -->
       <div class="card">
         <div class="card-hd">
-          <div class="card-title" id="compare-card-title">📊 거래처별 월별 출고요청 현황 (1~6월) · 박제영</div>
+          <div class="card-title">📊 거래처별 월별 공급 현황</div>
           <div style="display:flex;gap:6px;align-items:center;">
+            <span style="display:none"> </span>
             <div class="card-act" onclick="loadSlackFeeds()">🔄 새로고침</div>
           </div>
         </div>
         <div class="card-body" style="padding:0;">
           <div id="compare-no-data" style="padding:20px;text-align:center;font-size:12px;color:var(--text3);">
-            📡 박제영 출고요청 데이터를 분석중...
+            📡 Slack 발주 데이터를 분석중...
           </div>
           <div id="compare-table-wrap" style="display:none;overflow-x:auto;">
             <table class="tbl" id="compare-table">
-              <thead id="compare-thead"></thead>
+              <thead id="compare-thead">
+              </thead>
               <tbody id="compare-tbody"></tbody>
             </table>
           </div>
@@ -705,8 +705,9 @@ select.calc-input{cursor:pointer;}
       <!-- 발주 타임라인 -->
       <div class="card">
         <div class="card-hd">
-          <div class="card-title">📅 거래처별 출고요청 타임라인 · 박제영</div>
-          <div style="display:flex;gap:3px;flex-wrap:wrap;" id="timeline-month-tabs"></div>
+          <div class="card-title">📅 거래처별 발주 타임라인</div>
+          <div style="display:flex;gap:3px;flex-wrap:wrap;" id="timeline-month-tabs">
+          </div>
         </div>
         <div class="card-body" id="compare-timeline">
           <div style="color:var(--text3);font-size:11px;text-align:center;padding:16px;">데이터 로딩중...</div>
@@ -947,24 +948,6 @@ function extractTextFromMessage(m) {
 }
 
 // ── Slack 호출 ──
-
-// ── 달러 매입가 추출 ──
-function extractDollarPrices(messages) {
-  console.log("[Sein] 달러파싱 전체:", messages.length, "건");
-  messages.forEach(function(m) {
-    // 달러 파싱은 모든 메시지 대상 (봇 메시지 포함)
-    var ts = m.ts ? new Date(parseFloat(m.ts)*1000) : null;
-    if (!ts) return;
-    var dateLabel = ts.getFullYear() + "-" + String(ts.getMonth()+1).padStart(2,"0") + "-" + String(ts.getDate()).padStart(2,"0");
-    var monthLabel = (ts.getMonth()+1) + "월";
-    var text = extractTextFromMessage(m);
-    if (!text) return;
-
-    text.split("\n").forEach(function(line) {
-      var ll = line.toLowerCase();
-      // 시세/참고/송금 제외
-      if (/시세|참고|tt\d|외화송금|해외송금/.test(ll)) return;
-
 async function fetchSlack(channel, limit) {
   var MONTH_RANGES = [
     {label:"1월", oldest:"1735657200", latest:"1738335600"},
@@ -1008,6 +991,33 @@ async function fetchSlack(channel, limit) {
   console.log("[Sein] fetchSlack 최종:", channel, "→", allMessages.length, "건");
   return allMessages;
 }
+
+
+// ── 달러 매입가 추출 ──
+function extractDollarPrices(messages) {
+  console.log("[Sein] 달러파싱 전체:", messages.length, "건");
+  messages.forEach(function(m) {
+    // 달러 파싱은 모든 메시지 대상 (봇 메시지 포함)
+    var ts = m.ts ? new Date(parseFloat(m.ts)*1000) : null;
+    if (!ts) return;
+    var dateLabel = ts.getFullYear() + "-" + String(ts.getMonth()+1).padStart(2,"0") + "-" + String(ts.getDate()).padStart(2,"0");
+    var monthLabel = (ts.getMonth()+1) + "월";
+    var text = extractTextFromMessage(m);
+    if (!text) return;
+
+    text.split("\n").forEach(function(line) {
+      var ll = line.toLowerCase();
+      // 시세/참고/송금 제외
+      if (/시세|참고|tt\d|외화송금|해외송금/.test(ll)) return;
+
+      // 품목 키워드 위치 수집
+      var found = [];
+      for (var prod in PRICE_KEYWORDS) {
+        PRICE_KEYWORDS[prod].forEach(function(kw) {
+          var idx = ll.indexOf(kw);
+          if (idx >= 0) found.push({pos: idx, len: kw.length, prod: prod, kw: kw});
+        });
+      }
       if (!found.length) return;
 
       // 위치순 정렬, 긴 키워드 우선
@@ -1166,7 +1176,180 @@ function parseCalendar(messages) {
   return visits;
 }
 
+// ── 발주 파싱 ──
+function parseOrders(messages) {
+  var orders = [];
+  messages.forEach(function(m) {
+    var MY_IDS = [MY_USER_ID, "U08QM7TR6G1"];
+    var isMyMsg = MY_IDS.includes(m.user);
+    if (!isMyMsg && m.blocks) {
+      var bStr = JSON.stringify(m.blocks);
+      if (MY_IDS.some(function(id){ return bStr.includes(id); })) isMyMsg = true;
+    }
+    if (!isMyMsg && m.text) {
+      if (MY_IDS.some(function(id){ return m.text.includes(id); })) isMyMsg = true;
+    }
+    if (!isMyMsg) return;
 
+    var text = extractTextFromMessage(m);
+    if (!text) return;
+    text = text.replace(/\n/g, " ").replace(/\s{2,}/g, " ").trim();
+    text = text.replace(/수\s+량/g,"수량").replace(/단\s+가/g,"단가").replace(/품\s+목/g,"품목").replace(/거\s+래\s+처/g,"거래처").replace(/입\s+고/g,"입고");
+
+    var ts = m.ts ? new Date(parseFloat(m.ts)*1000) : null;
+    var dateStr = ts ? String(ts.getMonth()+1).padStart(2,"0")+"-"+String(ts.getDate()).padStart(2,"0") : "—";
+
+    if (!/발주|선적|수령|입고|LC|ETA|통관|납품|공급|사료수입|주문|오더|출고요청|발주요청/.test(text)) return;
+
+    // ── 거래처 추출 ──
+    var customer = "—";
+
+    // "거래처 : XXX" 패턴만 사용 (가장 신뢰)
+    var cp = text.match(/거래처\s*[:\s]+([가-힣a-zA-Z0-9·]+(?:\s[가-힣a-zA-Z0-9·]+)?)/);
+    if (cp) {
+      var cand = cp[1].trim()
+        .replace(/\s*(입고지|입고일|입고|품목|수량|단가|연락처).*$/,"")
+        .replace(/\s+(대표|사장|원장|부장|과장|팀장).*$/,"")
+        .trim();
+      if (cand.length >= 2 && cand.length <= 15 && !/비고|작성자|긴급/.test(cand)) {
+        customer = cand;
+      }
+    }
+
+    // ── 품목 ──
+    var product = "—";
+    var pm = text.match(/품목\s*:\s*(.+?)(?=\s+수량|\s+단가|\s+입고|$)/);
+    if (pm) product = pm[1].trim();
+    if (product === "—") {
+      var prods = [];
+      for (var key in PRICE_KEYWORDS) {
+        if (PRICE_KEYWORDS[key].some(function(k){return text.toLowerCase().includes(k);})) prods.push(key);
+      }
+      if (prods.length) product = prods.join(", ");
+    }
+
+    // ── 수량 ──
+    var qty = "—";
+    var qm = text.match(/수\s*량\s*[:\s]\s*([\d,]+\s*(?:포|kg|톤|ton|MT|mt|bag|bags))/i);
+    if (qm) qty = qm[1].trim();
+    if (qty==="—") { var r=text.match(/([\d,]+)\s*MT/i); if(r) qty=r[1]+"MT"; }
+    if (qty==="—") { var r=text.match(/([\d,]+)\s*톤/); if(r) qty=r[1]+"톤"; }
+    if (qty==="—") { var r=text.match(/([\d,]+)\s*포/); if(r) qty=r[1]+"포"; }
+    if (qty==="—") { var r=text.match(/([\d,]+)\s*(?:ton)/i); if(r) qty=r[1]+"ton"; }
+    if (qty==="—") { var r=text.match(/([\d,]+)\s*bag/i); if(r) qty=r[1]+"bag"; }
+    if (qty==="—") { var r=text.match(/([\d,]+)\s*kg/i); if(r) qty=r[1]+"kg"; }
+
+    // ── 단가 ──
+    var unitPrice = "—";
+    if (unitPrice==="—") { var r=text.match(/단\s*가\s*[:\s]\s*([\d,]+)\s*원/); if(r) unitPrice=r[1]+"원/kg"; }
+    if (unitPrice==="—") { var r=text.match(/\(([\d,]+)\s*원\/kg\)/); if(r) unitPrice=r[1]+"원/kg"; }
+    if (unitPrice==="—") { var r=text.match(/([\d,]+)\s*원\/kg/); if(r) unitPrice=r[1]+"원/kg"; }
+    if (unitPrice==="—") { var r=text.match(/단\s*가\s*[:\s]\s*([\d,]+)\/kg/i); if(r) unitPrice=r[1]+"원/kg"; }
+    if (unitPrice==="—") { var r=text.match(/([\d,]+)\/kg/i); if(r) unitPrice=r[1]+"원/kg"; }
+    if (unitPrice==="—") { var r=text.match(/\(([\d,]+)원\)/); if(r) unitPrice=r[1]+"원/kg"; }
+    if (unitPrice==="—") { var r=text.match(/(?:kg|톤)\s*([\d,]+)\s*원/i); if(r) unitPrice=r[1]+"원/kg"; }
+    if (unitPrice==="—") { var r=text.match(/\$([\d,]+(?:\.\d+)?)(?:\/(?:kg|mt|ton))?/i); if(r) unitPrice="$"+r[1]; }
+    if (unitPrice==="—") { var r=text.match(/USD\s*([\d,]+(?:\.\d+)?)/i); if(r) unitPrice="$"+r[1]; }
+    if (unitPrice==="—") { var r=text.match(/([\d,]+(?:\.\d+)?)\s*(?:USD|달러)/i); if(r) unitPrice="$"+r[1]; }
+
+    // ── 납기 ──
+    var deadline = "—";
+    var dlm = text.match(/(?:납기|ETA|입항|입고일)[\s:.]*([\d]{1,2}월[\d]{1,2}일|\d{1,2}[\/\.\-]\d{1,2})/i);
+    if (dlm) deadline = dlm[1];
+
+    // ── 상태 ──
+    var status = "처리중";
+    if (/완료|입고완료|통관완료|수령완료/.test(text)) status = "완료";
+    else if (/지연/.test(text)) status = "지연";
+
+    // 포 → kg 변환 (1포=20kg)
+    if (qty !== "—" && /포/.test(qty)) {
+      var poCnt = parseInt(qty.replace(/[^\d]/g,""));
+      if (!isNaN(poCnt)) qty = (poCnt*20)+"kg";
+    }
+
+    orders.push({customer:customer, product:product, qty:qty, unitPrice:unitPrice, orderDate:dateStr, deadline:deadline, status:status, raw:text.slice(0,200), ts:m.ts});
+  });
+  return orders;
+}
+
+// ── 거래처 비교 파싱 ──
+function parseCompare(myOrders) {
+  // parseOrders가 이미 뽑은 결과를 그대로 받아서 거래처별로 집계
+  var customers = {};
+  var thisMonth = new Date().getMonth(); // 0-based
+
+  myOrders.forEach(function(o) {
+    var cust = o.customer;
+    if (!cust || cust === "—") return;
+    if (/비고|작성자|긴급|요청사항|black_small/.test(cust)) return;
+
+    // orderDate 기준 월 추출
+    var month = -1;
+    if (o.orderDate && o.orderDate !== "—") {
+      var mp = parseInt(o.orderDate.split(/[-\/]/)[0]);
+      if (!isNaN(mp) && mp >= 1 && mp <= 12) month = mp - 1;
+    }
+    if (month < 0 && o.ts) {
+      month = new Date(parseFloat(o.ts)*1000).getMonth();
+    }
+    if (month < 0 || month > new Date().getMonth()) return;
+
+    if (!customers[cust]) {
+      var slots = [];
+      for (var i = 0; i <= thisMonth; i++) slots.push([]);
+      customers[cust] = {name:cust, months:slots, products:new Set(), lastOrder:null};
+    }
+    while (customers[cust].months.length <= month) customers[cust].months.push([]);
+
+    var day = parseInt((o.orderDate||"").split(/[-\/]/)[1]) || 1;
+    var ts = new Date(2026, month, day);
+    customers[cust].months[month].push({
+      date: o.orderDate,
+      products: o.product,
+      qty: o.qty,
+      price: o.unitPrice,
+      raw: o.raw
+    });
+    if (!customers[cust].lastOrder || ts > customers[cust].lastOrder) {
+      customers[cust].lastOrder = ts;
+    }
+    if (o.product && o.product !== "—") {
+      o.product.split(",").forEach(function(p){ customers[cust].products.add(p.trim()); });
+    }
+  });
+
+  // 최근 발주순 정렬
+  return Object.values(customers).sort(function(a,b){
+    return (b.lastOrder||0) - (a.lastOrder||0);
+  });
+}
+
+function parseBids(messages) {
+  var bids = [];
+  var today = new Date();
+  messages.forEach(function(m) {
+    var text = extractTextFromMessage(m);
+    if (!text) return;
+    var ts = m.ts ? new Date(parseFloat(m.ts)*1000) : null;
+    if (!/입찰|공고|낙찰|견적/.test(text)) return;
+    var content = text.replace(/\n/g, " ").slice(0,100);
+    var dDayNum = 999;
+    var dDay = "—";
+    var tsStr = ts ? (ts.getMonth()+1) + "/" + ts.getDate() + " " + String(ts.getHours()).padStart(2,"0") + ":" + String(ts.getMinutes()).padStart(2,"0") : "—";
+    var dlm = text.match(/마감[\s:.]*(\d{1,2})[\/\.\-](\d{1,2})/i);
+    if (dlm) {
+      var dlDate = new Date(today.getFullYear(), parseInt(dlm[1])-1, parseInt(dlm[2]));
+      dDayNum = Math.ceil((dlDate - today) / (1000*60*60*24));
+      dDay = dDayNum <= 0 ? "마감" : "D-" + dDayNum;
+    }
+    bids.push({content:content, dDayNum:dDayNum, dDay:dDay, tsStr:tsStr});
+  });
+  bids.sort(function(a,b){ return a.dDayNum - b.dDayNum; });
+  return bids;
+}
+
+// ── 렌더링: 캘린더 ──
 function renderCalendar(visitData) {
   var grid = document.getElementById("calGrid");
   if (!grid) return;
@@ -1229,31 +1412,83 @@ function renderCalendar(visitData) {
     grid.appendChild(cell);
   }
 }// ── 전체 발주 데이터 저장 ──
+var allOrders = [];
 
-function parseBids(messages) {
-  var bids = [];
-  var today = new Date();
-  messages.forEach(function(m) {
-    var text = extractTextFromMessage(m);
-    if (!text) return;
-    var ts = m.ts ? new Date(parseFloat(m.ts)*1000) : null;
-    if (!/입찰|공고|낙찰|견적/.test(text)) return;
-    var content = text.replace(/\n/g, " ").slice(0,100);
-    var dDayNum = 999;
-    var dDay = "—";
-    var tsStr = ts ? (ts.getMonth()+1) + "/" + ts.getDate() + " " + String(ts.getHours()).padStart(2,"0") + ":" + String(ts.getMinutes()).padStart(2,"0") : "—";
-    var dlm = text.match(/마감[\s:.]*(\d{1,2})[\/\.\-](\d{1,2})/i);
-    if (dlm) {
-      var dlDate = new Date(today.getFullYear(), parseInt(dlm[1])-1, parseInt(dlm[2]));
-      dDayNum = Math.ceil((dlDate - today) / (1000*60*60*24));
-      dDay = dDayNum <= 0 ? "마감" : "D-" + dDayNum;
-    }
-    bids.push({content:content, dDayNum:dDayNum, dDay:dDay, tsStr:tsStr});
+// ── 월별 필터 ──
+function filterOrderMonth(month, btn) {
+  // 버튼 스타일
+  document.querySelectorAll("#ord-month-tabs button").forEach(function(b) {
+    b.className = "chip cgr";
   });
-  bids.sort(function(a,b){ return a.dDayNum - b.dDayNum; });
-  return bids;
+  if (btn) btn.className = "chip cb";
+
+  var filtered = month === 0 ? allOrders : allOrders.filter(function(o) {
+    if (!o.orderDate || o.orderDate === "—") return false;
+    var m = parseInt(o.orderDate.split("-")[0]);
+    return m === month;
+  });
+  renderOrdersFiltered(filtered);
 }
 
+// ── 렌더링: 발주 목록 ──
+function renderOrders(orders) {
+  allOrders = orders; // 전체 저장
+  // 기본: 이번달(5월)만 표시
+  var thisMonth = new Date().getMonth() + 1;
+  var filtered = orders.filter(function(o) {
+    if (!o.orderDate || o.orderDate === "—") return false;
+    var m = parseInt(o.orderDate.split("-")[0]);
+    return m === thisMonth;
+  });
+  // 이번달 버튼 활성화
+  document.querySelectorAll("#ord-month-tabs button").forEach(function(b) {
+    b.className = "chip cgr";
+  });
+  var thisBtn = document.getElementById("ord-btn-" + thisMonth);
+  if (thisBtn) thisBtn.className = "chip cb";
+  renderOrdersFiltered(filtered);
+}
+
+function renderOrdersFiltered(orders) {
+  var tbody = document.getElementById("ord-tbody");
+  var wrap = document.getElementById("ord-table-wrap");
+  var noData = document.getElementById("ord-no-data");
+  if (!tbody) return;
+  if (!orders.length) {
+    if (noData) noData.style.display = "block";
+    if (wrap) wrap.style.display = "none";
+    return;
+  }
+  if (noData) noData.style.display = "none";
+  if (wrap) wrap.style.display = "block";
+  var statusMap = {
+    "완료": "<span class=\"chip cg\">완료</span>",
+    "처리중": "<span class=\"chip cy\">처리중</span>",
+    "지연": "<span class=\"chip cr\">지연</span>",
+  };
+  var total = orders.length;
+  var done = orders.filter(function(o){return o.status==="완료";}).length;
+  var delayed = orders.filter(function(o){return o.status==="지연";}).length;
+  var pending = orders.filter(function(o){return o.status==="처리중";}).length;
+  var el;
+  if ((el=document.getElementById("ord-total"))) el.textContent = total+"건";
+  if ((el=document.getElementById("ord-done"))) el.textContent = done+"건";
+  if ((el=document.getElementById("ord-delay"))) el.textContent = delayed+"건";
+  if ((el=document.getElementById("ord-pending"))) el.textContent = pending+"건";
+  tbody.innerHTML = orders.map(function(o) {
+    return "<tr><td><strong>" + o.customer + "</strong></td><td>" + o.product + "</td>" +
+      "<td class=\"mono\">" + o.qty + "</td>" +
+      "<td class=\"mono\" style=\"color:var(--accent)\">" + o.unitPrice + "</td>" +
+      "<td class=\"mono\" style=\"color:var(--text3)\">" + o.orderDate + "</td>" +
+      "<td class=\"mono\" style=\"color:var(--text3)\">" + o.deadline + "</td>" +
+      "<td>" + (statusMap[o.status] || "<span class=\"chip cgr\">—</span>") + "</td>" +
+      "<td style=\"font-size:10px;color:var(--text3);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap\">" + o.raw + "</td></tr>";
+  }).join("");
+  var t = document.getElementById("ord-update-time");
+  if (t) t.textContent = "업데이트: " + new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});
+}
+
+// ── 렌더링: 입찰 ──
 function renderBids(bids) {
   var cardList = document.getElementById("bid-card-list");
   var wrap = document.getElementById("bid-table-wrap");
@@ -1279,185 +1514,153 @@ function renderBids(bids) {
   if (t) t.textContent = "업데이트: " + new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});
 }
 
-// ── 발주 파싱 ──
-function parseOrders(messages) {
-  var orders = [];
-  messages.forEach(function(m) {
-    var isMyMsg = (m.user === MY_USER_ID);
-    if (!isMyMsg && m.blocks) { if (JSON.stringify(m.blocks).includes(MY_USER_ID)) isMyMsg = true; }
-    if (!isMyMsg && m.text && m.text.includes(MY_USER_ID)) isMyMsg = true;
-    if (!isMyMsg) return;
-    var text = extractTextFromMessage(m);
-    if (!text) return;
-    if (!/출고\s*요청|발주|납품\s*요청|입고\s*요청|제공\s*요청|선적|통관/.test(text)) return;
-    var ts = m.ts ? new Date(parseFloat(m.ts)*1000) : null;
-    if (!ts || ts.getFullYear() !== 2026) return;
-    var monthNum = ts.getMonth() + 1;
-    var dateStr = String(monthNum).padStart(2,"0") + "-" + String(ts.getDate()).padStart(2,"0");
-    var flatText = text.replace(/\r?\n/g," ").replace(/\s{2,}/g," ").trim();
-    flatText = flatText.replace(/수\s+렉/g,"수렉").replace(/단\s+가/g,"단가").replace(/품\s+목/g,"품목").replace(/거\s+래\s+처/g,"거래처");
-    var customer = "—";
-    var cp = flatText.match(/거래처\s*[:\uFF1A]\s*([\uAC00-\uD7A3a-zA-Z0-9\xc2�\s]{2,15}?)(?:\s+입고|\s+품목|\s+수렉|\s+단가|$)/);
-    if (cp) { var cand = cp[1].trim().replace(/\s+(입고|품목|수렉|대표|사장).*$/,"").trim(); if (cand.length>=2&&cand.length<=15&&!/비고|작성자|긴급/.test(cand)) customer = cand; }
-    var product = "—";
-    var pm = flatText.match(/품목\s*[:\uFF1A]\s*([^\s:]+(?:\s[^\s:]+)*?)(?:\s+수렉|\s+단가|\s+입고|$)/);
-    if (pm) product = pm[1].trim();
-    if (product==="—") { var prods=[]; for(var key in PRICE_KEYWORDS){if(PRICE_KEYWORDS[key].some(function(k){return flatText.toLowerCase().includes(k);}))prods.push(key);} if(prods.length) product=prods.slice(0,3).join(", "); }
-    var qty = "—";
-    var qp = [
-      /수\s*량\s*[::\uFF1A]\s*([\d,]+\s*(?:포|kg|톤|ton|MT|mt|bag|bags))/i,
-      /([\d,]+)\s*MT/i, /([\d,]+)\s*톤/, /([\d,]+)\s*포(?!\w)/, /([\d,]+)\s*kg/i
-    ];
-    for(var qi=0;qi<qp.length;qi++){var qm=flatText.match(qp[qi]);if(qm){qty=qm[1]?qm[1].trim():qm[0].trim();break;}}
-    if(qty!=="—"&&/포/.test(qty)){var pc=parseInt(qty.replace(/[^\d]/g,""));if(!isNaN(pc))qty=(pc*20).toLocaleString("ko-KR")+"kg";}
-    var unitPrice = "—";
-    var pp = [[/단\s*가\s*[::\uFF1A]\s*([\d,]+)\s*원/,"원/kg"],[/\(([\d,]+)\s*원\/kg\)/,"원/kg"],[/([\d,]+)\s*원\/kg/,"원/kg"],[/([\d,]+)\/kg/i,"원/kg"],[/\(([\d,]+)원\)/,"원/kg"],[/\$([\d,]+(?:\.\d+)?)(?:\/(?:kg|mt|ton))?/i,"$"]];
-    for(var pi=0;pi<pp.length;pi++){var pm2=flatText.match(pp[pi][0]);if(pm2){unitPrice=pp[pi][1]==="$"?"$"+pm2[1]:pm2[1]+"원/kg";break;}}
-    var deadline = "—";
-    var dlm = flatText.match(/(?:납기|ETA|입항|입고일|입고)\s*[::\uFF1A]?\s*(\d{1,2}월\s*\d{1,2}일|\d{1,2}[\/\.\-]\d{1,2})/i);
-    if (dlm) deadline = dlm[1].replace(/\s+/g,"");
-    orders.push({monthNum:monthNum,customer:customer,product:product,qty:qty,unitPrice:unitPrice,orderDate:dateStr,deadline:deadline,raw:flatText.slice(0,220),ts:m.ts});
-  });
-  orders.sort(function(a,b){return parseFloat(a.ts||0)-parseFloat(b.ts||0);});
-  console.log("[Sein] parseOrders:", orders.length, "건 (박제영 출고요청)");
-  return orders;
-}
-
-function parseCompare(myOrders) {
-  var customers = {};
-  var thisMonthIdx = new Date().getMonth();
-  myOrders.forEach(function(o) {
-    var cust = o.customer;
-    if (!cust || cust==="—") return;
-    if (/비고|작성자|긴급|요청사항|black_small/.test(cust)) return;
-    var monthIdx = -1;
-    if (o.ts) { var d=new Date(parseFloat(o.ts)*1000); if(d.getFullYear()===2026) monthIdx=d.getMonth(); }
-    if (monthIdx<0 && o.monthNum) monthIdx = o.monthNum-1;
-    if (monthIdx<0||monthIdx>thisMonthIdx) return;
-    if (!customers[cust]) { var slots=[]; for(var i=0;i<=thisMonthIdx;i++) slots.push([]); customers[cust]={name:cust,months:slots,products:new Set(),lastOrder:null}; }
-    while(customers[cust].months.length<=monthIdx) customers[cust].months.push([]);
-    customers[cust].months[monthIdx].push({date:o.orderDate,products:o.product,qty:o.qty,price:o.unitPrice,raw:o.raw});
-    var day=parseInt((o.orderDate||"").split(/[-\/]/)[1])||1;
-    var ed=new Date(2026,monthIdx,day);
-    if(!customers[cust].lastOrder||ed>customers[cust].lastOrder) customers[cust].lastOrder=ed;
-    if(o.product&&o.product!=="—") o.product.split(",").forEach(function(p){customers[cust].products.add(p.trim());});
-  });
-  return Object.values(customers).sort(function(a,b){return (b.lastOrder||0)-(a.lastOrder||0);});
-}
-
-var allOrders = [];
-
-function filterOrderMonth(month, btn) {
-  document.querySelectorAll("#ord-month-tabs button").forEach(function(b){b.className="chip cgr";});
-  if(btn) btn.className="chip cb";
-  var filtered = month===0 ? allOrders : allOrders.filter(function(o){return o.monthNum===month;});
-  renderOrdersFiltered(filtered);
-}
-
-function renderOrders(orders) {
-  allOrders = orders;
-  var thisMonth = new Date().getMonth()+1;
-  var filtered = orders.filter(function(o){return o.monthNum===thisMonth;});
-  document.querySelectorAll("#ord-month-tabs button").forEach(function(b){b.className="chip cgr";});
-  var tb=document.getElementById("ord-btn-"+thisMonth); if(tb) tb.className="chip cb";
-  renderOrdersFiltered(filtered);
-  var el;
-  var custSet=new Set(orders.map(function(o){return o.customer;}).filter(function(c){return c!=="—";}));
-  var prodSet=new Set(orders.map(function(o){return o.product;}).filter(function(p){return p!=="—";}));
-  if((el=document.getElementById("ord-total"))) el.textContent=orders.length+"건";
-  if((el=document.getElementById("ord-cust-cnt"))) el.textContent=custSet.size+"곳";
-  if((el=document.getElementById("ord-this-month"))) el.textContent=filtered.length+"건";
-  if((el=document.getElementById("ord-prod-cnt"))) el.textContent=prodSet.size+"종";
-}
-
-function renderOrdersFiltered(orders) {
-  var tbody=document.getElementById("ord-tbody"),wrap=document.getElementById("ord-table-wrap"),noData=document.getElementById("ord-no-data");
-  if(!tbody) return;
-  if(!orders.length){if(noData)noData.style.display="block";if(wrap)wrap.style.display="none";return;}
-  if(noData)noData.style.display="none";
-  if(wrap)wrap.style.display="block";
-  tbody.innerHTML=orders.map(function(o){
-    var ml="<span class=\"chip cb\" style=\"font-size:10px;padding:1px 6px;\">"+o.monthNum+"월</span>";
-    var ps=o.unitPrice!=="—"?"color:var(--accent);font-weight:600;":"color:var(--text3);";
-    var cs=o.customer!=="—"?"font-weight:700;":"color:var(--text3);";
-    return "<tr><td>"+ml+"</td><td class=\"mono\" style=\"color:var(--text3)\">"+o.orderDate+"</td><td style=\""+cs+"\">"+o.customer+"</td><td style=\"color:var(--text2)\">"+o.product+"</td><td class=\"mono\">"+o.qty+"</td><td class=\"mono\" style=\""+ps+"\">"+o.unitPrice+"</td><td class=\"mono\" style=\"color:var(--text3)\">"+o.deadline+"</td><td style=\"font-size:10px;color:var(--text3);max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;\" title=\""+o.raw.replace(/"/g,"&quot;")+"\">"+o.raw+"</td></tr>";
-  }).join("");
-  var t=document.getElementById("ord-update-time"); if(t) t.textContent="업데이트: "+new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});
-}
-
+// ── 렌더링: 거래처 비교 ──
 var _compareData = [];
 function renderCompare(customers) {
-  var tbody=document.getElementById("compare-tbody"),wrap=document.getElementById("compare-table-wrap"),noData=document.getElementById("compare-no-data");
-  if(!tbody) return;
-  if(!customers||!customers.length){if(noData)noData.style.display="block";if(wrap)wrap.style.display="none";return;}
-  if(noData)noData.style.display="none";
-  if(wrap)wrap.style.display="block";
-  var now=new Date(),thisMonthNum=now.getMonth()+1;
-  var thead=document.getElementById("compare-thead");
-  if(thead){var hdr="<tr><th>거래처</th>";for(var i=1;i<=thisMonthNum;i++)hdr+="<th class=\"r\">"+i+"월</th>";hdr+="<th class=\"r\">합제</th><th>주요품목</th><th>최근발주</th></tr>";thead.innerHTML=hdr;}
-  var titleEl=document.getElementById("compare-card-title");
-  if(titleEl) titleEl.textContent="📊 거래처별 월별 출고요청 현황 (1~"+thisMonthNum+"월) · 박제영";
-  tbody.innerHTML=customers.map(function(c){
-    while(c.months.length<thisMonthNum) c.months.push([]);
-    var total=c.months.reduce(function(s,m){return s+m.length;},0);
-    var lastDate=c.lastOrder?String(c.lastOrder.getMonth()+1).padStart(2,"0")+"-"+String(c.lastOrder.getDate()).padStart(2,"0"):"—";
-    var prods=Array.from(c.products).filter(Boolean).slice(0,4).join(", ")||"—";
-    var cells=c.months.slice(0,thisMonthNum).map(function(events,mi){
-      if(!events.length) return "<td class=\"r mono\" style=\"color:var(--text3)\">—</td>";
-      return "<td class=\"r mono\" style=\"color:var(--accent);cursor:pointer;\" onclick=\"showTimeline(\'"+encodeURIComponent(c.name)+"\',"+mi+")\" <span style=\"text-decoration:underline dotted\">"+events.length+"건</span></td>";
+  var tbody = document.getElementById("compare-tbody");
+  var wrap  = document.getElementById("compare-table-wrap");
+  var noData= document.getElementById("compare-no-data");
+  if (!tbody) return;
+
+  if (!customers || !customers.length) {
+    if (noData) noData.style.display = "block";
+    if (wrap)   wrap.style.display   = "none";
+    return;
+  }
+  if (noData) noData.style.display = "none";
+  if (wrap)   wrap.style.display   = "block";
+
+  var thisMonth = new Date().getMonth() + 1; // 1-based 표시용
+
+  // 헤더 동적 생성
+  var thead = document.getElementById("compare-thead");
+  if (thead) {
+    var hdr = "<tr><th>거래처</th>";
+    for (var i = 1; i <= thisMonth; i++) hdr += "<th class='r'>" + i + "월</th>";
+    hdr += "<th class='r'>합계</th><th>주요품목</th><th>최근발주</th></tr>";
+    thead.innerHTML = hdr;
+  }
+
+  // 카드 타이틀
+  var titleEl = document.querySelector("#p-compare .card-title");
+  if (titleEl) titleEl.textContent = "📊 거래처별 월별 공급 현황 (1월~" + thisMonth + "월)";
+
+  tbody.innerHTML = customers.map(function(c) {
+    while (c.months.length < thisMonth) c.months.push([]);
+    var total = c.months.reduce(function(s,m){ return s + m.length; }, 0);
+    var lastDate = c.lastOrder
+      ? String(c.lastOrder.getMonth()+1).padStart(2,"0")+"-"+String(c.lastOrder.getDate()).padStart(2,"0")
+      : "—";
+    var prods = Array.from(c.products).filter(Boolean).slice(0,3).join(", ") || "—";
+    var cells = c.months.slice(0, thisMonth).map(function(events, mi) {
+      if (!events.length) return "<td class='r mono' style='color:var(--text3)'>—</td>";
+      return "<td class=\"r mono\" style=\"color:var(--accent);cursor:pointer;\" onclick=\"showTimeline('"+encodeURIComponent(c.name)+"',"+mi+")\" title=\"상세보기\"><span style=\"text-decoration:underline dotted\">"+events.length+"건</span></td>";
     }).join("");
-    return "<tr><td><strong style=\"cursor:pointer;\" onclick=\"renderTimeline(_compareData,\'"+c.name+"\',null,-1)\">"+c.name+"</strong></td>"+cells+"<td class=\"r mono\" style=\"color:var(--green);font-weight:700;\">"+total+"건</td><td style=\"font-size:11px;color:var(--text2)\">"+prods+"</td><td class=\"mono\" style=\"color:var(--text3)\">"+lastDate+"</td></tr>";
+    return "<tr><td><strong>"+c.name+"</strong></td>"+cells+
+      "<td class='r mono' style='color:var(--green);font-weight:600'>"+total+"건</td>"+
+      "<td style='font-size:11px;color:var(--text2)'>"+prods+"</td>"+
+      "<td class='mono' style='color:var(--text3)'>"+lastDate+"</td></tr>";
   }).join("");
-  _compareData=customers;
-  renderTimeline(customers,null,now.getMonth(),now.getMonth()+1);
-  document.querySelectorAll("#timeline-month-tabs button").forEach(function(b){b.className="chip cgr";});
-  var tb=document.getElementById("tl-btn-"+thisMonthNum); if(tb) tb.className="chip cb";
+
+  // 이번달 타임라인 기본 표시
+  renderTimeline(customers, null, new Date().getMonth(), new Date().getMonth()+1);
+  document.querySelectorAll("#timeline-month-tabs button").forEach(function(b){ b.className="chip cgr"; });
+  var tb = document.getElementById("tl-btn-"+(new Date().getMonth()+1));
+  if (tb) tb.className = "chip cb";
   renderScreener(customers);
 }
 
-function showTimeline(custEncoded,monthIdx){renderTimeline(_compareData,decodeURIComponent(custEncoded),monthIdx,monthIdx+1);}
-
-function filterTimeline(month,btn){
-  document.querySelectorAll("#timeline-month-tabs button").forEach(function(b){b.className="chip cgr";});
-  if(btn) btn.className="chip cb";
-  if(month===0) renderTimeline(_compareData,null,-1,-1);
-  else renderTimeline(_compareData,null,month-1,month);
+function showTimeline(custEncoded, monthIdx) {
+  var cust = decodeURIComponent(custEncoded);
+  var customers = window._compareData || [];
+  renderTimeline(customers, cust, monthIdx, monthIdx+1);
 }
 
-function renderTimeline(customers,filterCust,filterMonthIdx,displayMonth){
-  _compareData=customers;
-  var box=document.getElementById("compare-timeline"); if(!box) return;
-  var items=[];
-  customers.forEach(function(c){
-    if(filterCust&&c.name!==filterCust) return;
-    c.months.forEach(function(events,mi){
-      if(filterMonthIdx>=0&&mi!==filterMonthIdx) return;
-      events.forEach(function(e){items.push({cust:c.name,monthIdx:mi,event:e});});
+function filterTimeline(month, btn) {
+  document.querySelectorAll("#timeline-month-tabs button").forEach(function(b){ b.className="chip cgr"; });
+  if (btn) btn.className = "chip cb";
+  var customers = window._compareData || [];
+  if (month === 0) renderTimeline(customers, null, -1, -1);
+  else renderTimeline(customers, null, month-1, month);
+}
+
+function renderTimeline(customers, filterCust, filterMonth, displayMonth) {
+  window._compareData = customers;
+  var box = document.getElementById("compare-timeline");
+  if (!box) return;
+
+  var items = [];
+  customers.forEach(function(c) {
+    if (filterCust && c.name !== filterCust) return;
+    c.months.forEach(function(events, mi) {
+      if (filterMonth >= 0 && mi !== filterMonth) return;
+      events.forEach(function(e) {
+        items.push({cust:c.name, month:mi+1, event:e});
+      });
     });
   });
-  if(!items.length){box.innerHTML="<div style=\"color:var(--text3);font-size:11px;text-align:center;padding:16px;\">해당 기간 출고요청 없음</div>";return;}
-  items.sort(function(a,b){var da=(a.event.date||"").replace(/[-\/]/g,""),db=(b.event.date||"").replace(/[-\/]/g,"");return db.localeCompare(da);});
-  box.innerHTML=items.map(function(item){
-    var e=item.event;
-    var dl=(item.monthIdx+1)+"/"+(e.date?e.date.split(/[-\/]/)[1]:"?");
-    var pt=e.price&&e.price!=="—"?"<span class=\"chip cb\" style=\"font-size:10px;padding:1px 6px;\">"+e.price+"</span> ":"";
-    var qt=e.qty&&e.qty!=="—"?"<span style=\"font-size:11px;color:var(--text2)\">"+e.qty+"</span> ":"";
-    return "<div style=\"display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);\"><span style=\"color:var(--text3);font-size:10px;min-width:36px;flex-shrink:0;\">"+dl+"</span><div style=\"flex:1;min-width:0;\"><span style=\"font-weight:700;color:var(--accent);margin-right:8px;\">"+item.cust+"</span><span style=\"font-size:12px;color:var(--text);\">"+((e.products&&e.products!=="—")?e.products:"")+"</span> "+qt+pt+(e.raw?"<div style=\"font-size:10px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:600px;\">"+e.raw+"</div>":"")+"</div></div>";
+
+  if (!items.length) {
+    box.innerHTML = "<div style='color:var(--text3);font-size:11px;text-align:center;padding:16px;'>데이터 없음</div>";
+    return;
+  }
+
+  // 날짜 내림차순 정렬
+  items.sort(function(a,b){
+    var da = (a.event.date||"").replace(/[-\/]/g,"");
+    var db = (b.event.date||"").replace(/[-\/]/g,"");
+    return db.localeCompare(da);
+  });
+
+  box.innerHTML = items.map(function(item) {
+    var e = item.event;
+    var dateLabel = item.month + "/" + (e.date ? e.date.split(/[-\/]/)[1] : "?");
+    var priceTag = e.price && e.price !== "—" ? "<span class='chip cb' style='font-size:10px;padding:1px 6px;'>"+e.price+"</span>" : "";
+    var qtyTag   = e.qty   && e.qty   !== "—" ? "<span style='font-size:11px;color:var(--text2);margin-left:4px;'>"+e.qty+"</span>" : "";
+    return "<div style='display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);'>" +
+      "<span style='color:var(--text3);font-size:10px;min-width:32px;'>"+dateLabel+"</span>" +
+      "<div style='flex:1;'>" +
+        "<span style='font-weight:600;color:var(--accent);margin-right:8px;'>"+item.cust+"</span>" +
+        "<span style='font-size:12px;color:var(--text1);'>"+((e.products&&e.products!=="—")?e.products:"")+"</span>" +
+        qtyTag + " " + priceTag +
+        (e.raw ? "<div style='font-size:10px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:600px;'>"+e.raw+"</div>" : "") +
+      "</div>" +
+    "</div>";
   }).join("");
 }
 
-function renderScreener(customers){
-  var tbody=document.getElementById("screener-tbody"); if(!tbody||!customers.length) return;
-  var thisMonthIdx=new Date().getMonth();
-  var sorted=customers.slice().sort(function(a,b){var at=a.months.reduce(function(s,m){return s+m.length;},0),bt=b.months.reduce(function(s,m){return s+m.length;},0);return bt-at;});
-  tbody.innerHTML=sorted.map(function(c,i){
-    var tmc=c.months[thisMonthIdx]?c.months[thisMonthIdx].length:0;
-    var total=c.months.reduce(function(s,m){return s+m.length;},0);
-    var lastDate=c.lastOrder?String(c.lastOrder.getMonth()+1).padStart(2,"0")+"-"+String(c.lastOrder.getDate()).padStart(2,"0"):"—";
-    var ps=new Set(); c.months.forEach(function(mo){mo.forEach(function(e){if(e.products&&e.products!=="—")e.products.split(",").forEach(function(p){ps.add(p.trim());});});});
-    var prods=Array.from(ps).slice(0,4).join(", ")||"—";
-    var isActive=c.lastOrder&&(new Date()-c.lastOrder)<30*24*60*60*1000;
-    return "<tr><td class=\"mono\" style=\"color:var(--text3)\">"+(i+1)+"</td><td><strong style=\"cursor:pointer;\" onclick=\"renderTimeline(_compareData,\'"+c.name+"\',null,-1)\">"+c.name+"</strong></td><td style=\"font-size:11px;color:var(--text2)\">"+prods+"</td><td class=\"mono\" style=\"color:var(--accent);font-weight:600;\">"+(tmc>0?tmc+"건":"—")+"</td><td class=\"mono\" style=\"color:var(--text3)\">"+lastDate+"</td><td><span class=\"dot "+(isActive?"dg":"dr")+"\"></span></td></tr>";
+function renderScreener(customers) {
+  var tbody = document.getElementById("screener-tbody");
+  if (!tbody || !customers.length) return;
+  var thisMonth = new Date().getMonth(); // 4 = 5월
+  // 총발주건수 기준으로 정렬
+  var sorted = customers.slice().sort(function(a,b) {
+    var at = a.months.reduce(function(s,m){return s+m.length;},0);
+    var bt = b.months.reduce(function(s,m){return s+m.length;},0);
+    return bt - at;
+  });
+  tbody.innerHTML = sorted.map(function(c, i) {
+    var thisMonthCnt = c.months[thisMonth] ? c.months[thisMonth].length : 0;
+    var total = c.months.reduce(function(a,b){return a+b.length;},0);
+    var lastDate = c.lastOrder ? String(c.lastOrder.getMonth()+1).padStart(2,"0")+"-"+String(c.lastOrder.getDate()).padStart(2,"0") : "—";
+    // 주요품목 중복 제거
+    var prodSet = new Set();
+    c.months.forEach(function(mo) {
+      mo.forEach(function(e) {
+        if (e.products && e.products !== "(품목미상)") {
+          e.products.split(",").forEach(function(p){ prodSet.add(p.trim()); });
+        }
+      });
+    });
+    var prods = Array.from(prodSet).slice(0,4).join(", ") || "—";
+    var isActive = c.lastOrder && (new Date() - c.lastOrder) < 30*24*60*60*1000;
+    return "<tr>" +
+      "<td class=\"mono\" style=\"color:var(--text3)\">" + (i+1) + "</td>" +
+      "<td><strong style=\"cursor:pointer;\" onclick=\"renderTimeline(_compareData,'" + c.name + "',null,null)\">" + c.name + "</strong></td>" +
+      "<td style=\"font-size:11px;color:var(--text2)\">" + prods + "</td>" +
+      "<td class=\"mono\" style=\"color:var(--accent);font-weight:600;\">" + (thisMonthCnt > 0 ? thisMonthCnt+"건" : "—") + "</td>" +
+      "<td class=\"mono\" style=\"color:var(--text3)\">" + lastDate + "</td>" +
+      "<td><span class=\"dot " + (isActive?"dg":"dr") + "\"></span></td></tr>";
   }).join("");
 }
 
@@ -1889,7 +2092,7 @@ async function loadSlackFeeds() {
   } else {
     renderCalendar({});
   }
-  var orders = await fetchSlack(CHANNELS["발주"], 200);
+  var orders = await fetchSlack(CHANNELS["발주"], 500);
   console.log("[Sein] 발주:", orders.length, "건, 박제영:", orders.filter(function(m){return m.user===MY_USER_ID;}).length, "건");
   if (orders.length) {
     extractDollarPrices(orders);
