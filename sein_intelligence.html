@@ -2055,7 +2055,7 @@ async function loadSlackFeeds() {
   } else {
     renderCalendar({});
   }
-  var orders = await fetchSlack(CHANNELS["발주"], 200);
+  var orders = await fetchSlack(CHANNELS["발주"], 500);
   console.log("[Sein] 발주:", orders.length, "건, 박제영:", orders.filter(function(m){return m.user===MY_USER_ID;}).length, "건");
   if (orders.length) {
     extractDollarPrices(orders);
