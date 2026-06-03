@@ -949,15 +949,51 @@ function extractTextFromMessage(m) {
 
 // ── Slack 호출 ──
 async function fetchSlack(channel, limit) {
-  limit = limit || 200;
+  // 2026-01-01 00:00 KST = unix 1735657200
+  var YEAR_START = "1735657200";
+  var allMessages = [];
+  var seen = {};
+
+  // 1차: oldest=2026-01-01부터 200건 수집
   try {
-    var res = await fetch(PROXY_URL + "/slack/messages?channel=" + channel + "&limit=" + limit);
-    var data = await res.json();
-    return data.ok ? (data.messages || []) : [];
-  } catch(e) {
-    console.warn("Slack 오류:", e.message);
-    return [];
-  }
+    var url1 = PROXY_URL + "/slack/messages?channel=" + channel + "&limit=200&oldest=" + YEAR_START;
+    var r1 = await fetch(url1);
+    var d1 = await r1.json();
+    if (d1.ok && d1.messages) {
+      d1.messages.forEach(function(m){ if(!seen[m.ts]){ allMessages.push(m); seen[m.ts]=true; } });
+      console.log("[Sein] 1차(oldest):", d1.messages.length, "건");
+      // cursor 있으면 추가 페이지 수집 (최대 8페이지 = 최대 1600건)
+      var cursor = d1.response_metadata && d1.response_metadata.next_cursor;
+      var pageCount = 0;
+      while (cursor && pageCount < 8) {
+        try {
+          var urlC = PROXY_URL + "/slack/messages?channel=" + channel + "&limit=200&cursor=" + encodeURIComponent(cursor);
+          var rC = await fetch(urlC);
+          var dC = await rC.json();
+          if (!dC.ok || !dC.messages || !dC.messages.length) break;
+          dC.messages.forEach(function(m){ if(!seen[m.ts]){ allMessages.push(m); seen[m.ts]=true; } });
+          console.log("[Sein] cursor페이지" + (pageCount+1) + ":", dC.messages.length, "건");
+          cursor = dC.response_metadata && dC.response_metadata.next_cursor;
+          pageCount++;
+        } catch(e2){ break; }
+      }
+    }
+  } catch(e){ console.warn("[Sein] 1차 실패:", e.message); }
+
+  // 2차: 최신 200건 (중복 제거 후 합산)
+  try {
+    var url2 = PROXY_URL + "/slack/messages?channel=" + channel + "&limit=200";
+    var r2 = await fetch(url2);
+    var d2 = await r2.json();
+    if (d2.ok && d2.messages) {
+      var added = 0;
+      d2.messages.forEach(function(m){ if(!seen[m.ts]){ allMessages.push(m); seen[m.ts]=true; added++; } });
+      console.log("[Sein] 2차(최신):", d2.messages.length, "건 (신규:", added, "건)");
+    }
+  } catch(e){ console.warn("[Sein] 2차 실패:", e.message); }
+
+  console.log("[Sein] fetchSlack 최종:", channel, "→", allMessages.length, "건");
+  return allMessages;
 }
 
 // ── 달러 매입가 추출 ──
