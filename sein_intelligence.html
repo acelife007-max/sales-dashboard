@@ -1390,27 +1390,28 @@ function renderCompare(customers) {
   var tbody=document.getElementById("compare-tbody"),wrap=document.getElementById("compare-table-wrap"),noData=document.getElementById("compare-no-data");
   if(!tbody) return;
   if(!customers||!customers.length){if(noData)noData.style.display="block";if(wrap)wrap.style.display="none";return;}
-  if(noData)noData.style.display="none"; if(wrap)wrap.style.display="block";
-  var now=new Date(),tmn=now.getMonth()+1;
+  if(noData)noData.style.display="none";
+  if(wrap)wrap.style.display="block";
+  var now=new Date(),thisMonthNum=now.getMonth()+1;
   var thead=document.getElementById("compare-thead");
-  if(thead){var hdr="<tr><th>\xea\xb1\xb0\xeb\x9e\x98\xec\xb2\x98</th>";for(var i=1;i<=tmn;i++)hdr+="<th class='r'>"+i+"\xec\x9b\x94</th>";hdr+="<th class='r'>\xed\x95\xa9\xec\xa0\x9c</th><th>\xec\xa3\xbc\xec\x9a\x94\xed\x92\x88\xeb\xaa\xa9</th><th>\xec\xb5\x9c\xea\xb7\xbc\xeb\xb0\x9c\xec\xa3\xbc</th></tr>";thead.innerHTML=hdr;}
+  if(thead){var hdr="<tr><th>거래처</th>";for(var i=1;i<=thisMonthNum;i++)hdr+="<th class=\"r\">"+i+"월</th>";hdr+="<th class=\"r\">합제</th><th>주요품목</th><th>최근발주</th></tr>";thead.innerHTML=hdr;}
   var titleEl=document.getElementById("compare-card-title");
-  if(titleEl) titleEl.textContent="\xf0\x9f\x93\x8a \xea\xb1\xb0\xeb\x9e\x98\xec\xb2\x98\xeb\xb3\x84 \xec\x9b\x94\xeb\xb3\x84 \xec\xb6\x9c\xea\xb3\xa0\xec\x9a\x94\xec\xb2\xad \xed\x98\x84\xed\x99\xa9 (1~"+tmn+"\xec\x9b\x94) \xc2\xb7 \xeb\xb0\x95\xec\xa0\x9c\xec\x98\x81";
+  if(titleEl) titleEl.textContent="📊 거래처별 월별 출고요청 현황 (1~"+thisMonthNum+"월) · 박제영";
   tbody.innerHTML=customers.map(function(c){
-    while(c.months.length<tmn) c.months.push([]);
+    while(c.months.length<thisMonthNum) c.months.push([]);
     var total=c.months.reduce(function(s,m){return s+m.length;},0);
-    var lastDate=c.lastOrder?String(c.lastOrder.getMonth()+1).padStart(2,"0")+"-"+String(c.lastOrder.getDate()).padStart(2,"0"):"\xe2\x80\x94";
-    var prods=Array.from(c.products).filter(Boolean).slice(0,4).join(", ")||"\xe2\x80\x94";
-    var cells=c.months.slice(0,tmn).map(function(events,mi){
-      if(!events.length) return "<td class='r mono' style='color:var(--text3)'>\xe2\x80\x94</td>";
-      return "<td class='r mono' style='color:var(--accent);cursor:pointer;' data-cust='"+encodeURIComponent(c.name)+"' data-mi='"+mi+"' onclick='showTimeline(this.dataset.cust,this.dataset.mi)'><span style='text-decoration:underline dotted'>"+events.length+"\xea\xb1\xb4</span></td>";
+    var lastDate=c.lastOrder?String(c.lastOrder.getMonth()+1).padStart(2,"0")+"-"+String(c.lastOrder.getDate()).padStart(2,"0"):"—";
+    var prods=Array.from(c.products).filter(Boolean).slice(0,4).join(", ")||"—";
+    var cells=c.months.slice(0,thisMonthNum).map(function(events,mi){
+      if(!events.length) return "<td class=\"r mono\" style=\"color:var(--text3)\">—</td>";
+      return "<td class=\"r mono\" style=\"color:var(--accent);cursor:pointer;\" onclick=\"showTimeline(\'"+encodeURIComponent(c.name)+"\',"+mi+")\" <span style=\"text-decoration:underline dotted\">"+events.length+"건</span></td>";
     }).join("");
-    return "<tr><td><strong style='cursor:pointer;' data-cust='"+encodeURIComponent(c.name)+"' onclick='renderTimeline(_compareData,decodeURIComponent(this.dataset.cust),now.getMonth(),now.getMonth()+1)'>"+c.name+"</strong></td>"+cells+"<td class='r mono' style='color:var(--green);font-weight:700;'>"+total+"\xea\xb1\xb4</td><td style='font-size:11px;color:var(--text2)'>"+prods+"</td><td class='mono' style='color:var(--text3)'>"+lastDate+"</td></tr>";
+    return "<tr><td><strong style=\"cursor:pointer;\" onclick=\"renderTimeline(_compareData,\'"+c.name+"\',null,-1)\">"+c.name+"</strong></td>"+cells+"<td class=\"r mono\" style=\"color:var(--green);font-weight:700;\">"+total+"건</td><td style=\"font-size:11px;color:var(--text2)\">"+prods+"</td><td class=\"mono\" style=\"color:var(--text3)\">"+lastDate+"</td></tr>";
   }).join("");
   _compareData=customers;
   renderTimeline(customers,null,now.getMonth(),now.getMonth()+1);
   document.querySelectorAll("#timeline-month-tabs button").forEach(function(b){b.className="chip cgr";});
-  var tb=document.getElementById("tl-btn-"+tmn); if(tb) tb.className="chip cb";
+  var tb=document.getElementById("tl-btn-"+thisMonthNum); if(tb) tb.className="chip cb";
   renderScreener(customers);
 }
 
