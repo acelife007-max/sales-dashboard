@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEIN INTELLIGENCE</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D1117;--w:#161B22;--ink:#E6EDF3;--ink2:#8B949E;
+  --muted:#8B949E;--light:#484F58;--bdr:#30363D;--bdr2:#21262D;
+  --blue:#58A6FF;--blue-bg:rgba(88,166,255,.1);--blue-bdr:rgba(88,166,255,.3);
+  --green:#3FB950;--green-bg:rgba(63,185,80,.1);--green-bdr:rgba(63,185,80,.3);
+  --red:#F85149;--red-bg:rgba(248,81,73,.1);--red-bdr:rgba(248,81,73,.3);
+  --amber:#D29922;--amber-bg:rgba(210,153,34,.1);
+  --purple:#BC8CFF;--purple-bg:rgba(188,140,255,.1);
+  --nav-h:58px;--tick-h:38px;
+  --mono:'DM Mono',monospace;--sans:'Pretendard',-apple-system,sans-serif;
+  --r:12px;--r-sm:8px;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:13.5px;min-height:100vh}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:300;background:rgba(13,17,23,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 24px;height:var(--nav-h);gap:8px}
+.brand{display:flex;align-items:center;gap:10px;margin-right:12px}
+.brand-sq{width:34px;height:34px;background:linear-gradient(135deg,#58A6FF,#3FB950);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#0D1117;font-weight:900;font-size:17px;letter-spacing:-.5px;flex-shrink:0}
+.brand-name{font-size:14px;font-weight:800;letter-spacing:-.2px;color:var(--ink)}
+.brand-sub{font-size:10.5px;color:var(--muted);font-weight:400;margin-top:1px}
+.ntabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1}
+.ntabs::-webkit-scrollbar{display:none}
+.nt{padding:7px 15px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--muted);font-family:var(--sans);transition:all .14s;white-space:nowrap}
+.nt:hover{background:var(--bdr2);color:var(--ink)}
+.nt.on{background:var(--blue);color:#0D1117}
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:17px;height:17px;background:var(--red);color:#fff;border-radius:9px;font-size:10px;font-weight:800;padding:0 4px;margin-left:5px}
+.live-btn{margin-left:auto;padding:7px 14px;border-radius:20px;border:1.5px solid var(--green-bdr);background:var(--green-bg);color:var(--green);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--sans);white-space:nowrap;display:flex;align-items:center;gap:5px;flex-shrink:0}
+.dot-live{width:7px;height:7px;background:var(--green);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* TICKER */
+.ticker{background:#0D1117;border-bottom:1px solid var(--bdr);display:flex;align-items:center;padding:0 24px;height:var(--tick-h);gap:5px;overflow-x:auto;scrollbar-width:none;position:sticky;top:var(--nav-h);z-index:200}
+.ticker::-webkit-scrollbar{display:none}
+.tick{display:flex;align-items:center;gap:5px;padding:3px 10px;background:var(--w);border:1px solid var(--bdr);border-radius:20px;white-space:nowrap;font-size:11.5px}
+.tk{color:var(--muted);font-weight:500}
+.tv{font-family:var(--mono);font-weight:600;font-size:11px}
+.tv.up{color:var(--red)}.tv.dn{color:var(--blue)}.tv.eq{color:var(--light)}
+
+/* PAGES */
+.page{display:none}.page.on{display:block;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.wrap{max-width:1240px;margin:0 auto;padding:22px 24px 48px}
+
+/* GRID UTILS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.mb16{margin-bottom:16px}
+
+/* CARD */
+.card{background:var(--w);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden}
+.card-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;border-bottom:1px solid var(--bdr2)}
+.card-title{font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px}
+.card-link{font-size:12px;color:var(--blue);cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .13s;white-space:nowrap}
+.card-link:hover{background:var(--blue-bg)}
+
+/* STAT CARDS */
+.sc{background:var(--w);border:1px solid var(--bdr);border-radius:var(--r);padding:20px 22px;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.sc.accent-b::before{background:linear-gradient(90deg,var(--blue),#79C0FF)}
+.sc.accent-g::before{background:linear-gradient(90deg,var(--green),#56D364)}
+.sc.accent-r::before{background:linear-gradient(90deg,var(--red),#FF7B72)}
+.sc.accent-a::before{background:linear-gradient(90deg,var(--amber),#E3B341)}
+.sc.accent-p::before{background:linear-gradient(90deg,var(--purple),#D2A8FF)}
+.sc-label{font-size:10.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.sc-val{font-family:var(--mono);font-size:40px;font-weight:600;letter-spacing:-2px;line-height:1;color:var(--ink);margin-bottom:8px}
+.sc-sub{font-size:12px;color:var(--muted);line-height:1.5}
+.sc.dark{background:#1C2128;border-color:var(--bdr)}
+.sc.dark::before{display:none}
+.sc.dark .sc-label{color:rgba(230,237,243,.4)}
+.sc.dark .sc-val{font-family:var(--sans);font-size:24px;font-weight:800;letter-spacing:-.5px;line-height:1.2;color:#fff}
+.sc.dark .sc-sub{color:rgba(230,237,243,.5)}
+
+/* TAGS */
+.tag{display:inline-flex;align-items:center;gap:3px;margin-top:10px;padding:4px 10px;border-radius:20px;font-size:11.5px;font-weight:700}
+.tag-up{background:var(--red-bg);color:var(--red)}
+.tag-dn{background:var(--blue-bg);color:var(--blue)}
+.tag-ok{background:var(--green-bg);color:var(--green)}
+.tag-n{background:var(--bdr2);color:var(--muted)}
+.tag-a{background:var(--amber-bg);color:var(--amber)}
+
+/* ALERT LIST */
+.alist{padding:8px 16px 14px;display:flex;flex-direction:column;gap:6px}
+.ai{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px}
+.ai.dn{background:var(--blue-bg)}.ai.up{background:var(--red-bg)}.ai.ok{background:var(--green-bg)}.ai.neu{background:var(--bdr2)}
+.ai-ico{font-size:15px;flex-shrink:0;margin-top:1px}
+.ai-t{font-size:12.5px;font-weight:700;line-height:1.35}
+.ai-s{font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+
+/* PRICE TABLE */
+.ptbl{padding:2px 0}
+.pr{display:flex;align-items:center;gap:10px;padding:9px 18px;border-bottom:1px solid var(--bdr2);transition:background .1s}
+.pr:last-child{border-bottom:none}.pr:hover{background:var(--bdr2)}
+.pd{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.pn{flex:1;font-size:13px;font-weight:500}
+.pv{font-family:var(--mono);font-size:12.5px}
+.pu{font-size:11px;color:var(--light)}
+.pc{font-size:11.5px;font-weight:700;min-width:68px;text-align:right;font-family:var(--mono)}
+
+/* ORDER LIST */
+.olist{padding:2px 0 8px}
+.oi{display:flex;align-items:center;gap:10px;padding:9px 18px;border-bottom:1px solid var(--bdr2);transition:background .1s}
+.oi:last-child{border-bottom:none}.oi:hover{background:var(--bdr2)}
+.pchip{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:800;flex-shrink:0}
+.pj{background:var(--blue-bg);color:var(--blue)}
+.oi-info{flex:1;min-width:0}
+.oi-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.oi-sub{font-size:11px;color:var(--muted);margin-top:1px}
+.status{padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:700;flex-shrink:0}
+.st-d{background:var(--green-bg);color:var(--green)}
+.st-p{background:var(--amber-bg);color:var(--amber)}
+
+/* BAR ROWS */
+.brow{display:flex;align-items:center;gap:10px;padding:8px 18px;border-bottom:1px solid var(--bdr2)}
+.brow:last-child{border-bottom:none}
+.bn{width:120px;font-size:11.5px;font-weight:600;color:var(--muted);flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bbg{flex:1;height:6px;background:var(--bdr2);border-radius:3px;overflow:hidden}
+.bfg{height:100%;border-radius:3px;transition:width 1.3s cubic-bezier(.4,0,.2,1)}
+.bv{font-family:var(--mono);font-size:11.5px;font-weight:600;min-width:50px;text-align:right;flex-shrink:0}
+
+/* CALENDAR */
+.cw{padding:0 16px 16px}
+.cm{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:12px 0 10px;border-bottom:1px solid var(--bdr2);margin-bottom:8px}
+.cdow{display:grid;grid-template-columns:repeat(5,1fr);text-align:center;font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--light);margin-bottom:5px}
+.cg{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.cg{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.cd{min-height:90px;padding:7px 8px;border-radius:10px;border:1px solid var(--bdr);background:#161B22;cursor:pointer;transition:all .14s;display:flex;flex-direction:column}
+.cd:hover:not(.emp){border-color:var(--blue-bdr);background:#1C2128;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+.cd.busy{background:rgba(210,153,34,.06);border-color:rgba(210,153,34,.25)}
+.cd.today{border-color:var(--blue);background:rgba(31,111,235,.12);border-width:2px}
+.cd.emp{opacity:.08;pointer-events:none;background:transparent;border-color:transparent}
+.cdn{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px}
+.cd.today .cdn{color:#58A6FF;font-weight:800}
+.ev{font-size:10px;font-weight:600;padding:2px 5px;border-radius:4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin-bottom:2px;line-height:1.4}
+.ev.dist{background:rgba(210,153,34,.2);color:#E3B341}
+.ev.farm{background:rgba(63,185,80,.15);color:#56D364}
+.ev.hosp{background:rgba(88,166,255,.15);color:#79C0FF}
+.ev.special{background:rgba(188,140,255,.2);color:#D2A8FF}
+.cd-more{font-size:9.5px;color:var(--light);margin-top:2px;padding-left:2px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;padding:0 16px 14px;font-size:11.5px;color:var(--muted)}
+.leg{display:flex;align-items:center;gap:4px}
+.leg-sq{width:11px;height:9px;border-radius:2px}
+
+/* ORDERS PAGE */
+.ph-hd{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+.ph-t{font-size:22px;font-weight:800;letter-spacing:-.5px}
+.ph-s{font-size:12px;color:var(--muted);margin-top:3px}
+.pills{display:flex;gap:5px;flex-wrap:wrap}
+.pb{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--bdr);background:var(--w);color:var(--muted);font-family:var(--sans);transition:all .13s}
+.pb:hover{border-color:var(--ink);color:var(--ink)}
+.pb.on{background:var(--blue);color:#0D1117;border-color:var(--blue)}
+.krow{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;margin-bottom:16px;background:var(--w)}
+.kc{padding:16px 20px;border-right:1px solid var(--bdr)}
+.kc:last-child{border-right:none}
+.kv{font-family:var(--mono);font-size:26px;font-weight:600;letter-spacing:-1px}
+.kl{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.tbl-wrap{overflow-x:auto}
+table.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+table.tbl th{text-align:left;padding:10px 16px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);border-bottom:1.5px solid var(--bdr);background:var(--bdr2);white-space:nowrap}
+table.tbl td{padding:10px 16px;border-bottom:1px solid var(--bdr2);vertical-align:middle}
+table.tbl tr:last-child td{border-bottom:none}
+table.tbl tr:hover td{background:#1C2128}
+.mono{font-family:var(--mono);font-size:12px}
+
+/* CALC */
+.calc-g{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.cc{background:var(--w);border:1px solid var(--bdr);border-radius:var(--r);padding:22px}
+.cc-h{font-size:14px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.cg2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cf{display:flex;flex-direction:column;gap:5px}
+.cf label{font-size:10.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--muted)}
+.cf input,.cf select{padding:9px 12px;border:1.5px solid var(--bdr);border-radius:var(--r-sm);font-size:13px;font-family:var(--sans);color:var(--ink);background:var(--bdr2);transition:border .13s;outline:none}
+.cf input:focus,.cf select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(88,166,255,.15)}
+.cbtn{width:100%;margin-top:12px;padding:11px;background:var(--blue);color:#0D1117;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all .13s}
+.cbtn:hover{background:#79C0FF;transform:translateY(-1px);box-shadow:0 4px 12px rgba(88,166,255,.25)}
+.cres{display:none;margin-top:14px;background:#1C2128;border-radius:10px;padding:16px;border:1px solid var(--bdr)}
+.cres-lbl{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(230,237,243,.4);margin-bottom:10px}
+.cres-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cri{text-align:center;padding:10px 4px;background:rgba(255,255,255,.05);border-radius:8px}
+.criv{font-family:var(--mono);font-size:16px;font-weight:600;color:#79C0FF}
+.crin{font-size:9px;color:rgba(230,237,243,.4);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
+
+/* PRICES */
+.pg4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+@media(max-width:1024px){.pg4{grid-template-columns:1fr 1fr}.g2,.g3{grid-template-columns:1fr}.calc-g{grid-template-columns:1fr}}
+@media(max-width:600px){.g4,.pg4{grid-template-columns:1fr 1fr}.krow{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="brand">
+    <div class="brand-sq">S</div>
+    <div><div class="brand-name">SEIN INTELLIGENCE</div><div class="brand-sub">경상총괄팀 · 박제영</div></div>
+  </div>
+  <div class="ntabs">
+    <button class="nt on" onclick="go('overview',this)">Overview</button>
+    <button class="nt" onclick="go('orders',this)">발주 현황<span class="badge">22</span></button>
+    <button class="nt" onclick="go('calendar',this)">캘린더</button>
+    <button class="nt" onclick="go('prices',this)">가격</button>
+    <button class="nt" onclick="go('calc',this)">계산기</button>
+  </div>
+  <button class="live-btn"><div class="dot-live"></div>Slack 연동</button>
+</nav>
+<div class="ticker">
+  <div class="tick"><span class="tk">염산염라이신</span><span class="tv up">$1,150 ▲</span></div>
+  <div class="tick"><span class="tk">DL-메티오닌</span><span class="tv up">$2.68 ▲</span></div>
+  <div class="tick"><span class="tk">L-트레오닌</span><span class="tv dn">$1,190 ▼</span></div>
+  <div class="tick"><span class="tk">Vit.E 50%</span><span class="tv eq">$12 —</span></div>
+  <div class="tick"><span class="tk">MCP</span><span class="tv dn">$550 ▼</span></div>
+  <div class="tick"><span class="tk">보호지방</span><span class="tv up">$1,280 ▲</span></div>
+  <div class="tick"><span class="tk">USD/KRW</span><span class="tv eq">1,517</span></div>
+  <div class="tick"><span class="tk">CNY/KRW</span><span class="tv eq">223.8</span></div>
+</div>
+
+<!-- ████ OVERVIEW ████ -->
+<div id="p-overview" class="page on">
+<style>
+/* ── Overview 대시보드 스타일 ── */
+.ov-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.ov-title{font-size:20px;font-weight:800;letter-spacing:-.4px}
+.ov-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.ov-time{font-size:11px;color:var(--light);background:var(--bdr2);padding:4px 10px;border-radius:20px}
+
+/* 상단 KPI 4개 */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+.kpi{background:#161B22;border:1px solid var(--bdr);border-radius:14px;padding:22px 24px;position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.kpi.k-blue::after{background:linear-gradient(90deg,#1F6FEB,#58A6FF)}
+.kpi.k-green::after{background:linear-gradient(90deg,#238636,#3FB950)}
+.kpi.k-amber::after{background:linear-gradient(90deg,#9E6A03,#D29922)}
+.kpi.k-red::after{background:linear-gradient(90deg,#B62324,#F85149)}
+.kpi-label{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px}
+.kpi-val{font-size:36px;font-weight:800;font-family:var(--mono);letter-spacing:-1px;line-height:1}
+.kpi-delta{display:inline-flex;align-items:center;gap:3px;margin-top:6px;font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:20px}
+.kpi-delta.up{background:rgba(248,81,73,.15);color:#F85149}
+.kpi-delta.dn{background:rgba(88,166,255,.15);color:#58A6FF}
+.kpi-delta.neu{background:var(--bdr2);color:var(--light)}
+.kpi-sub{font-size:10.5px;color:var(--muted);margin-top:6px}
+
+/* 메인 차트 카드 */
+.chart-card{background:#161B22;border:1px solid var(--bdr);border-radius:14px;padding:22px 24px;margin-bottom:18px}
+.chart-card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.chart-card-title{font-size:13px;font-weight:700}
+.chart-legend{display:flex;gap:14px}
+.chart-legend span{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted)}
+.chart-legend span::before{content:'';width:12px;height:3px;border-radius:2px;display:inline-block}
+.leg-blue::before{background:#58A6FF}
+.leg-orange::before{background:#F0883E}
+
+/* SVG 라인 차트 */
+.ov-chart{width:100%;height:160px}
+
+/* 하단 3분할 */
+.ov-bottom{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.mini-card{background:#161B22;border:1px solid var(--bdr);border-radius:14px;padding:20px 22px}
+.mini-title{font-size:13px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+
+/* 알림 리스트 */
+.ov-alist .oai{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.ov-alist .oai:last-child{border-bottom:none;padding-bottom:0}
+.oai-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.oai-t{font-size:12.5px;font-weight:600;line-height:1.4}
+
+
+/* 도넛 차트 */
+.donut-wrap{display:flex;align-items:center;gap:16px}
+.donut-legend .dl-row{display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:11.5px;color:var(--muted)}
+.donut-legend .dl-row span{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* 원자재 바 차트 */
+.ov-pbar{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ov-pbar:last-child{margin-bottom:0}
+.ov-pbar-label{font-size:11px;color:var(--muted);width:80px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ov-pbar-bg{flex:1;height:8px;background:var(--bdr2);border-radius:4px;overflow:hidden}
+.ov-pbar-fg{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.ov-pbar-val{font-size:11px;font-family:var(--mono);color:var(--ink);width:60px;text-align:right;flex-shrink:0}
+</style>
+
+<div class="wrap">
+
+
+  <!-- KPI 3개 (환율 + 국제시세) -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);gap:16px" id="kpi-cbot">
+    <div class="kpi k-blue">
+      <div class="kpi-label">USD / KRW 환율</div>
+      <div class="kpi-val" id="kpi-fx" style="font-size:26px">—</div>
+      <div id="kpi-fx-delta"><span class="kpi-delta neu">로딩중…</span></div>
+      <div class="kpi-sub" id="kpi-fx-sub">Yahoo Finance · 실시간</div>
+    </div>
+    <div class="kpi k-amber">
+      <div class="kpi-label">대두박 국제시세 (CBOT ZM)</div>
+      <div class="kpi-val" id="kpi-zm">—</div>
+      <div id="kpi-zm-delta"><span class="kpi-delta neu">로딩중…</span></div>
+      <div class="kpi-sub" id="kpi-zm-sub">short ton 기준 · Yahoo Finance</div>
+    </div>
+    <div class="kpi k-green">
+      <div class="kpi-label">옥수수 국제시세 (CBOT ZC)</div>
+      <div class="kpi-val" id="kpi-zc">—</div>
+      <div id="kpi-zc-delta"><span class="kpi-delta neu">로딩중…</span></div>
+      <div class="kpi-sub" id="kpi-zc-sub">부셸 기준 · Yahoo Finance</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:-4px 0 14px;font-size:10.5px;color:var(--muted)">
+    <span id="market-refresh-hint" style="opacity:.7">로딩중…</span>
+    <button onclick="fetchMarket()" style="background:var(--bdr2);border:1px solid var(--bdr);color:var(--muted);border-radius:6px;padding:3px 10px;font-size:10.5px;cursor:pointer;font-family:var(--sans)" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--muted)'">↻ 지금 갱신</button>
+  </div>
+  <script>
+  // ── 실시간 시세 업데이트 ──
+  const REFRESH_SEC = 60; // 갱신 주기(초)
+  let _refreshTimer = null;
+
+  async function fetchMarket(){
+    const YF = 'https://query1.finance.yahoo.com/v8/finance/chart/';
+    const cors = 'https://corsproxy.io/?';
+
+    // 갱신 표시 (깜빡임 효과)
+    ['kpi-fx','kpi-zm','kpi-zc'].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) el.style.opacity = '0.5';
+    });
+
+    async function getQuote(sym){
+      try {
+        const r = await fetch(cors + encodeURIComponent(YF + sym + '?interval=1d&range=5d&_t=' + Date.now()));
+        const d = await r.json();
+        const meta = d.result ? d.result[0].meta : d.chart.result[0].meta;
+        return { price: meta.regularMarketPrice, prev: meta.previousClose };
+      } catch(e){ return null; }
+    }
+    function fmtDelta(price, prev, isInt=false){
+      const chg = price - prev;
+      const pct = ((chg/prev)*100).toFixed(2);
+      const up = chg >= 0;
+      const chgStr = isInt ? Math.abs(Math.round(chg)) : Math.abs(chg).toFixed(2);
+      return `<span class="kpi-delta ${up?'up':'dn'}">${up?'▲':'▼'} ${chgStr} (${up?'+':''}${pct}%)</span>`;
+    }
+    const ts = ()=>new Date().toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+
+    const [fx, zm, zc] = await Promise.all([getQuote('KRWUSD=X'), getQuote('ZM=F'), getQuote('ZC=F')]);
+
+    // USD/KRW
+    if(fx){
+      const rate = Math.round(1/fx.price), prevRate = Math.round(1/fx.prev);
+      document.getElementById('kpi-fx').textContent = rate.toLocaleString()+'원';
+      document.getElementById('kpi-fx-delta').innerHTML = fmtDelta(rate, prevRate, true);
+      document.getElementById('kpi-fx-sub').textContent = 'Yahoo Finance · '+ts()+' 갱신';
+    } else {
+      try {
+        const d = await fetch('https://api.exchangerate-api.com/v4/latest/USD').then(r=>r.json());
+        const rate = Math.round(d.rates.KRW);
+        document.getElementById('kpi-fx').textContent = rate.toLocaleString()+'원';
+        document.getElementById('kpi-fx-delta').innerHTML = '<span class="kpi-delta neu">ExchangeRate-API</span>';
+        document.getElementById('kpi-fx-sub').textContent = 'ExchangeRate-API · '+ts()+' 갱신';
+      } catch(_){
+        document.getElementById('kpi-fx').textContent = '1,517원';
+        document.getElementById('kpi-fx-delta').innerHTML = '<span class="kpi-delta neu">참고값</span>';
+      }
+    }
+
+    // 대두박
+    if(zm){
+      document.getElementById('kpi-zm').textContent = '$'+zm.price.toFixed(2);
+      document.getElementById('kpi-zm-delta').innerHTML = fmtDelta(zm.price, zm.prev);
+      document.getElementById('kpi-zm-sub').textContent = 'short ton · '+ts()+' 갱신';
+    } else {
+      document.getElementById('kpi-zm').textContent = '$302';
+      document.getElementById('kpi-zm-delta').innerHTML = '<span class="kpi-delta neu">참고값</span>';
+    }
+
+    // 옥수수
+    if(zc){
+      document.getElementById('kpi-zc').textContent = '$'+zc.price.toFixed(2);
+      document.getElementById('kpi-zc-delta').innerHTML = fmtDelta(zc.price, zc.prev);
+      document.getElementById('kpi-zc-sub').textContent = '부셸 기준 · '+ts()+' 갱신';
+    } else {
+      document.getElementById('kpi-zc').textContent = '$4.11';
+      document.getElementById('kpi-zc-delta').innerHTML = '<span class="kpi-delta neu">참고값</span>';
+    }
+
+    // 투명도 복원
+    ['kpi-fx','kpi-zm','kpi-zc'].forEach(id=>{
+      const el = document.getElementById(id);
+      if(el){ el.style.transition='opacity .4s'; el.style.opacity='1'; }
+    });
+
+    // 카운트다운 업데이트
+    updateCountdown();
+  }
+
+  // 카운트다운 타이머
+  let _nextRefresh = Date.now() + REFRESH_SEC * 1000;
+  function updateCountdown(){
+    _nextRefresh = Date.now() + REFRESH_SEC * 1000;
+    if(_refreshTimer) clearInterval(_refreshTimer);
+    _refreshTimer = setInterval(()=>{
+      const left = Math.max(0, Math.round((_nextRefresh - Date.now())/1000));
+      const el = document.getElementById('market-refresh-hint');
+      if(el) el.textContent = left > 0 ? left+'초 후 자동 갱신' : '갱신 중…';
+      if(left === 0){
+        clearInterval(_refreshTimer);
+        fetchMarket().then(()=> setInterval(()=>{
+          const l = Math.max(0, Math.round((_nextRefresh - Date.now())/1000));
+          const e = document.getElementById('market-refresh-hint');
+          if(e) e.textContent = l > 0 ? l+'초 후 자동 갱신' : '갱신 중…';
+        }, 1000));
+      }
+    }, 1000);
+  }
+
+  // setInterval로 주기 갱신
+  fetchMarket();
+  setInterval(fetchMarket, REFRESH_SEC * 1000);
+  </script>
+
+  <!-- 인터랙티브 원료 트렌드 차트 -->
+  <div class="chart-card" id="trend-card">
+    <div class="chart-card-hd" style="flex-wrap:wrap;gap:10px">
+      <div class="chart-card-title">📈 원자재 단가 트렌드 (4~6월)</div>
+      <div id="trend-pills" style="display:flex;flex-wrap:wrap;gap:5px"></div>
+    </div>
+    <div style="position:relative;height:220px;margin-top:8px">
+      <canvas id="trendChart" style="width:100%;height:220px"></canvas>
+    </div>
+    <div id="trend-legend" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:10.5px"></div>
+  </div>
+  <script>
+  // ── 원료별 트렌드 데이터 (4월~6월, 실 업무보고 기반) ──
+  const TREND_DATA = {
+    labels: ['4월초','4월중','4월말','5월초','5월중','5월말','6월초','6월중','6/17'],
+    series: [
+      { id:'mcp',   name:'MCP 소포장',     unit:'$/톤', color:'#58A6FF', data:[690,700,700,690,710,740,840,960,1065] },
+      { id:'mdcp',  name:'MDCP',           unit:'$/톤', color:'#06B6D4', data:[635,640,645,650,657,660,750,970,1010] },
+      { id:'meth',  name:'DL-메티오닌',    unit:'$/kg', color:'#F0883E', data:[2.4,2.5,2.5,2.55,2.6,2.8,3.8,4.6,5.0] },
+      { id:'valin', name:'발린(Valine)',    unit:'$/톤', color:'#F85149', data:[1100,1150,1200,1250,1300,1400,1700,1800,1915] },
+      { id:'lys',   name:'라이신황산염',   unit:'$/톤', color:'#3FB950', data:[980,1000,1020,1010,1000,1010,700,660,640] },
+      { id:'threo', name:'L-트레오닌',     unit:'$/톤', color:'#BC8CFF', data:[1200,1200,1220,1230,1240,1250,1080,1070,1065] },
+      { id:'ve',    name:'VE (비타민E)',    unit:'$/kg', color:'#D29922', data:[12,12,12,12,12,12,12,12,11] },
+      { id:'va',    name:'VA (비타민A)',    unit:'$/kg', color:'#E3B341', data:[20,20,20,20,20,20,20,20,20] },
+      { id:'ad3',   name:'AD3',            unit:'$/kg', color:'#A5F3FC', data:[24,24,24,24,24,24,24,24,24] },
+      { id:'dcp',   name:'DCP',            unit:'$/톤', color:'#6E7681', data:[545,540,535,535,535,535,535,535,535] },
+    ]
+  };
+
+  let activeIds = new Set(['mcp','meth']);
+
+  // pill 버튼 생성
+  const pillBox = document.getElementById('trend-pills');
+  TREND_DATA.series.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'pb' + (activeIds.has(s.id) ? ' on' : '');
+    btn.style.cssText = `font-size:10px;padding:3px 10px;border-radius:14px;cursor:pointer;border:1.5px solid;transition:all .15s;font-family:var(--sans);font-weight:600;background:${activeIds.has(s.id)?s.color+'22':'var(--w)'};color:${activeIds.has(s.id)?s.color:'var(--muted)'};border-color:${activeIds.has(s.id)?s.color:'var(--bdr)'}`;
+    btn.textContent = s.name;
+    btn.dataset.id = s.id;
+    btn.dataset.color = s.color;
+    btn.onclick = () => toggleSeries(s.id, btn, s.color);
+    pillBox.appendChild(btn);
+  });
+
+  function toggleSeries(id, btn, color) {
+    if (activeIds.has(id)) {
+      if (activeIds.size <= 1) return; // 최소 1개 유지
+      activeIds.delete(id);
+      btn.style.background = 'var(--w)';
+      btn.style.color = 'var(--muted)';
+      btn.style.borderColor = 'var(--bdr)';
+    } else {
+      activeIds.add(id);
+      btn.style.background = color + '22';
+      btn.style.color = color;
+      btn.style.borderColor = color;
+    }
+    drawChart();
+  }
+
+  function drawChart() {
+    const canvas = document.getElementById('trendChart');
+    const dpr = window.devicePixelRatio || 1;
+    const W = canvas.offsetWidth, H = 180;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+
+    const PAD = {top:16, right:50, bottom:28, left:48};
+    const cW = W - PAD.left - PAD.right;
+    const cH = H - PAD.top - PAD.bottom;
+    const n = TREND_DATA.labels.length;
+
+    // 활성 시리즈
+    const active = TREND_DATA.series.filter(s => activeIds.has(s.id));
+
+    // 각 시리즈별 min/max 계산 (단위가 달라서 정규화 필요)
+    // 정규화: 각 시리즈를 0~1로 변환 후 cH에 맵핑
+    // 단위별로 Y축 그룹화 (같은 단위끼리 같은 Y scale)
+    const unitGroups = {};
+    active.forEach(s => {
+      if (!unitGroups[s.unit]) unitGroups[s.unit] = {min:Infinity, max:-Infinity, series:[]};
+      unitGroups[s.unit].series.push(s);
+      s.data.forEach(v => {
+        unitGroups[s.unit].min = Math.min(unitGroups[s.unit].min, v);
+        unitGroups[s.unit].max = Math.max(unitGroups[s.unit].max, v);
+      });
+    });
+
+    // 배경
+    ctx.fillStyle = 'transparent';
+    ctx.clearRect(0, 0, W, H);
+
+    // 그리드
+    ctx.strokeStyle = '#21262D';
+    ctx.lineWidth = 1;
+    [0, 0.25, 0.5, 0.75, 1].forEach(t => {
+      const y = PAD.top + cH * t;
+      ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + cW, y); ctx.stroke();
+    });
+
+    // X축 레이블
+    ctx.fillStyle = '#6E7681'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center';
+    TREND_DATA.labels.forEach((lbl, i) => {
+      const x = PAD.left + (i / (n-1)) * cW;
+      ctx.fillText(lbl, x, H - 5);
+    });
+
+    // 시리즈별 라인 그리기
+    active.forEach(s => {
+      const ug = unitGroups[s.unit];
+      const range = ug.max - ug.min || 1;
+      const pad_pct = 0.1;
+      const lo = ug.min - range * pad_pct;
+      const hi = ug.max + range * pad_pct;
+
+      const pts = s.data.map((v, i) => ({
+        x: PAD.left + (i / (n-1)) * cW,
+        y: PAD.top + cH * (1 - (v - lo) / (hi - lo))
+      }));
+
+      // 영역 채우기
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, PAD.top + cH);
+      pts.forEach(p => ctx.lineTo(p.x, p.y));
+      ctx.lineTo(pts[pts.length-1].x, PAD.top + cH);
+      ctx.closePath();
+      ctx.fillStyle = s.color + '18';
+      ctx.fill();
+
+      // 라인
+      ctx.beginPath();
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = 2.5;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+      ctx.stroke();
+
+      // 마지막 포인트 + 값
+      const last = pts[pts.length - 1];
+      ctx.beginPath();
+      ctx.arc(last.x, last.y, 4, 0, Math.PI*2);
+      ctx.fillStyle = s.color; ctx.fill();
+      ctx.fillStyle = s.color;
+      ctx.font = 'bold 9px sans-serif';
+      ctx.textAlign = 'left';
+      const lastVal = s.data[s.data.length-1];
+      ctx.fillText(lastVal >= 100 ? '$'+lastVal.toLocaleString() : '$'+lastVal, last.x + 6, last.y + 3);
+    });
+
+    // 범례 업데이트
+    const leg = document.getElementById('trend-legend');
+    leg.innerHTML = active.map(s => `<span style="display:flex;align-items:center;gap:4px;color:var(--muted)"><span style="width:16px;height:2.5px;background:${s.color};display:inline-block;border-radius:2px"></span><span style="color:${s.color};font-weight:700">${s.name}</span> <span style="color:var(--light)">${s.unit}</span></span>`).join('');
+  }
+
+  // 초기 렌더 + 리사이즈 대응
+  window.addEventListener('load', ()=>setTimeout(drawChart, 100));
+  window.addEventListener('resize', drawChart);
+  if(document.readyState==='complete') setTimeout(drawChart, 150);
+  </script>
+
+  <!-- 하단 3분할 -->
+  <div class="ov-bottom">
+
+    <!-- 주요 알림 -->
+    <div class="mini-card">
+      <div class="mini-title">⚡ 주요 알림 <span style="font-size:10px;color:var(--muted);font-weight:400;cursor:pointer" onclick="go('orders',null)">전체 →</span></div>
+      <div class="ov-alist">
+        <div class="oai">
+          <div class="oai-dot" style="background:#F85149"></div>
+          <div><div class="oai-t">MCP 단가 급락 — 구매 적기</div></div>
+        </div>
+        <div class="oai">
+          <div class="oai-dot" style="background:#F85149"></div>
+          <div><div class="oai-t">보호지방 단가 급등</div></div>
+        </div>
+        <div class="oai">
+          <div class="oai-dot" style="background:#3FB950"></div>
+          <div><div class="oai-t">노엘목장 파인애플분말 입고완료</div></div>
+        </div>
+        <div class="oai">
+          <div class="oai-dot" style="background:#3FB950"></div>
+          <div><div class="oai-t">우일축산약품 나노비타믹스 완료</div></div>
+        </div>
+        <div class="oai">
+          <div class="oai-dot" style="background:#D29922"></div>
+          <div><div class="oai-t">영광축산 장프로 대기중</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 원자재 가격 바 -->
+    <div class="mini-card">
+      <div class="mini-title">💰 원자재 가격 <span style="font-size:10px;color:var(--muted);font-weight:400;cursor:pointer" onclick="go('prices',null)">상세 →</span></div>
+      <div style="font-size:9.5px;color:var(--amber);margin-bottom:10px">※ Slack 발주채널 감지 (도착도 단가)</div>
+      <div class="ov-pbar">
+        <div class="ov-pbar-label">황산염라이신</div>
+        <div class="ov-pbar-bg"><div class="ov-pbar-fg" style="width:74%;background:#58A6FF"></div></div>
+        <div class="ov-pbar-val" style="color:#58A6FF">2,030원</div>
+      </div>
+      <div class="ov-pbar">
+        <div class="ov-pbar-label">DL-메티오닌</div>
+        <div class="ov-pbar-bg"><div class="ov-pbar-fg" style="width:100%;background:#F0883E"></div></div>
+        <div class="ov-pbar-val" style="color:#F0883E">3,550원</div>
+      </div>
+      <div class="ov-pbar">
+        <div class="ov-pbar-label">L-트레오닌</div>
+        <div class="ov-pbar-bg"><div class="ov-pbar-fg" style="width:51%;background:#BC8CFF"></div></div>
+        <div class="ov-pbar-val" style="color:#BC8CFF">1,820원</div>
+      </div>
+      <div class="ov-pbar">
+        <div class="ov-pbar-label">MCP</div>
+        <div class="ov-pbar-bg"><div class="ov-pbar-fg" style="width:29%;background:#06B6D4"></div></div>
+        <div class="ov-pbar-val" style="color:#06B6D4">1,020원</div>
+      </div>
+      <div class="ov-pbar">
+        <div class="ov-pbar-label">보호지방 하이팻</div>
+        <div class="ov-pbar-bg"><div class="ov-pbar-fg" style="width:37%;background:#F85149"></div></div>
+        <div class="ov-pbar-val" style="color:#F85149">1,331원</div>
+      </div>
+      <div class="ov-pbar">
+        <div class="ov-pbar-label">대두박</div>
+        <div class="ov-pbar-bg"><div class="ov-pbar-fg" style="width:20%;background:#3FB950"></div></div>
+        <div class="ov-pbar-val" style="color:#3FB950">650~687원</div>
+      </div>
+    </div>
+
+    <!-- 거래처 방문 빈도 (도넛 + 리스트) -->
+    <div class="mini-card">
+      <div class="mini-title">📊 거래처 방문 빈도 (5~6월)</div>
+      <div class="donut-wrap">
+        <svg width="110" height="110" viewBox="0 0 90 90" style="flex-shrink:0">
+          <circle cx="45" cy="45" r="32" fill="none" stroke="#21262D" stroke-width="14"/>
+          <!-- 총 20회: 우일5(90°), 경북4(72°), 부산3(54°), 천년3(54°), 노엘3(54°), 오케이2(36°) -->
+          <circle cx="45" cy="45" r="32" fill="none" stroke="#58A6FF" stroke-width="14" stroke-dasharray="50.3 150.8" stroke-dashoffset="0" transform="rotate(-90 45 45)"/>
+          <circle cx="45" cy="45" r="32" fill="none" stroke="#BC8CFF" stroke-width="14" stroke-dasharray="40.2 160.8" stroke-dashoffset="-50.3" transform="rotate(-90 45 45)"/>
+          <circle cx="45" cy="45" r="32" fill="none" stroke="#0EA5E9" stroke-width="14" stroke-dasharray="30.2 170.8" stroke-dashoffset="-90.5" transform="rotate(-90 45 45)"/>
+          <circle cx="45" cy="45" r="32" fill="none" stroke="#F59E0B" stroke-width="14" stroke-dasharray="30.2 170.8" stroke-dashoffset="-120.7" transform="rotate(-90 45 45)"/>
+          <circle cx="45" cy="45" r="32" fill="none" stroke="#3FB950" stroke-width="14" stroke-dasharray="30.2 170.8" stroke-dashoffset="-150.9" transform="rotate(-90 45 45)"/>
+          <circle cx="45" cy="45" r="32" fill="none" stroke="#F85149" stroke-width="14" stroke-dasharray="20.1 180.9" stroke-dashoffset="-181.1" transform="rotate(-90 45 45)"/>
+          <text x="45" y="48" text-anchor="middle" fill="var(--ink)" font-size="13" font-weight="800">20회</text>
+        </svg>
+        <div class="donut-legend">
+          <div class="dl-row"><span style="background:#58A6FF"></span>우일가축약품 <strong style="color:var(--ink);margin-left:auto;padding-left:8px">5회</strong></div>
+          <div class="dl-row"><span style="background:#BC8CFF"></span>경북수산 <strong style="color:var(--ink);margin-left:auto;padding-left:8px">4회</strong></div>
+          <div class="dl-row"><span style="background:#0EA5E9"></span>부산사료 <strong style="color:var(--ink);margin-left:auto;padding-left:8px">3회</strong></div>
+          <div class="dl-row"><span style="background:#F59E0B"></span>천년TMF <strong style="color:var(--ink);margin-left:auto;padding-left:8px">3회</strong></div>
+          <div class="dl-row"><span style="background:#3FB950"></span>노엘목장 <strong style="color:var(--ink);margin-left:auto;padding-left:8px">3회</strong></div>
+          <div class="dl-row"><span style="background:#F85149"></span>오케이 <strong style="color:var(--ink);margin-left:auto;padding-left:8px">2회</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ████ 발주 현황 ████ -->
+<div id="p-orders" class="page">
+<div class="wrap">
+  <div class="ph-hd">
+    <div><div class="ph-t">발주 현황 — 박제영</div></div>
+    <div class="pills" id="mpills">
+      <button class="pb" onclick="filtM('all',this)">전체</button>
+      <button class="pb" onclick="filtM('2026-04',this)">4월</button>
+      <button class="pb" onclick="filtM('2026-05',this)">5월</button>
+      <button class="pb on" onclick="filtM('2026-06',this)">6월</button>
+    </div>
+  </div>
+  <div class="krow">
+    <div class="kc"><div class="kv" id="kv-tot">13</div><div class="kl">총 발주건수</div></div>
+    <div class="kc"><div class="kv" id="kv-done">12</div><div class="kl">입고완료</div></div>
+    <div class="kc"><div class="kv" id="kv-pend">1</div><div class="kl">대기중</div></div>
+    <div class="kc"><div class="kv">박제영</div><div class="kl">담당자</div></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-title">📋 출고 요청 내역</div><div id="ord-cnt" style="font-size:11.5px;color:var(--muted)">13건</div></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>날짜</th><th>거래처</th><th>품목</th><th>수량</th><th>단가</th><th>입고일</th><th>상태</th></tr></thead>
+        <tbody id="otbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ████ 캘린더 ████ -->
+<div id="p-calendar" class="page">
+<div class="wrap">
+  <div style="margin-bottom:16px">
+    <div class="ph-t">방문 캘린더</div>
+  </div>
+  <div class="card" style="max-width:900px;margin:0 auto">
+    <div class="cw">
+      <div class="cm">JUNE 2026</div>
+      <div class="cdow" style="display:grid;grid-template-columns:repeat(5,1fr);text-align:center;font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--light);margin-bottom:5px;padding:0 2px">
+        <div>월 MON</div><div>화 TUE</div><div>수 WED</div><div>목 THU</div><div>금 FRI</div>
+      </div>
+      <div class="cg">
+        <!-- 1주차: 1(월)~5(금) -->
+        <div class="cd"><div class="cdn">01 월</div></div>
+        <div class="cd busy"><div class="cdn">02 화</div><div class="ev farm">부경양돈</div><div class="ev dist">유안사료</div><div class="ev farm">삼솔농장</div><div class="cd-more">+오케이 +아베스목장 +노엘목장 +코리아에프앤에프</div></div>
+        <div class="cd"><div class="cdn">03 수</div></div>
+        <div class="cd busy"><div class="cdn">04 목</div><div class="ev farm">부경양돈</div><div class="ev dist">코리아에프앤에프</div><div class="ev dist">그레니에</div></div>
+        <div class="cd busy"><div class="cdn">05 금</div><div class="ev special">뉴트리신 회의(사내)</div><div class="ev dist">코리아에프앤에프</div><div class="ev farm">경주목장</div></div>
+
+        <!-- 2주차: 8(월)~12(금) -->
+        <div class="cd busy"><div class="cdn">08 월</div><div class="ev dist">김해축협</div><div class="ev dist">양산기장TMR</div><div class="ev farm">부경양돈</div><div class="cd-more">+통일동물병원 +코리아에프앤에프</div></div>
+        <div class="cd busy"><div class="cdn">09 화</div><div class="ev farm">합천돼지자가</div><div class="ev dist">합천축협</div><div class="ev hosp">에이스파마텍</div></div>
+        <div class="cd busy"><div class="cdn">10 수</div><div class="ev farm">우정농장</div><div class="ev farm">송정농장</div><div class="ev dist">청도축협</div></div>
+        <div class="cd busy"><div class="cdn">11 목</div><div class="ev farm">부경양돈</div><div class="ev hosp">한성동물병원</div><div class="ev dist">한우협회 영주지부</div></div>
+        <div class="cd"><div class="cdn">12 금</div></div>
+
+        <!-- 3주차: 15(월)~19(금) -->
+        <div class="cd busy"><div class="cdn">15 월</div><div class="ev special">경영전략회의 (사내)</div></div>
+        <div class="cd busy"><div class="cdn">16 화</div><div class="ev farm">노엘목장</div><div class="ev farm">부경양돈</div><div class="ev dist">지정낙우회</div><div class="cd-more">+한국수생명연구소</div></div>
+        <div class="cd busy"><div class="cdn">17 수</div><div class="ev dist">한우협회 거창군지부</div><div class="ev hosp">지원동물병원</div></div>
+        <div class="cd today busy"><div class="cdn">18 목 ★</div><div class="ev farm">부경양돈</div><div class="ev farm">합천돼지자가</div><div class="ev dist">고려산업</div></div>
+        <div class="cd"><div class="cdn">19 금</div></div>
+
+        <!-- 4주차: 22(월)~26(금) -->
+        <div class="cd"><div class="cdn">22 월</div></div>
+        <div class="cd"><div class="cdn">23 화</div></div>
+        <div class="cd"><div class="cdn">24 수</div></div>
+        <div class="cd"><div class="cdn">25 목</div></div>
+        <div class="cd"><div class="cdn">26 금</div></div>
+
+        <!-- 5주차: 29(월)~30(화) -->
+        <div class="cd"><div class="cdn">29 월</div></div>
+        <div class="cd"><div class="cdn">30 화</div></div>
+        <div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ████ 가격 ████ -->
+<div id="p-prices" class="page">
+<div class="wrap">
+  <div style="margin-bottom:16px"><div class="ph-t">가격 트렌드</div></div>
+  <div class="pg4">
+    <div class="sc accent-b"><div class="sc-label">MCP 소포장 (CIF)</div><div class="sc-val" style="font-size:26px">$1,065/톤</div><div class="sc-sub">CHANHEN · 6/17 계약예정</div><div class="tag tag-up">▲ 전월比 $375↑</div></div>
+    <div class="sc accent-g"><div class="sc-label">MDCP (CIF 인천)</div><div class="sc-val" style="font-size:26px">$1,010/톤</div><div class="sc-sub">SINOCHEM · 6/11</div><div class="tag tag-up">▲ 강세유지</div></div>
+    <div class="sc accent-a"><div class="sc-label">라이신황산염 톤백</div><div class="sc-val" style="font-size:26px">$640/톤</div><div class="sc-sub">6/16 선적서류 수령</div><div class="tag tag-dn">▼ $700→$640 수정</div></div>
+    <div class="sc accent-p"><div class="sc-label">DL-메티오닌</div><div class="sc-val" style="font-size:26px">$5.0/kg</div><div class="sc-sub">6/16 부산바이오 300T 낙찰</div><div class="tag tag-up">▲ 전월比 급등</div></div>
+  </div>
+  <style>
+  .pi-section{margin-bottom:20px}
+  .pi-label{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .pi-label::after{content:'';flex:1;height:1px;background:var(--bdr)}
+  .pi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+  .pi-item{background:#1C2128;border:1px solid var(--bdr);border-radius:10px;padding:13px 14px;position:relative;overflow:hidden;transition:border-color .15s,transform .15s}
+  .pi-item:hover{border-color:rgba(255,255,255,.2);transform:translateY(-1px)}
+  .pi-item::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .pi-item.c-blue::before{background:linear-gradient(90deg,#58A6FF,#79C0FF)}
+  .pi-item.c-cyan::before{background:linear-gradient(90deg,#06B6D4,#22D3EE)}
+  .pi-item.c-muted::before{background:var(--light)}
+  .pi-item.c-red::before{background:linear-gradient(90deg,#F85149,#FF7B72)}
+  .pi-item.c-amber::before{background:linear-gradient(90deg,#D29922,#E3B341)}
+  .pi-item.c-green::before{background:linear-gradient(90deg,#3FB950,#56D364)}
+  .pi-item.c-purple::before{background:linear-gradient(90deg,#BC8CFF,#D2A8FF)}
+  .pi-name{font-size:10.5px;font-weight:600;color:var(--muted);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pi-price{font-family:var(--mono);font-size:17px;font-weight:700;line-height:1;margin-bottom:4px}
+  .pi-unit{font-size:10px;color:var(--light);font-family:var(--mono)}
+  .pi-badge{display:inline-flex;align-items:center;gap:2px;margin-top:6px;padding:2px 7px;border-radius:20px;font-size:9.5px;font-weight:700}
+  .pi-badge.up{background:rgba(248,81,73,.15);color:#F85149}
+  .pi-badge.dn{background:rgba(88,166,255,.15);color:#58A6FF}
+  .pi-badge.eq{background:var(--bdr2);color:var(--light)}
+  </style>
+  <div style="padding:18px 18px 20px">
+    <div style="font-size:12px;font-weight:700;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:8px">
+      📊 달러 구매단가 상대 지수
+    </div>
+
+    <!-- 김선이 -->
+    <div class="pi-section">
+      <div class="pi-label" style="color:var(--amber)">인산칼슘</div>
+      <div class="pi-grid">
+        <div class="pi-item c-blue"><div class="pi-name">MCP 소포장</div><div class="pi-price" style="color:#58A6FF">1,065</div><div class="pi-unit">$/톤 · CHANHEN</div><div class="pi-badge up">▲ +$375 급등</div></div>
+        <div class="pi-item c-blue"><div class="pi-name">MCP 톤백과립</div><div class="pi-price" style="color:#58A6FF">1,053</div><div class="pi-unit">$/톤 · CHANHEN</div><div class="pi-badge up">▲ 계약예정</div></div>
+        <div class="pi-item c-cyan"><div class="pi-name">MDCP</div><div class="pi-price" style="color:#06B6D4">1,010</div><div class="pi-unit">$/톤 · SINOCHEM</div><div class="pi-badge up">▲ 강세유지</div></div>
+        <div class="pi-item c-muted"><div class="pi-name">TCP 참고</div><div class="pi-price" style="color:var(--muted)">650</div><div class="pi-unit">$/톤 · hengchang</div><div class="pi-badge eq">참고가</div></div>
+        <div class="pi-item c-muted"><div class="pi-name">DCP 참고</div><div class="pi-price" style="color:var(--muted)">535</div><div class="pi-unit">$/톤 · SUNCHEM</div><div class="pi-badge dn">▼ 소폭인하</div></div>
+      </div>
+    </div>
+
+    <!-- 왕려원 -->
+    <div class="pi-section">
+      <div class="pi-label" style="color:var(--green)">아미노산 / 보호지방</div>
+      <div class="pi-grid">
+        <div class="pi-item c-red"><div class="pi-name">발린 (Valine)</div><div class="pi-price" style="color:#F85149">1,915</div><div class="pi-unit">$/톤 · 부산입항 6/11</div><div class="pi-badge up">▲ +$470 급등</div></div>
+        <div class="pi-item c-amber"><div class="pi-name">메가풋 지대</div><div class="pi-price" style="color:var(--amber)">1,142</div><div class="pi-unit">$/톤 · Green nature</div><div class="pi-badge up">▲ LC개설</div></div>
+        <div class="pi-item c-blue"><div class="pi-name">라이신황산염 톤백</div><div class="pi-price" style="color:#58A6FF">640</div><div class="pi-unit">$/톤 · 선적서류 6/16</div><div class="pi-badge dn">▼ $700→$640</div></div>
+        <div class="pi-item c-muted"><div class="pi-name">레시틴</div><div class="pi-price" style="color:var(--muted)">2.5</div><div class="pi-unit">$/kg</div><div class="pi-badge eq">참고가</div></div>
+        <div class="pi-item c-amber"><div class="pi-name">DL-메티오닌</div><div class="pi-price" style="color:var(--amber)">5.0</div><div class="pi-unit">$/kg · 부산바이오 낙찰</div><div class="pi-badge up">▲ 급등계약</div></div>
+        <div class="pi-item c-green"><div class="pi-name">트레오닌 (TONGDA)</div><div class="pi-price" style="color:var(--green)">1,085</div><div class="pi-unit">$/톤 · 나람사료 입찰 6/10</div><div class="pi-badge eq">견적가</div></div>
+        <div class="pi-item c-green"><div class="pi-name">트레오닌 (COFFER)</div><div class="pi-price" style="color:var(--green)">1,070</div><div class="pi-unit">$/톤 · 나람사료 입찰 6/10</div><div class="pi-badge eq">견적가</div></div>
+        <div class="pi-item c-green"><div class="pi-name">트레오닌 (UNION)</div><div class="pi-price" style="color:var(--green)">1,045</div><div class="pi-unit">$/톤 · 나람사료 입찰 6/10</div><div class="pi-badge eq">견적가</div></div>
+      </div>
+    </div>
+
+    <!-- 성유진 -->
+    <div class="pi-section" style="margin-bottom:0">
+      <div class="pi-label" style="color:var(--purple)">비타민</div>
+      <div class="pi-grid">
+        <div class="pi-item c-purple"><div class="pi-name">AD3</div><div class="pi-price" style="color:#BC8CFF">24</div><div class="pi-unit">$/kg · 비타민시황</div><div class="pi-badge eq">최신시세</div></div>
+        <div class="pi-item c-purple"><div class="pi-name">VA 비타민A</div><div class="pi-price" style="color:#BC8CFF">20</div><div class="pi-unit">$/kg · 비타민시황</div><div class="pi-badge eq">최신시세</div></div>
+        <div class="pi-item c-purple"><div class="pi-name">VD3</div><div class="pi-price" style="color:#BC8CFF">16</div><div class="pi-unit">$/kg · 비타민시황</div><div class="pi-badge eq">최신시세</div></div>
+        <div class="pi-item c-purple"><div class="pi-name">VB6</div><div class="pi-price" style="color:#BC8CFF">13</div><div class="pi-unit">$/kg · 비타민시황</div><div class="pi-badge eq">최신시세</div></div>
+        <div class="pi-item c-purple"><div class="pi-name">VE 비타민E</div><div class="pi-price" style="color:#BC8CFF">11</div><div class="pi-unit">$/kg · 비타민시황</div><div class="pi-badge dn">▼ $12→$11</div></div>
+        <div class="pi-item c-purple"><div class="pi-name">BIOTIN</div><div class="pi-price" style="color:#BC8CFF">4.6</div><div class="pi-unit">$/kg · 비타민시황</div><div class="pi-badge eq">최신시세</div></div>
+        <div class="pi-item c-purple"><div class="pi-name">VC97%</div><div class="pi-price" style="color:#BC8CFF">3.6</div><div class="pi-unit">$/kg · 비타민시황</div><div class="pi-badge eq">최신시세</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-title">🗒 달러 구매가 변동 이력</div><div style="font-size:11px;color:var(--muted)">김선이·왕려원·성유진 업무보고 원문 기반 · 4월~6월</div></div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>품목</th><th>이전단가</th><th>최근단가</th><th>변동</th><th>담당</th><th>감지일</th></tr></thead>
+        <tbody>
+          <tr><td><strong>MCP 소포장 (CHANHEN)</strong></td><td class="mono">$690/톤</td><td class="mono" style="color:var(--red)">$1,065/톤</td><td><span class="status" style="background:var(--red-bg);color:var(--red)">▲ +$375 급등</span></td><td>김선이</td><td>2026-06-17</td></tr>
+          <tr><td><strong>MDCP (SINOCHEM)</strong></td><td class="mono">$657/톤</td><td class="mono" style="color:var(--red)">$1,010/톤</td><td><span class="status" style="background:var(--red-bg);color:var(--red)">▲ +$353 급등</span></td><td>김선이</td><td>2026-06-11</td></tr>
+          <tr><td><strong>MDCP (ALCHEM)</strong></td><td class="mono">$635/톤</td><td class="mono" style="color:var(--red)">$970/톤</td><td><span class="status" style="background:var(--red-bg);color:var(--red)">▲ +$335 급등</span></td><td>김선이</td><td>2026-06-11 (견적→취소)</td></tr>
+          <tr><td><strong>발린 (Valine)</strong></td><td class="mono">$1,445/톤</td><td class="mono" style="color:var(--red)">$1,915/톤</td><td><span class="status" style="background:var(--red-bg);color:var(--red)">▲ +$470 급등</span></td><td>왕려원</td><td>2026-06-11 (부산입항)</td></tr>
+          <tr><td><strong>라이신황산염 톤백</strong></td><td class="mono">$700/톤</td><td class="mono" style="color:var(--blue)">$640/톤</td><td><span class="status" style="background:var(--blue-bg);color:var(--blue)">▼ -$60 인하</span></td><td>왕려원</td><td>2026-06-16 (수정계약)</td></tr>
+          <tr><td><strong>DL-메티오닌</strong></td><td class="mono">$2.58/kg</td><td class="mono" style="color:var(--red)">$5.0/kg</td><td><span class="status" style="background:var(--red-bg);color:var(--red)">▲ +$2.42 급등</span></td><td>성유진</td><td>2026-06-16 (낙찰)</td></tr>
+          <tr><td><strong>VE (비타민E)</strong></td><td class="mono">$12.0/kg</td><td class="mono" style="color:var(--blue)">$11/kg</td><td><span class="status" style="background:var(--blue-bg);color:var(--blue)">▼ -$1 소폭인하</span></td><td>성유진</td><td>2026-06-18 (비타민시황)</td></tr>
+          <tr><td><strong>MCP 소포장 (CHANHEN)</strong></td><td class="mono">-</td><td class="mono">$690/톤</td><td><span class="status st-p">최초기록</span></td><td>김선이</td><td>2025-05-28 (견적수령)</td></tr>
+          <tr><td><strong>DCP (SUNCHEM XINLIN)</strong></td><td class="mono">$545/톤</td><td class="mono" style="color:var(--blue)">$535/톤</td><td><span class="status" style="background:var(--blue-bg);color:var(--blue)">▼ -$10 소폭</span></td><td>김선이</td><td>2025-05-30 (계약)</td></tr>
+          <tr><td><strong>트레오닌 (TONGDA)</strong></td><td class="mono">-</td><td class="mono">$1,085/톤</td><td><span class="status st-n">나람사료 입찰견적</span></td><td>왕려원</td><td>2026-06-10</td></tr>
+          <tr><td><strong>트레오닌 (COFFER)</strong></td><td class="mono">-</td><td class="mono">$1,070/톤</td><td><span class="status st-n">나람사료 입찰견적</span></td><td>왕려원</td><td>2026-06-10</td></tr>
+          <tr><td><strong>트레오닌 (UNION)</strong></td><td class="mono">-</td><td class="mono">$1,045/톤</td><td><span class="status st-n">나람사료 입찰견적</span></td><td>왕려원</td><td>2026-06-10</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ████ 계산기 ████ -->
+<div id="p-calc" class="page">
+<div class="wrap">
+  <div style="margin-bottom:18px"><div class="ph-t">계산기</div></div>
+  <div class="calc-g">
+    <div class="cc">
+      <div class="cc-h">📦 발주 금액 계산</div>
+      <div style="margin-bottom:10px">
+        <div class="cf"><label>품목 선택</label>
+          <select id="ci" onchange="af()">
+            <option value="">직접입력</option>
+            <option value="8000">나노비타믹스E — 8,000원/kg</option>
+            <option value="10000">나노비타믹스E 일반 — 10,000원/kg</option>
+            <option value="25000">나노비타쎄 액상 — 25,000원/kg</option>
+            <option value="4000">이지스타터 — 4,000원/kg</option>
+            <option value="3000">파인애플분말 — 3,000원/kg</option>
+            <option value="2100">MCP — 2,100원/kg</option>
+            <option value="16000">비타민E — 16,000원/kg</option>
+            <option value="3850">DL-메티오닌 — 3,850원/kg</option>
+          </select>
+        </div>
+      </div>
+      <div class="cg2" style="margin-bottom:10px">
+        <div class="cf"><label>단가 (원/kg)</label><input id="cp" type="number" placeholder="8000"></div>
+        <div class="cf"><label>수량 (kg)</label><input id="cq" type="number" placeholder="100"></div>
+      </div>
+      <div class="cf"><label>부가세</label><select id="cv"><option value="0">별도 (0%)</option><option value="0.1">포함 (10%)</option></select></div>
+      <button class="cbtn" onclick="calcO()">계산하기</button>
+      <div class="cres" id="ro"><div class="cres-lbl">계산 결과</div><div class="cres-row"><div class="cri"><div class="criv" id="r-s">—</div><div class="crin">공급가</div></div><div class="cri"><div class="criv" id="r-v">—</div><div class="crin">부가세</div></div><div class="cri"><div class="criv" id="r-t">—</div><div class="crin">합계</div></div></div></div>
+    </div>
+    <div class="cc">
+      <div class="cc-h">💰 마진 계산기</div>
+      <div class="cg2" style="margin-bottom:10px">
+        <div class="cf"><label>매입가 (원/kg)</label><input id="mb" type="number" placeholder="7000"></div>
+        <div class="cf"><label>매출가 (원/kg)</label><input id="ms" type="number" placeholder="8000"></div>
+        <div class="cf"><label>수량 (kg)</label><input id="mq" type="number" placeholder="100"></div>
+        <div class="cf"><label>기타비용 (원)</label><input id="mc" type="number" value="0"></div>
+      </div>
+      <button class="cbtn" onclick="calcM()">마진 계산</button>
+      <div class="cres" id="rm"><div class="cres-lbl">마진 분석</div><div class="cres-row"><div class="cri"><div class="criv" id="r-mg">—</div><div class="crin">총마진</div></div><div class="cri"><div class="criv" id="r-mr">—</div><div class="crin">마진율</div></div><div class="cri"><div class="criv" id="r-mn">—</div><div class="crin">순이익</div></div></div></div>
+    </div>
+    <div class="cc">
+      <div class="cc-h">💱 환율 계산기</div>
+      <div class="cg2" style="margin-bottom:10px">
+        <div class="cf"><label>금액 (USD)</label><input id="fu" type="number" placeholder="550"></div>
+        <div class="cf"><label>USD/KRW</label><input id="fr" type="number" value="1517"></div>
+      </div>
+      <button class="cbtn" onclick="calcF()">원화 변환</button>
+      <div class="cres" id="rf"><div class="cres-lbl">환율 변환</div><div class="cres-row"><div class="cri"><div class="criv" id="r-k">—</div><div class="crin">원화 KRW</div></div><div class="cri"><div class="criv" id="r-p">—</div><div class="crin">원/kg (100kg)</div></div><div class="cri"><div class="criv" id="r-tn">—</div><div class="crin">원/톤</div></div></div></div>
+    </div>
+    <div class="cc">
+      <div class="cc-h">🎯 목표 달성률</div>
+      <div class="cg2" style="margin-bottom:10px">
+        <div class="cf"><label>월 목표 (만원)</label><input id="gt" type="number" value="2500"></div>
+        <div class="cf"><label>현재 실적 (만원)</label><input id="gc" type="number" placeholder="1820"></div>
+        <div class="cf"><label>오늘 (일)</label><input id="gd" type="number" value="7"></div>
+        <div class="cf"><label>월 영업일</label><input id="gw" type="number" value="22"></div>
+      </div>
+      <button class="cbtn" onclick="calcG()">분석</button>
+      <div class="cres" id="rg"><div class="cres-lbl">목표 분석</div><div class="cres-row"><div class="cri"><div class="criv" id="r-grt">—</div><div class="crin">달성률</div></div><div class="cri"><div class="criv" id="r-grm">—</div><div class="crin">잔여 목표</div></div><div class="cri"><div class="criv" id="r-grd">—</div><div class="crin">일 필요량</div></div></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const ORDERS=[
+  {d:'2026-06-17',c:'지원동물병원 오지홍원장',item:'설사72',qty:'1박스',price:'샘플',eta:'6/19(금)',st:'done'},
+  {d:'2026-06-17',c:'임정호 대표',item:'나노비타믹스',qty:'20kg',price:'샘플',eta:'6/19(금)',st:'done'},
+  {d:'2026-06-12',c:'유원',item:'BHT',qty:'500kg',price:'11,000원/kg',eta:'6/16(화)',st:'done'},
+  {d:'2026-06-11',c:'한성동물병원',item:'이지스타터',qty:'100kg',price:'3,600원/kg',eta:'6/12(금)',st:'done'},
+  {d:'2026-06-08',c:'통일동물병원',item:'설사72',qty:'5box',price:'8,000원/box',eta:'6/9(화)',st:'done'},
+  {d:'2026-06-05',c:'코리아에프앤에프',item:'대두박',qty:'25,000kg',price:'680원/kg',eta:'6/9(화)',st:'done'},
+  {d:'2026-06-05',c:'김일준 대표(경주)',item:'ECM40',qty:'630kg',price:'1,700원/kg',eta:'6/6(토)',st:'done'},
+  {d:'2026-06-02',c:'부경양돈',item:'ECM',qty:'4,000kg',price:'1,250원/kg',eta:'6/5(금)',st:'done'},
+  {d:'2026-06-01',c:'노엘목장',item:'파인애플분말',qty:'5포',price:'3,000원/kg',eta:'6/2(화)',st:'done'},
+  {d:'2026-05-28',c:'우일축산약품',item:'나노비타믹스',qty:'100kg',price:'8,000원/kg',eta:'5/28(목)',st:'done'},
+  {d:'2026-05-27',c:'송우열 대표',item:'이지스타터',qty:'30kg',price:'4,000원/kg',eta:'5/28(목)',st:'done'},
+  {d:'2026-05-27',c:'경북수산',item:'비타민E',qty:'25kg',price:'16,000원/kg',eta:'5/27(수)',st:'done'},
+  {d:'2026-05-26',c:'영광축산',item:'장프로(샘플)',qty:'25kg',price:'샘플',eta:'5/27(수)',st:'done'},
+  {d:'2026-05-26',c:'경북수산',item:'비타민E',qty:'25kg',price:'16,000원/kg',eta:'5/27(수)',st:'done'},
+  {d:'2026-05-22',c:'경북수산',item:'비타민E',qty:'25kg',price:'16,000원/kg',eta:'5/23(토)',st:'done'},
+  {d:'2026-05-21',c:'코리아에프앤에프',item:'대두박',qty:'25,000kg',price:'665원/kg',eta:'5/27',st:'done'},
+  {d:'2026-05-19',c:'경북수산',item:'비타민E',qty:'25kg',price:'16,000원/kg',eta:'5/21(목)',st:'done'},
+  {d:'2026-04-27',c:'노엘목장',item:'파인애플분말',qty:'5포',price:'3,000원/kg',eta:'4/28(화)',st:'done'},
+  {d:'2026-04-27',c:'송우열 대표',item:'이지스타터',qty:'30kg',price:'4,000원/kg',eta:'4/28(화)',st:'done'},
+  {d:'2026-04-22',c:'태백농산 손태훈',item:'설사72',qty:'3박스',price:'10,000원/박스 (30만원)',eta:'4/22',st:'done'},
+  {d:'2026-04-16',c:'오앤티',item:'메치오닌',qty:'3,000kg',price:'6,000원/kg',eta:'4/22(수)',st:'done'},
+  {d:'2026-04-15',c:'한성동물병원',item:'나노비타믹스E',qty:'40kg',price:'8,000원/kg',eta:'4/16',st:'done'},
+];
+const stTxt={done:'완료',pend:'대기'};
+const stCls={done:'st-d',pend:'st-p'};
+
+function renderOrders(rows){
+  document.getElementById('kv-tot').textContent=rows.length;
+  document.getElementById('kv-done').textContent=rows.filter(o=>o.st==='done').length;
+  document.getElementById('kv-pend').textContent=rows.filter(o=>o.st==='pend').length;
+  document.getElementById('ord-cnt').textContent=rows.length+'건';
+  document.getElementById('otbody').innerHTML=rows.map(o=>`
+    <tr>
+      <td class="mono">${o.d.slice(5)}</td>
+      <td><strong>${o.c}</strong></td>
+      <td>${o.item}</td>
+      <td class="mono">${o.qty}</td>
+      <td class="mono">${o.price}</td>
+      <td class="mono">${o.eta}</td>
+      <td><span class="status ${stCls[o.st]}">${stTxt[o.st]}</span></td>
+    </tr>`).join('');
+}
+renderOrders(ORDERS.filter(o=>o.d.startsWith('2026-06')));
+
+function filtM(m,btn){
+  document.querySelectorAll('#mpills .pb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderOrders(m==='all'?ORDERS:ORDERS.filter(o=>o.d.startsWith(m)));
+}
+
+function go(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('on');
+  document.querySelectorAll('.nt').forEach(t=>t.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  else {const m={overview:0,orders:1,calendar:2,prices:3,calc:4};document.querySelectorAll('.nt')[m[id]]?.classList.add('on');}
+  if(id==='orders'){
+    const curOn=document.querySelector('#mpills .pb.on');
+    if(!curOn){
+      document.querySelectorAll('#mpills .pb').forEach(b=>b.classList.remove('on'));
+      const junBtn=document.querySelector('#mpills .pb[onclick*="2026-06"]');
+      if(junBtn){junBtn.classList.add('on');renderOrders(ORDERS.filter(o=>o.d.startsWith('2026-06')));}
+    }
+  }
+}
+
+setTimeout(()=>{document.querySelectorAll('.bfg').forEach(b=>{b.style.width=b.dataset.w+'%'})},200);
+
+const fmt=n=>Math.round(n).toLocaleString()+'원';
+function af(){const v=document.getElementById('ci').value;if(v)document.getElementById('cp').value=v;}
+function calcO(){
+  const p=+document.getElementById('cp').value||0,q=+document.getElementById('cq').value||0,v=+document.getElementById('cv').value||0;
+  const s=p*q,vt=s*v,t=s+vt;
+  document.getElementById('r-s').textContent=fmt(s);
+  document.getElementById('r-v').textContent=fmt(vt);
+  document.getElementById('r-t').textContent=fmt(t);
+  document.getElementById('ro').style.display='block';
+}
+function calcM(){
+  const b=+document.getElementById('mb').value||0,s=+document.getElementById('ms').value||0,q=+document.getElementById('mq').value||0,c=+document.getElementById('mc').value||0;
+  const g=(s-b)*q,n=g-c,r=s>0?((s-b)/s*100).toFixed(1):0;
+  document.getElementById('r-mg').textContent=fmt(g);
+  document.getElementById('r-mr').textContent=r+'%';
+  document.getElementById('r-mn').textContent=fmt(n);
+  document.getElementById('rm').style.display='block';
+}
+function calcF(){
+  const u=+document.getElementById('fu').value||0,r=+document.getElementById('fr').value||1517;
+  document.getElementById('r-k').textContent=fmt(u*r);
+  document.getElementById('r-p').textContent=fmt(u*r/100);
+  document.getElementById('r-tn').textContent=fmt(u*r/1000);
+  document.getElementById('rf').style.display='block';
+}
+function calcG(){
+  const t=+document.getElementById('gt').value||0,c=+document.getElementById('gc').value||0,d=+document.getElementById('gd').value||1,w=+document.getElementById('gw').value||22;
+  const rem=t-c,rd=w-d,dl=rd>0?(rem/rd).toFixed(1):0,rt=t>0?(c/t*100).toFixed(1):0;
+  document.getElementById('r-grt').textContent=rt+'%';
+  document.getElementById('r-grm').textContent=rem.toLocaleString()+'만원';
+  document.getElementById('r-grd').textContent=parseFloat(dl).toLocaleString()+'만원';
+  document.getElementById('rg').style.display='block';
+}
+</script>
+</body>
+</html>
