@@ -1326,13 +1326,13 @@ const ORDERS=[
   {d:'2026-01-07',c:'코리아에프앤에프',item:'대두박',qty:'25,000kg',price:'-',eta:'1/9(금)',st:'done'},
   {d:'2026-01-05',c:'시현축산',item:'황산염라이신·비테인염산염',qty:'황산 1,000kg·비테인 200kg',price:'-',eta:'-',st:'done'},
 ];
-const stTxt={done:'완료',pend:'대기'};
-const stCls={done:'st-d',pend:'st-p'};
+const stTxt={done:'완료',pend:'대기',wait:'대기'};
+const stCls={done:'st-d',pend:'st-p',wait:'st-p'};
 
 function renderOrders(rows){
   document.getElementById('kv-tot').textContent=rows.length;
   document.getElementById('kv-done').textContent=rows.filter(o=>o.st==='done').length;
-  document.getElementById('kv-pend').textContent=rows.filter(o=>o.st==='pend').length;
+  document.getElementById('kv-pend').textContent=rows.filter(o=>o.st==='pend'||o.st==='wait').length;
   document.getElementById('ord-cnt').textContent=rows.length+'건';
   document.getElementById('otbody').innerHTML=rows.map(o=>`
     <tr>
@@ -1344,7 +1344,7 @@ function renderOrders(rows){
       <td><span class="status ${stCls[o.st]}">${stTxt[o.st]}</span></td>
     </tr>`).join('');
 }
-renderOrders(ORDERS.filter(o=>o.d.startsWith('2026-06')));
+renderOrders(ORDERS);
 
 function filtM(m,btn){
   document.querySelectorAll('#mpills .pb').forEach(b=>b.classList.remove('on'));
@@ -1564,7 +1564,7 @@ function go(id,btn){
     if(!curOn){
       document.querySelectorAll('#mpills .pb').forEach(b=>b.classList.remove('on'));
       const junBtn=document.querySelector('#mpills .pb[onclick*="2026-06"]');
-      if(junBtn){junBtn.classList.add('on');renderOrders(ORDERS.filter(o=>o.d.startsWith('2026-06')));}
+      if(junBtn){junBtn.classList.remove('on');}const allBtn=document.querySelector('#mpills .pb[onclick*="all"]');if(allBtn){allBtn.classList.add('on');}renderOrders(ORDERS);
     }
   }
   if(id==='bids'){
