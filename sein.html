@@ -752,9 +752,9 @@ table.tbl tr:hover td{background:#1C2128}
   <!-- KPI 통계 -->
   <div class="krow" style="margin-bottom:16px">
     <div class="kc"><div class="kv">박제영</div><div class="kl">담당자</div></div>
-    <div class="kc"><div class="kv" id="kv-tot">16</div><div class="kl">총 발주건수</div></div>
-    <div class="kc"><div class="kv" id="kv-done">14</div><div class="kl">입고완료</div></div>
-    <div class="kc"><div class="kv" id="kv-pend">2</div><div class="kl">대기중</div></div>
+    <div class="kc"><div class="kv" id="kv-tot">60</div><div class="kl">총 발주건수</div></div>
+    <div class="kc"><div class="kv" id="kv-done">59</div><div class="kl">입고완료</div></div>
+    <div class="kc"><div class="kv" id="kv-pend">1</div><div class="kl">대기중</div></div>
   </div>
 
   <!-- 발주테이블 + 캘린더 2열 -->
@@ -1255,6 +1255,7 @@ table.tbl tr:hover td{background:#1C2128}
 
 <script>
 const ORDERS=[
+  // ===== 6월 =====
   {d:'2026-06-25',c:'코리아에프앤에프',item:'MCP 소포장',qty:'1,000kg',price:'1,790원/kg',eta:'6/29(월)',st:'wait'},
   {d:'2026-06-23',c:'부경양돈',item:'코코시스',qty:'1,600kg',price:'-',eta:'6/24(수)',st:'done'},
   {d:'2026-06-18',c:'부경양돈',item:'ECM',qty:'4,800kg',price:'-',eta:'6/22(월)',st:'done'},
@@ -1267,19 +1268,60 @@ const ORDERS=[
   {d:'2026-06-05',c:'김일준 대표(경주)',item:'ECM40',qty:'630kg',price:'1,700원/kg',eta:'6/6(토)',st:'done'},
   {d:'2026-06-02',c:'부경양돈',item:'ECM',qty:'4,000kg',price:'1,250원/kg',eta:'6/5(금)',st:'done'},
   {d:'2026-06-01',c:'노엘목장',item:'파인애플분말',qty:'5포',price:'3,000원/kg',eta:'6/2(화)',st:'done'},
-  {d:'2026-05-28',c:'우일축산약품',item:'나노비타믹스',qty:'100kg',price:'8,000원/kg',eta:'5/28(목)',st:'done'},
+  // ===== 5월 =====
+  {d:'2026-05-28',c:'코리아에프앤에프',item:'대두박',qty:'25,000kg',price:'665원/kg',eta:'5/29(금)',st:'done'},
   {d:'2026-05-27',c:'송우열 대표',item:'이지스타터',qty:'30kg',price:'4,000원/kg',eta:'5/28(목)',st:'done'},
-  {d:'2026-05-27',c:'경북수산',item:'비타민E',qty:'25kg',price:'16,000원/kg',eta:'5/27(수)',st:'done'},
-  {d:'2026-05-26',c:'영광축산',item:'장프로(샘플)',qty:'25kg',price:'샘플',eta:'5/27(수)',st:'done'},
-  {d:'2026-05-26',c:'경북수산',item:'비타민E',qty:'25kg',price:'16,000원/kg',eta:'5/27(수)',st:'done'},
-  {d:'2026-05-22',c:'경북수산',item:'비타민E',qty:'25kg',price:'16,000원/kg',eta:'5/23(토)',st:'done'},
-  {d:'2026-05-21',c:'코리아에프앤에프',item:'대두박',qty:'25,000kg',price:'665원/kg',eta:'5/27',st:'done'},
-  {d:'2026-05-19',c:'경북수산',item:'비타민E',qty:'25kg',price:'16,000원/kg',eta:'5/21(목)',st:'done'},
-  {d:'2026-04-27',c:'노엘목장',item:'파인애플분말',qty:'5포',price:'3,000원/kg',eta:'4/28(화)',st:'done'},
-  {d:'2026-04-27',c:'송우열 대표',item:'이지스타터',qty:'30kg',price:'4,000원/kg',eta:'4/28(화)',st:'done'},
-  {d:'2026-04-22',c:'태백농산 손태훈',item:'설사72',qty:'3박스',price:'10,000원/박스 (30만원)',eta:'4/22',st:'done'},
+  {d:'2026-05-27',c:'우일축산약품',item:'나노비타믹스',qty:'100kg',price:'8,000원/kg',eta:'5/28(목)',st:'done'},
+  {d:'2026-05-26',c:'부산사료',item:'하이풋',qty:'4,000kg',price:'2,500원/kg',eta:'5/28(목)',st:'done'},
+  {d:'2026-05-26',c:'영광축산',item:'장프로',qty:'25kg',price:'샘플',eta:'5/27(수)',st:'done'},
+  {d:'2026-05-22',c:'경북수산(정우수산)',item:'비타민E',qty:'25kg',price:'16,000원/kg',eta:'5/23(토)',st:'done'},
+  {d:'2026-05-21',c:'코리아에프앤에프',item:'대두박',qty:'25,000kg',price:'665원/kg',eta:'5/27(수)',st:'done'},
+  {d:'2026-05-21',c:'시현축산',item:'비테인',qty:'200kg',price:'3,200원/kg',eta:'5/22(금)',st:'done'},
+  {d:'2026-05-19',c:'오앤티',item:'염산염라이신',qty:'8,000kg',price:'1,800원/kg',eta:'5/20(수)',st:'done'},
+  {d:'2026-05-19',c:'경북수산(조양수산)',item:'비타민E',qty:'25kg',price:'16,000원/kg',eta:'5/21(목)',st:'done'},
+  {d:'2026-05-11',c:'코리아에프앤에프',item:'MCP 소포장',qty:'1,000kg',price:'1,720원/kg',eta:'5/15(금)',st:'done'},
+  {d:'2026-05-08',c:'오케이',item:'MDCP',qty:'27,000kg',price:'1,470원/kg',eta:'5/12(화)',st:'done'},
+  // ===== 4월 =====
+  {d:'2026-04-27',c:'합천돼지자가',item:'DCP',qty:'27,000kg',price:'-',eta:'4/29(수)',st:'done'},
+  {d:'2026-04-23',c:'부경양돈',item:'ECM',qty:'4,000kg',price:'-',eta:'4/27(월)',st:'done'},
+  {d:'2026-04-22',c:'태백농산(손태훈)',item:'설사72',qty:'3box',price:'샘플',eta:'-',st:'done'},
+  {d:'2026-04-22',c:'부산사료',item:'하이풋',qty:'2,000kg',price:'-',eta:'4/29(수)',st:'done'},
+  {d:'2026-04-17',c:'코리아에프앤에프',item:'대두박',qty:'25,000kg',price:'-',eta:'4/28(화)',st:'done'},
   {d:'2026-04-16',c:'오앤티',item:'메치오닌',qty:'3,000kg',price:'6,000원/kg',eta:'4/22(수)',st:'done'},
-  {d:'2026-04-15',c:'한성동물병원',item:'나노비타믹스E',qty:'40kg',price:'8,000원/kg',eta:'4/16',st:'done'},
+  {d:'2026-04-16',c:'오앤티',item:'염산염라이신',qty:'10,000kg',price:'1,600원/kg',eta:'4/22(수)',st:'done'},
+  {d:'2026-04-01',c:'프로팜(노현석)',item:'코코시스',qty:'800kg',price:'2,500원/kg',eta:'-',st:'done'},
+  // ===== 3월 =====
+  {d:'2026-03-27',c:'송우열 대표',item:'이지스타터',qty:'30kg',price:'4,000원/kg',eta:'3/28(토)',st:'done'},
+  {d:'2026-03-27',c:'우일축산약품',item:'나노비타믹스·나노비타쎄',qty:'나비믹스 2box·나비쎄 1box',price:'샘플',eta:'3/30(월)',st:'done'},
+  {d:'2026-03-25',c:'합천돼지자가',item:'염화콜린',qty:'2,000kg',price:'-',eta:'3/27(금)',st:'done'},
+  {d:'2026-03-17',c:'우일축산약품',item:'나노비타믹스',qty:'100kg',price:'-',eta:'-',st:'done'},
+  {d:'2026-03-16',c:'노엘목장',item:'파인애플분말',qty:'5포',price:'-',eta:'-',st:'done'},
+  {d:'2026-03-12',c:'오앤티',item:'염산염라이신·메치오닌',qty:'염산염라이신 3,000kg·메치오닌 5,000kg',price:'염라 1,450원',eta:'3/18(수)',st:'done'},
+  {d:'2026-03-06',c:'합천(이한석)',item:'이지스타터',qty:'3포',price:'4,000원/kg',eta:'-',st:'done'},
+  {d:'2026-03-06',c:'오앤티',item:'염산염라이신',qty:'12,000kg',price:'1,450원/kg',eta:'3/11(수)',st:'done'},
+  {d:'2026-03-04',c:'합천돼지자가',item:'DCP',qty:'27,000kg',price:'940원/kg',eta:'-',st:'done'},
+  {d:'2026-03-03',c:'부산사료',item:'하이풋',qty:'2,000kg',price:'-',eta:'3/5(목)',st:'done'},
+  // ===== 2월 =====
+  {d:'2026-02-10',c:'노엘목장',item:'파인애플분말',qty:'100kg',price:'-',eta:'-',st:'done'},
+  {d:'2026-02-10',c:'우일축산약품(장안농장)',item:'나노비타믹스',qty:'100kg',price:'-',eta:'-',st:'done'},
+  {d:'2026-02-10',c:'송기름 대표(합안)',item:'코코시스',qty:'800kg',price:'2,500원/kg',eta:'-',st:'done'},
+  {d:'2026-02-04',c:'부경양돈',item:'코코시스',qty:'4,000kg',price:'-',eta:'2/6(금)',st:'done'},
+  {d:'2026-02-04',c:'우정농장(김현우)',item:'나노비타믹스',qty:'20kg',price:'샘플',eta:'-',st:'done'},
+  // ===== 1월 =====
+  {d:'2026-01-30',c:'한성동물병원',item:'초유아이지·설사72',qty:'각 1박스',price:'샘플',eta:'-',st:'done'},
+  {d:'2026-01-29',c:'영광축산(박현규)',item:'나노비타믹스E',qty:'20kg',price:'10,000원/kg',eta:'-',st:'done'},
+  {d:'2026-01-29',c:'영광축산(박현규)',item:'코코시스',qty:'1,000kg',price:'-',eta:'-',st:'done'},
+  {d:'2026-01-29',c:'오앤티',item:'염산염라이신',qty:'7,000kg',price:'-',eta:'2/4(수)',st:'done'},
+  {d:'2026-01-26',c:'YK목장(양종석)',item:'ECM40',qty:'3bag',price:'1,700원/kg',eta:'-',st:'done'},
+  {d:'2026-01-19',c:'노엘목장',item:'파인애플분말',qty:'100kg',price:'-',eta:'-',st:'done'},
+  {d:'2026-01-16',c:'부경양돈',item:'코코시스',qty:'4,000kg',price:'2,090원/kg',eta:'1/19(월)',st:'done'},
+  {d:'2026-01-14',c:'부산사료',item:'하이풋',qty:'2,000kg',price:'-',eta:'1/16(금)',st:'done'},
+  {d:'2026-01-13',c:'장유수산',item:'비타민C 35%·비타민E 50%',qty:'비타C 1,000kg·비타E 500kg',price:'비타C 3,300원·비타E 13,000원/kg',eta:'-',st:'done'},
+  {d:'2026-01-13',c:'우일축산약품(장안농장)',item:'나노비타믹스',qty:'100kg',price:'-',eta:'-',st:'done'},
+  {d:'2026-01-09',c:'오앤티',item:'염산염라이신',qty:'4,000kg',price:'1,450원/kg',eta:'1/14(수)',st:'done'},
+  {d:'2026-01-09',c:'통일동물병원',item:'초유아이지·설사72',qty:'초유 2box·설사72 3box',price:'-',eta:'-',st:'done'},
+  {d:'2026-01-07',c:'코리아에프앤에프',item:'대두박',qty:'25,000kg',price:'-',eta:'1/9(금)',st:'done'},
+  {d:'2026-01-05',c:'시현축산',item:'황산염라이신·비테인염산염',qty:'황산 1,000kg·비테인 200kg',price:'-',eta:'-',st:'done'},
 ];
 const stTxt={done:'완료',pend:'대기'};
 const stCls={done:'st-d',pend:'st-p'};
