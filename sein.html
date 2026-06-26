@@ -742,7 +742,7 @@ table.tbl tr:hover td{background:#1C2128}
   <div class="ph-hd">
     <div><div class="ph-t">발주 현황 · 방문 캘린더</div></div>
     <div class="pills" id="mpills">
-      <button class="pb on" onclick="filtM('all',this)">전체</button>
+      <button class="pb" onclick="filtM('all',this)">전체</button>
       <button class="pb" onclick="filtM('2026-01',this)">1월</button>
       <button class="pb" onclick="filtM('2026-02',this)">2월</button>
       <button class="pb" onclick="filtM('2026-03',this)">3월</button>
@@ -1344,7 +1344,20 @@ function renderOrders(rows){
       <td><span class="status ${stCls[o.st]}">${stTxt[o.st]}</span></td>
     </tr>`).join('');
 }
-renderOrders(ORDERS);
+
+// 현재 월 자동 선택
+(function(){
+  const now = new Date();
+  const curMonth = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+  const btns = document.querySelectorAll('#mpills .pb');
+  btns.forEach(b => {
+    b.classList.remove('on');
+    if(b.getAttribute('onclick') && b.getAttribute('onclick').includes(curMonth)){
+      b.classList.add('on');
+    }
+  });
+  renderOrders(ORDERS.filter(o=>o.d.startsWith(curMonth)));
+})();
 
 function filtM(m,btn){
   document.querySelectorAll('#mpills .pb').forEach(b=>b.classList.remove('on'));
