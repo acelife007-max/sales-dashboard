@@ -1628,6 +1628,11 @@ function calcG(){
 
 // ===== 업계뉴스 JS =====
 const NEWS_DATA = [
+  {id:100,lang:'ko',cat:'policy',src:'축산신문',date:'2026-06-09',title:'동계 조사료 수급 빠듯…롤당 11~12만원 고가 형성',desc:'볏짚 수거량 전년대비 28.5만톤 감소. 환율·유가 상승으로 수입 조사료도 30% 증가했지만 평균가 7% 상승. 라이그라스·페스큐·연맥·티모시 전 품목 인상.',url:'https://www.chuksannews.co.kr/'},
+  {id:101,lang:'ko',cat:'policy',src:'머니투데이',date:'2026-05-06',title:'4월 소비자물가 축산물 5.5%↑…전체 물가 2.6% 상승 견인',desc:'농산물은 기상호조로 5.2% 하락한 반면 축산물·수산물은 강세 지속. 환율·유가 상승이 사료원가 전이로 이어지는 구조적 압박 지속.',url:'https://www.mt.co.kr/economy/2026/05/06/2026050609153032233'},
+  {id:102,lang:'en',cat:'amino',src:'Feeding Ingredients Asia',date:'2026-04-16',title:'DL-메치오닌 2026년 글로벌 거래가 $2,700~3,500/MT 박스권',desc:'석유화학 원료(아크롤레인·메틸메르캅탄) 연동으로 유가 변동에 민감. 생산 집중도 80% 상위 5개사, 가동률 75~80% 수준에서 공급 타이트.',url:'https://www.feedingredientsasia.com/en/market-insights/supply-chain/dl-methionine-supply-chain-market-2026-analysis'},
+  {id:103,lang:'en',cat:'feed',src:'GlobeNewswire',date:'2026-06-05',title:'글로벌 사료첨가제 시장 2026년 507억 달러…아미노산이 견인',desc:'2031년까지 연 6.0% 성장 전망. 항생제 규제 강화로 라이신·메치오닌·트레오닌 등 아미노산 비중 확대, 가금 부문이 최대 수요처.',url:'https://www.globenewswire.com/news-release/2026/06/05/3307218/0/en/Feed-Additives-Market-by-Type-Source-Form-Livestock-End-Users-Function-and-Region-Global-Forecast-to-2031.html'},
+  {id:104,lang:'ko',cat:'amino',src:'딜사이트',date:'2026-04-29',title:'대상, 라이신 시황 변동성에 스페셜티 아미노산으로 전환',desc:'중국발 저가 라이신 공급과잉으로 작년 판가 하락 타격. 트립토판·알기닌·글루타민 등 고부가 스페셜티 제품 생산 확대로 수익성 개선 추진.',url:'https://dealsite.co.kr/articles/124026'},
   {id:1,lang:'ko',cat:'amino',src:'축산신문',date:'2026-04-29',title:'중동전쟁도 막지 못하는 동물약품 수출…라이신은 중국 공세에 26.8% ↓',desc:'1분기 동물약품 수출 9,330만불(전년比 10.5%↓). 라이신 수출 4,240만불로 26.8% 급감. 중국산 저가 공세 지속, 완제품 수출은 10% 증가.',url:'https://www.chuksannews.co.kr/news/article.html?no=271425'},
   {id:2,lang:'ko',cat:'amino',src:'한화투자증권',date:'2026-03-25',title:'중국 메치오닌 spot가격 3월 155.9% 급등…아미노산 판가 회복세',desc:'3월 중국 라이신·메치오닌·트립토판 spot가격 각 25.4%·155.9%·12.8% 상승. 주요 생산업체 판가 약 10% 인상. 바이오 수익성 1Q26 바닥 후 빠른 회복 전망.',url:'https://file.hanaw.com/download/research/FileServer/WEB/industry/industry/2026/03/24/FnB_Strategy_20260325.pdf'},
   {id:3,lang:'ko',cat:'feed',src:'축산신문',date:'2026-04-08',title:'중동발 위기, 사료원료 공급망 다변화로 대응해야',desc:'호르무즈 해협 봉쇄·항로 우회로 운임 급등. 환율 1,500원 이상 고환율 가능성에 수입 원료 원가 상승 압박 확대. 원산지 분산 구매 전략 필요.',url:'https://www.chuksannews.co.kr/news/article.html?no=271126'},
