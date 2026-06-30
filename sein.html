@@ -755,8 +755,8 @@ table.tbl tr:hover td{background:#1C2128}
   <!-- KPI 통계 -->
   <div class="krow" style="margin-bottom:16px">
     <div class="kc"><div class="kv">박제영</div><div class="kl">담당자</div></div>
-    <div class="kc"><div class="kv" id="kv-tot">63</div><div class="kl">총 발주건수</div></div>
-    <div class="kc"><div class="kv" id="kv-done">62</div><div class="kl">입고완료</div></div>
+    <div class="kc"><div class="kv" id="kv-tot">65</div><div class="kl">총 발주건수</div></div>
+    <div class="kc"><div class="kv" id="kv-done">64</div><div class="kl">입고완료</div></div>
     <div class="kc"><div class="kv" id="kv-pend">1</div><div class="kl">대기중</div></div>
   </div>
 
@@ -796,7 +796,7 @@ table.tbl tr:hover td{background:#1C2128}
           <div class="cd"><div class="cdn">25</div></div>
           <div class="cd"><div class="cdn">26</div></div>
           <!-- 5주차 -->
-          <div class="cd"><div class="cdn">29</div></div>
+          <div class="cd busy"><div class="cdn">29</div><div class="ev dist">대한산란계협회 양산김해</div><div class="ev dist">오앤티</div><div class="ev dist">코리아에프앤에프</div></div>
           <div class="cd"><div class="cdn">30</div></div>
           <div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div>
         </div>
@@ -1259,7 +1259,9 @@ table.tbl tr:hover td{background:#1C2128}
 <script>
 const ORDERS=[
   // ===== 6월 =====
-  {d:'2026-06-25',c:'코리아에프앤에프',item:'MCP 소포장',qty:'1,000kg',price:'1,790원/kg',eta:'6/29(월)',st:'wait'},
+  {d:'2026-06-30',c:'노엘목장',item:'파인애플분말',qty:'100kg',price:'3,000원/kg',eta:'7/1(수)',st:'wait'},
+  {d:'2026-06-29',c:'미소인터내셔널',item:'비타민D3',qty:'20kg',price:'40,000원/kg',eta:'6/30(화)',st:'done'},
+  {d:'2026-06-25',c:'코리아에프앤에프',item:'MCP 소포장',qty:'1,000kg',price:'1,790원/kg',eta:'6/29(월)',st:'done'},
   {d:'2026-06-23',c:'부경양돈',item:'코코시스',qty:'1,600kg',price:'-',eta:'6/24(수)',st:'done'},
   {d:'2026-06-18',c:'부경양돈',item:'ECM',qty:'4,800kg',price:'-',eta:'6/22(월)',st:'done'},
   {d:'2026-06-17',c:'지원동물병원 오지홍원장',item:'설사72',qty:'1박스',price:'샘플',eta:'6/19(금)',st:'done'},
