@@ -228,8 +228,6 @@ table.tbl tr:hover td{background:#1C2128}
     <button class="nt" onclick="go('prices',this)">가격</button>
     <button class="nt" onclick="go('bids',this)">📋 입찰결과</button>
     <button class="nt" onclick="go('clients',this)">🏢 거래처</button>
-    <button class="nt" onclick="go('rivals',this)">⚔️ 경쟁사</button>
-    <button class="nt" onclick="go('cal7',this)">📅 7월</button>
     <button class="nt" onclick="go('news',this)">📰 업계뉴스</button>
     <button class="nt" onclick="go('calc',this)">계산기</button>
   </div>
@@ -1204,56 +1202,6 @@ table.tbl tr:hover td{background:#1C2128}
 </div>
 </div>
 
-<!-- ████ 경쟁사 분석 ████ -->
-<div id="p-rivals" class="page">
-<div class="wrap">
-  <div style="margin-bottom:20px"><div class="ph-t">⚔️ 경쟁사 입찰 패턴 분석</div></div>
-  <div id="rival-wrap"></div>
-</div>
-</div>
-
-<!-- ████ 7월 캘린더 ████ -->
-<div id="p-cal7" class="page">
-<div class="wrap">
-  <div style="margin-bottom:16px"><div class="ph-t">📅 방문 캘린더 — 7월</div></div>
-  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:8px">
-    <div style="text-align:center;font-size:11px;color:var(--muted);padding:4px">월</div>
-    <div style="text-align:center;font-size:11px;color:var(--muted);padding:4px">화</div>
-    <div style="text-align:center;font-size:11px;color:var(--muted);padding:4px">수</div>
-    <div style="text-align:center;font-size:11px;color:var(--muted);padding:4px">목</div>
-    <div style="text-align:center;font-size:11px;color:var(--muted);padding:4px">금</div>
-  </div>
-  <div style="gap:5px;display:grid;grid-template-columns:repeat(5,1fr)">
-    <div class="cd emp"></div>
-    <div class="cd busy"><div class="cdn">01</div><div class="ev farm">영광축산</div><div class="ev dist">합천축협</div><div class="ev dist">오앤티</div><div class="ev farm">거창소재농가</div><div class="ev hosp">백제약품</div></div>
-    <div class="cd"><div class="cdn">02</div></div>
-    <div class="cd"><div class="cdn">03</div></div>
-    <div class="cd"><div class="cdn">04</div></div>
-    <div class="cd"><div class="cdn">07</div></div>
-    <div class="cd"><div class="cdn">08</div></div>
-    <div class="cd"><div class="cdn">09</div></div>
-    <div class="cd"><div class="cdn">10</div></div>
-    <div class="cd"><div class="cdn">11</div></div>
-    <div class="cd"><div class="cdn">14</div></div>
-    <div class="cd"><div class="cdn">15</div></div>
-    <div class="cd"><div class="cdn">16</div></div>
-    <div class="cd"><div class="cdn">17</div></div>
-    <div class="cd"><div class="cdn">18</div></div>
-    <div class="cd"><div class="cdn">21</div></div>
-    <div class="cd"><div class="cdn">22</div></div>
-    <div class="cd"><div class="cdn">23</div></div>
-    <div class="cd"><div class="cdn">24</div></div>
-    <div class="cd"><div class="cdn">25</div></div>
-    <div class="cd"><div class="cdn">28</div></div>
-    <div class="cd"><div class="cdn">29</div></div>
-    <div class="cd"><div class="cdn">30</div></div>
-    <div class="cd"><div class="cdn">31</div></div>
-    <div class="cd emp"></div>
-  </div>
-  <div style="margin-top:12px;font-size:11px;color:var(--muted)">* 7/1 부경양돈 ECM 4,800kg 입고 확인 (Slack 7/2 발주). 방문일정 추가 시 업데이트해주세요.</div>
-</div>
-</div>
-
 <script>
 // ===== 거래처 카드 데이터 (Slack 발주 확인 기반) =====
 const CLIENT_DATA = [
@@ -1383,139 +1331,6 @@ const CLIENT_DATA = [
     `;
     grid.appendChild(card);
   });
-})();
-</script>
-
-<script>
-// ===== 경쟁사 분석 데이터 (입찰결과 Slack 확인 기반) =====
-const RIVAL_DATA = [
-  {
-    name:'CSF',
-    items:[
-      {product:'황산염라이신', client:'부경양돈', date:'2026-06-23', price:'874원', result:'낙찰'},
-    ]
-  },
-  {
-    name:'희우코리아',
-    items:[
-      {product:'황산염라이신', client:'우성사료', date:'2026-06-16', price:'935원', result:'낙찰'},
-    ]
-  },
-  {
-    name:'이센티', 
-    items:[
-      {product:'황산염라이신·트레오닌·발린', client:'CJ', date:'2026-06-16', price:'1,045원', result:'낙찰'},
-    ]
-  },
-  {
-    name:'밀테크(CUC)',
-    items:[
-      {product:'트레오닌', client:'체리부로', date:'2026-06-12', price:'1,820원', result:'낙찰'},
-    ]
-  },
-  {
-    name:'에보닉',
-    items:[
-      {product:'메치오닌', client:'부산바이오', date:'2026-06-16', price:'$2.68', result:'탈락(세인 $2.66 낙찰)'},
-      {product:'메치오닌', client:'우성사료', date:'2026-06-12', price:'$5.0', result:'낙찰(CJ)'},
-    ]
-  },
-  {
-    name:'Xinlin(중국)',
-    items:[
-      {product:'DCP·MCP', client:'이지홀딩스', date:'2026-06-20', price:'MCP $707·DCP $560', result:'낙찰'},
-    ]
-  },
-];
-
-(function(){
-  const wrap = document.getElementById('rival-wrap');
-  if(!wrap) return;
-
-  // 경쟁사별 카드
-  const grid = document.createElement('div');
-  grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:28px';
-
-  RIVAL_DATA.forEach(r => {
-    const card = document.createElement('div');
-    card.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px';
-    const rows = r.items.map(i=>
-      `<tr style="border-bottom:1px solid var(--border)">
-        <td style="padding:6px 4px;font-size:11px;color:var(--muted)">${i.date.slice(5)}</td>
-        <td style="padding:6px 4px;font-size:11px">${i.client}</td>
-        <td style="padding:6px 4px;font-size:11px;color:var(--amber)">${i.product}</td>
-        <td style="padding:6px 4px;font-size:12px;font-weight:700;color:${i.result.includes('낙찰')&&!i.result.includes('탈락')?'#F85149':'#3FB950'}">${i.price}</td>
-        <td style="padding:6px 4px;font-size:11px;color:var(--muted)">${i.result}</td>
-      </tr>`
-    ).join('');
-    card.innerHTML = `
-      <div style="font-weight:700;font-size:15px;color:var(--fg);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)">🏭 ${r.name}</div>
-      <table style="width:100%;border-collapse:collapse">
-        <thead><tr style="background:var(--surface2)">
-          <th style="padding:5px 4px;font-size:10px;color:var(--muted);text-align:left">날짜</th>
-          <th style="padding:5px 4px;font-size:10px;color:var(--muted);text-align:left">거래처</th>
-          <th style="padding:5px 4px;font-size:10px;color:var(--muted);text-align:left">품목</th>
-          <th style="padding:5px 4px;font-size:10px;color:var(--muted);text-align:left">단가</th>
-          <th style="padding:5px 4px;font-size:10px;color:var(--muted);text-align:left">결과</th>
-        </tr></thead>
-        <tbody>${rows}</tbody>
-      </table>`;
-    grid.appendChild(card);
-  });
-  wrap.appendChild(grid);
-
-  // 품목별 경쟁사 단가 비교표
-  const title2 = document.createElement('div');
-  title2.style.cssText = 'font-weight:700;font-size:14px;color:var(--muted);margin-bottom:12px';
-  title2.textContent = '📊 품목별 경쟁 단가 요약 (Slack 입찰 확인 기준)';
-  wrap.appendChild(title2);
-
-  const tbl = document.createElement('table');
-  tbl.style.cssText = 'width:100%;border-collapse:collapse;font-size:13px';
-  tbl.innerHTML = `
-    <thead><tr style="background:var(--surface2)">
-      <th style="padding:10px 14px;text-align:left;color:var(--muted);border-bottom:1px solid var(--border)">품목</th>
-      <th style="padding:10px 14px;text-align:left;color:var(--muted);border-bottom:1px solid var(--border)">경쟁사</th>
-      <th style="padding:10px 14px;text-align:center;color:var(--muted);border-bottom:1px solid var(--border)">경쟁사 낙찰가</th>
-      <th style="padding:10px 14px;text-align:center;color:var(--muted);border-bottom:1px solid var(--border)">세인 제시가</th>
-      <th style="padding:10px 14px;text-align:center;color:var(--muted);border-bottom:1px solid var(--border)">결과</th>
-      <th style="padding:10px 14px;text-align:left;color:var(--muted);border-bottom:1px solid var(--border)">거래처</th>
-    </tr></thead>
-    <tbody>
-      <tr style="border-bottom:1px solid var(--border)">
-        <td style="padding:10px 14px;font-weight:600">황산염라이신</td>
-        <td style="padding:10px 14px;color:var(--muted)">CSF</td>
-        <td style="padding:10px 14px;text-align:center;color:#F85149;font-weight:700">874원</td>
-        <td style="padding:10px 14px;text-align:center;color:var(--muted)">참여</td>
-        <td style="padding:10px 14px;text-align:center"><span style="background:rgba(248,81,73,.2);color:#F85149;padding:2px 8px;border-radius:8px;font-size:11px">탈락</span></td>
-        <td style="padding:10px 14px;color:var(--muted)">부경양돈</td>
-      </tr>
-      <tr style="border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)">
-        <td style="padding:10px 14px;font-weight:600">메치오닌</td>
-        <td style="padding:10px 14px;color:var(--muted)">에보닉</td>
-        <td style="padding:10px 14px;text-align:center;color:var(--muted)">$2.68</td>
-        <td style="padding:10px 14px;text-align:center;color:#3FB950;font-weight:700">$2.66</td>
-        <td style="padding:10px 14px;text-align:center"><span style="background:rgba(63,185,80,.2);color:#3FB950;padding:2px 8px;border-radius:8px;font-size:11px">낙찰</span></td>
-        <td style="padding:10px 14px;color:var(--muted)">부산바이오</td>
-      </tr>
-      <tr style="border-bottom:1px solid var(--border)">
-        <td style="padding:10px 14px;font-weight:600">트레오닌</td>
-        <td style="padding:10px 14px;color:var(--muted)">밀테크</td>
-        <td style="padding:10px 14px;text-align:center;color:#F85149">1,820원</td>
-        <td style="padding:10px 14px;text-align:center;color:#3FB950;font-weight:700">1,878원</td>
-        <td style="padding:10px 14px;text-align:center"><span style="background:rgba(63,185,80,.2);color:#3FB950;padding:2px 8px;border-radius:8px;font-size:11px">낙찰</span></td>
-        <td style="padding:10px 14px;color:var(--muted)">나람사료</td>
-      </tr>
-      <tr style="border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)">
-        <td style="padding:10px 14px;font-weight:600">DCP·MCP</td>
-        <td style="padding:10px 14px;color:var(--muted)">Xinlin(중국)</td>
-        <td style="padding:10px 14px;text-align:center;color:#F85149">MCP $707</td>
-        <td style="padding:10px 14px;text-align:center;color:var(--muted)">MCP $711</td>
-        <td style="padding:10px 14px;text-align:center"><span style="background:rgba(248,81,73,.2);color:#F85149;padding:2px 8px;border-radius:8px;font-size:11px">탈락</span></td>
-        <td style="padding:10px 14px;color:var(--muted)">이지홀딩스</td>
-      </tr>
-    </tbody>`;
-  wrap.appendChild(tbl);
 })();
 </script>
 
@@ -1904,7 +1719,7 @@ function go(id,btn){
   document.getElementById('p-'+id).classList.add('on');
   document.querySelectorAll('.nt').forEach(t=>t.classList.remove('on'));
   if(btn) btn.classList.add('on');
-  else {const m={overview:0,orders:1,calendar:1,prices:2,bids:3,clients:4,rivals:5,cal7:6,news:7,calc:8};document.querySelectorAll('.nt')[m[id]]?.classList.add('on');}
+  else {const m={overview:0,orders:1,calendar:1,prices:2,bids:3,clients:4,news:5,calc:6};document.querySelectorAll('.nt')[m[id]]?.classList.add('on');}
   if(id==='orders'){
     const curOn=document.querySelector('#mpills .pb.on');
     if(!curOn){
