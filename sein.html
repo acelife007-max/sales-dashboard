@@ -1569,6 +1569,19 @@ function filtM(m,btn){
   document.querySelectorAll('#mpills .pb').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
   renderOrders(m==='all'?ORDERS:ORDERS.filter(o=>o.d.startsWith(m)));
+
+  // 방문 캘린더도 같이 전환
+  if(m !== 'all'){
+    const month = m.split('-')[1].replace(/^0/,''); // '2026-06' → '6'
+    const calTarget = document.getElementById('cal-'+month);
+    if(calTarget){
+      document.querySelectorAll('[id^="cal-"]').forEach(el=>el.style.display='none');
+      document.querySelectorAll('#cal-pills .pb').forEach(b=>b.classList.remove('on'));
+      calTarget.style.display='grid';
+      const calBtn = document.querySelector('#cal-pills .pb[onclick*="\''+month+'\'"]');
+      if(calBtn) calBtn.classList.add('on');
+    }
+  }
 }
 
 // ===== 입찰결과 데이터 (이재석 부사장 업무보고 기반) =====
