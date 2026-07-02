@@ -771,7 +771,7 @@ table.tbl tr:hover td{background:#1C2128}
         <div class="card-title">📅 방문 캘린더</div>
         <div class="pills" id="cal-pills" style="gap:4px">
           <button class="pb" onclick="showCal('6',this)" style="font-size:11px;padding:3px 10px">6월</button>
-          <button class="pb on" onclick="showCal('7',this)" style="font-size:11px;padding:3px 10px">7월</button>
+          <button class="pb" onclick="showCal('7',this)" style="font-size:11px;padding:3px 10px">7월</button>
         </div>
       </div>
       <div class="cw" style="padding:0 8px 12px">
@@ -807,7 +807,7 @@ table.tbl tr:hover td{background:#1C2128}
         </div>
 
         <!-- 7월 캘린더 -->
-        <div id="cal-7" class="cg" style="gap:5px;display:grid;grid-template-columns:repeat(5,1fr)">
+        <div id="cal-7" class="cg" style="gap:5px;display:none;grid-template-columns:repeat(5,1fr)">
           <div class="cd emp"></div>
           <div class="cd busy"><div class="cdn">01</div><div class="ev farm">영광축산</div><div class="ev dist">합천축협</div><div class="ev dist">오앤티</div><div class="ev farm">거창소재농가</div><div class="ev hosp">백제약품</div></div>
           <div class="cd"><div class="cdn">02</div></div>
@@ -1548,19 +1548,22 @@ function showCal(month, btn){
   if(target) target.style.display='grid';
 }
 // 초기 로드 시 현재 월 캘린더 자동 선택
-(function(){
+document.addEventListener('DOMContentLoaded', function(){
   const now = new Date();
-  const m = String(now.getMonth()+1); // 7
+  const m = String(now.getMonth()+1);
+  document.querySelectorAll('[id^="cal-"]').forEach(el=>{ el.style.display='none'; });
+  document.querySelectorAll('#cal-pills .pb').forEach(b=>b.classList.remove('on'));
+  const target = document.getElementById('cal-'+m);
   const btn = document.querySelector('#cal-pills .pb[onclick*="\''+m+'\'"]');
-  document.querySelectorAll('[id^="cal-"]').forEach(el=>el.style.display='none');
-  if(btn){ btn.classList.add('on'); document.getElementById('cal-'+m).style.display='grid'; }
+  if(target){ target.style.display='grid'; }
+  if(btn){ btn.classList.add('on'); }
   else {
-    // 없으면 마지막 버튼 선택
+    // 현재 월 버튼 없으면 마지막 버튼 선택
     const btns = document.querySelectorAll('#cal-pills .pb');
     const last = btns[btns.length-1];
-    if(last){ last.classList.add('on'); last.click(); }
+    if(last){ last.classList.add('on'); const lastM = last.getAttribute('onclick').match(/'(\d+)'/)?.[1]; if(lastM){ const el=document.getElementById('cal-'+lastM); if(el) el.style.display='grid'; } }
   }
-})();
+});
 
 function filtM(m,btn){
   document.querySelectorAll('#mpills .pb').forEach(b=>b.classList.remove('on'));
