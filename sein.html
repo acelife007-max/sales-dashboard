@@ -752,15 +752,16 @@ table.tbl tr:hover td{background:#1C2128}
       <button class="pb" onclick="filtM('2026-04',this)">4월</button>
       <button class="pb" onclick="filtM('2026-05',this)">5월</button>
       <button class="pb" onclick="filtM('2026-06',this)">6월</button>
+      <button class="pb" onclick="filtM('2026-07',this)">7월</button>
     </div>
   </div>
 
   <!-- KPI 통계 -->
   <div class="krow" style="margin-bottom:16px">
     <div class="kc"><div class="kv">박제영</div><div class="kl">담당자</div></div>
-    <div class="kc"><div class="kv" id="kv-tot">65</div><div class="kl">총 발주건수</div></div>
+    <div class="kc"><div class="kv" id="kv-tot">66</div><div class="kl">총 발주건수</div></div>
     <div class="kc"><div class="kv" id="kv-done">64</div><div class="kl">입고완료</div></div>
-    <div class="kc"><div class="kv" id="kv-pend">1</div><div class="kl">대기중</div></div>
+    <div class="kc"><div class="kv" id="kv-pend">2</div><div class="kl">대기중</div></div>
   </div>
 
   <!-- 발주테이블 + 캘린더 2열 -->
@@ -1224,7 +1225,7 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <div style="gap:5px;display:grid;grid-template-columns:repeat(5,1fr)">
     <div class="cd emp"></div>
-    <div class="cd busy"><div class="cdn">01</div><div class="ev farm">부경양돈</div></div>
+    <div class="cd busy"><div class="cdn">01</div><div class="ev farm">영광축산</div><div class="ev dist">합천축협</div><div class="ev dist">오앤티</div><div class="ev farm">거창소재농가</div><div class="ev hosp">백제약품</div></div>
     <div class="cd"><div class="cdn">02</div></div>
     <div class="cd"><div class="cdn">03</div></div>
     <div class="cd"><div class="cdn">04</div></div>
@@ -1584,6 +1585,8 @@ const RIVAL_DATA = [
 
 <script>
 const ORDERS=[
+  // ===== 7월 =====
+  {d:'2026-07-02',c:'부경양돈',item:'ECM',qty:'4,800kg',price:'-',eta:'7/6(월)',st:'wait'},
   // ===== 6월 =====
   {d:'2026-06-30',c:'노엘목장',item:'파인애플분말',qty:'100kg',price:'3,000원/kg',eta:'7/1(수)',st:'wait'},
   {d:'2026-06-29',c:'미소인터내셔널',item:'비타민D3',qty:'20kg',price:'40,000원/kg',eta:'6/30(화)',st:'done'},
