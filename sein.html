@@ -809,7 +809,7 @@ table.tbl tr:hover td{background:#1C2128}
         <!-- 7월 캘린더 -->
         <div id="cal-7" class="cg" style="gap:5px;display:none;grid-template-columns:repeat(5,1fr)">
           <div class="cd emp"></div>
-          <div class="cd busy"><div class="cdn">01</div><div class="ev farm">영광축산</div><div class="ev dist">합천축협</div><div class="ev dist">오앤티</div><div class="ev farm">거창소재농가</div><div class="ev hosp">백제약품</div></div>
+          <div class="cd busy"><div class="cdn">01</div><div class="ev farm">영광축산</div><div class="ev dist">합천축협</div><div class="ev dist">오앤티</div></div>
           <div class="cd"><div class="cdn">02</div></div>
           <div class="cd"><div class="cdn">03</div></div>
           <div class="cd"><div class="cdn">04</div></div>
@@ -1346,7 +1346,6 @@ const CLIENT_DATA = [
     card.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;';
     card.innerHTML = `
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-        <span style="background:${typeColor[c.type]||'#6E7681'};color:#000;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px">${typeLabel[c.type]||c.type}</span>
         <span style="font-weight:700;font-size:15px;color:var(--fg)">${c.name}</span>
         <span style="margin-left:auto;font-size:11px;color:var(--muted)">${c.region}</span>
       </div>
