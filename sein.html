@@ -1588,30 +1588,30 @@ function filtM(m,btn){
 // 기간: 25년 12월 ~ 26년 6월
 const BID_DATA = [
   // ── 2026년 1월 ──
-  {date:'2026-01-07', client:'농협사료', item:'팜이트산 6개월', qty:'월13톤 6개월', sein_price:'2,380원', winner:'세인 낙찰 2,380원', winner_price:'2,380원', result:'won', note:'1/7: 팜이트산(6개월) 세인 낙찰, 은진·이센티·솔텐 참여'},
-  {date:'2026-01-09', client:'한국썸벹', item:'비타민 오퍼(VE·VAD3·BIOTIN)', qty:'VE 20T·VAD3 3T·BIOTIN 10T', sein_price:'BIOTIN 참여', winner:'VE-BASF $6초 20T / VAD3-ZMC $15.8 3T / BIOTIN-세인 낙찰', winner_price:'BIOTIN 세인 낙찰', result:'won', note:'1/9: 비타민 오퍼결과, BIOTIN 세인 낙찰'},
-  {date:'2026-01-20', client:'동원팜스', item:'메치오닌 2~4월', qty:'2~4월(3개월)', sein_price:'—', winner:'세인 낙찰', winner_price:'—', result:'won', note:'1/16~19: 동원팜스 메치오닌 2~4월 세인 낙찰'},
-  {date:'2026-01-20', client:'한국썸벹', item:'코팅VC 오퍼', qty:'7T', sein_price:'$2.5', winner:'세인 낙찰 $2.5', winner_price:'$2.5', result:'won', note:'1/20: 코팅VC 세인 낙찰'},
-  {date:'2026-01-23', client:'양주축협', item:'칼슘염보호지방·TCP', qty:'복수', sein_price:'TCP 참여', winner:'칼슘염-휘드베스트 낙찰 / TCP-뉴브리드 730원', winner_price:'TCP 730원', result:'lost', note:'1/23: 양주축협 원료입찰, 세인 TCP 탈락'},
-  {date:'2026-01-23', client:'체리부로', item:'아미노산 2개월(메치오닌·황산라이신)', qty:'2개월', sein_price:'참여', winner:'메치오닌-매트리얼 낙찰 / 트레오닌-더키움바이오 낙찰 / 트립토판10%-아크로 낙찰', winner_price:'—', result:'lost', note:'1/22: 체리부로 아미노산 입찰, 세인 탈락'},
+  {date:'2026-01-07', client:'농협사료', item:'팜이트산 6개월', qty:'월13톤 6개월', sein_price:'2,380원', winner:'세인 낙찰 2,380원', winner_price:'2,380원', result:'won', note:'세인 낙찰. 경쟁: 은진·이센티·솔텐'},
+  {date:'2026-01-09', client:'한국썸벹', item:'비타민 오퍼(VE·VAD3·BIOTIN)', qty:'VE 20T·VAD3 3T·BIOTIN 10T', sein_price:'BIOTIN 참여', winner:'VE-BASF $6초 20T / VAD3-ZMC $15.8 3T / BIOTIN-세인 낙찰', winner_price:'BIOTIN 세인 낙찰', result:'won', note:'BIOTIN 세인 낙찰. VE-BASF, VAD3-ZMC'},
+  {date:'2026-01-20', client:'동원팜스', item:'메치오닌 2~4월', qty:'2~4월(3개월)', sein_price:'—', winner:'세인 낙찰', winner_price:'—', result:'won', note:'세인 낙찰'},
+  {date:'2026-01-20', client:'한국썸벹', item:'코팅VC 오퍼', qty:'7T', sein_price:'$2.5', winner:'세인 낙찰 $2.5', winner_price:'$2.5', result:'won', note:'세인 낙찰'},
+  {date:'2026-01-23', client:'양주축협', item:'칼슘염보호지방·TCP', qty:'복수', sein_price:'TCP 참여', winner:'칼슘염-휘드베스트 낙찰 / TCP-뉴브리드 730원', winner_price:'TCP 730원', result:'lost', note:'TCP 탈락. 뉴브리드 730원 낙찰'},
+  {date:'2026-01-23', client:'체리부로', item:'아미노산 2개월(메치오닌·황산라이신)', qty:'2개월', sein_price:'참여', winner:'메치오닌-매트리얼 낙찰 / 트레오닌-더키움바이오 낙찰 / 트립토판10%-아크로 낙찰', winner_price:'—', result:'lost', note:'메치-매트리얼, 트레오-더키움바이오, 트립-아크로 낙찰'},
 
   // ── 2026년 2월 ──
-  {date:'2026-02-05', client:'다원케미칼', item:'비타민 오퍼(VE·VB6·비오틴)', qty:'VE 20T·VB6 2.5T·비오틴 10T', sein_price:'참여', winner:'세인 3품목 낙찰', winner_price:'—', result:'won', note:'2/5: 다원케미칼 비타민 오퍼 세인 3품목 낙찰'},
-  {date:'2026-02-05', client:'농협사료', item:'트레오닌 6개월', qty:'월48톤 6개월·8개업체 참여', sein_price:'참여', winner:'CSF 낙찰 (희우·이센티·아이넷·세인·세계로·가야·골든게인 탈락)', winner_price:'—', result:'lost', note:'2/5: 8개 업체 참여, CSF 낙찰, 세인 5위'},
+  {date:'2026-02-05', client:'다원케미칼', item:'비타민 오퍼(VE·VB6·비오틴)', qty:'VE 20T·VB6 2.5T·비오틴 10T', sein_price:'참여', winner:'세인 3품목 낙찰', winner_price:'—', result:'won', note:'세인 3품목 낙찰'},
+  {date:'2026-02-05', client:'농협사료', item:'트레오닌 6개월', qty:'월48톤 6개월·8개업체 참여', sein_price:'참여', winner:'CSF 낙찰 (희우·이센티·아이넷·세인·세계로·가야·골든게인 탈락)', winner_price:'—', result:'lost', note:'8업체 참여. CSF 낙찰, 세인 5위'},
 
   // ── 2026년 6월 ──
-  {date:'2026-06-11', client:'이지홀딩스 (BK&CO)', item:'MCP 분말 36톤 오퍼', qty:'36톤', sein_price:'$708', winner:'세인 낙찰 $708', winner_price:'$708', result:'won', note:'6/11: 이지홀딩스 MCP 오퍼 세인 낙찰'},
-  {date:'2026-06-12', client:'체리부로', item:'메치오닌 3개월', qty:'3개월', sein_price:'3,640원', winner:'세인 낙찰 3,640원', winner_price:'3,640원', result:'won', note:'밀테크 3,660원(CUC), 에보닉 4,000원'},
-  {date:'2026-06-12', client:'체리부로', item:'트레오닌 2개월', qty:'2개월', sein_price:'1,838원', winner:'SH글로벌 1,820원', winner_price:'1,820원', result:'lost', note:'세인 2위(1,838원)'},
-  {date:'2026-06-12', client:'체리부로', item:'황산염라이신 2개월', qty:'2개월', sein_price:'참여', winner:'아크로·은진·밀테크 3원화', winner_price:'1,080원', result:'lost', note:'3업체 컨소시엄 공급'},
-  {date:'2026-06-12', client:'우성사료', item:'메치오닌 경쟁 입찰 (아산·논산·경산)', qty:'2개월', sein_price:'$5.0', winner:'CJ 낙찰 (경산) / 가야바이오 (아산·논산)', winner_price:'$5.0', result:'lost', note:'6/12 성유진 업무보고: 우성사료 메치오닌 $5.0 세인 견적 → CJ 낙찰. 아산·논산은 가야바이오에서 공급 확정(7~8월)'},
-  {date:'2026-06-16', client:'우성사료', item:'MDCP·메치오닌·트레오닌·황산라이신 4품목', qty:'복수품목', sein_price:'참여(해우 통해)', winner:'황산라이신-희우코리아 935원 / 트레오닌-해우 1,700원 / 메치오닌-CJ 7,200원 / MDCP-중앙석고 1,580원', winner_price:'황라 935원·트레오 1,700원·메치 7,200원·MDCP 1,580원', result:'lost', note:'6/16 이재석 업무보고: 4품목 전부 탈락. 가야바이오 이원화 공급(황라·트레오·메치오닌)'},
-  {date:'2026-06-16', client:'CJ', item:'황산라이신·트레오닌·발린 3분기', qty:'3분기', sein_price:'참여', winner:'황산라이신-이센티 1,045원 / 트레오닌-더키움바이오 1,750원 / 발린-아이넷 2,500원', winner_price:'황라 1,045원·트레오 1,750원·발린 2,500원', result:'lost', note:'6/16: CJ 3분기 아미노산 결과'},
-  {date:'2026-06-16', client:'부산바이오', item:'메치오닌 3분기', qty:'3분기', sein_price:'$2.66', winner:'세인 낙찰 $2.66', winner_price:'$2.66', result:'won', note:'에보닉 $2.68 예상, 스미토모 참여'},
-  {date:'2026-07-07', client:'안양축협', item:'TCP 1년', qty:'1년', sein_price:'-', winner:'7/7 재입찰 예정', winner_price:'-', result:'lost', note:'6/29 입찰 예가 문제로 유찰. 진건·중앙석고·세계로 3업체 참여. 7/7 재입찰 예정'},
-  {date:'2026-06-23', client:'부경양돈', item:'황산염라이신', qty:'1년 계약', sein_price:'참여', winner:'CSF 낙찰 874원', winner_price:'874원', result:'lost', note:'6/23: 참가업체 세인·세계로케미칼·희우코리아·은진바이오·CSF·ENT. CSF 874원 낙찰, 세인 탈락'},
-  {date:'2026-06-20', client:'이지홀딩스 (BK&CO)', item:'인산칼슘 오퍼 DCP·MCP', qty:'DCP 500T·MCP 110T', sein_price:'MCP $711·DCP $550', winner:'광동(MCP $707·DCP $560 예상)', winner_price:'MCP $707·DCP $560', result:'lost', note:'세인 BK&CO로 참여, Xinlin 배제, 광동 낙찰'},
-  {date:'2026-06-16', client:'나람사료', item:'트레오닌·트립토판50%·발린 3분기', qty:'트레오닌 25~27T/월', sein_price:'트레오닌 1,878원', winner:'트레오닌-세인 1,878원 낙찰 / 트립토판-이센티 4,150원 / 발린-더에스앤엘 2,500원', winner_price:'트레오닌 1,878원', result:'won', note:'6/16: 세인 트레오닌만 낙찰'},
+  {date:'2026-06-11', client:'이지홀딩스 (BK&CO)', item:'MCP 분말 36톤 오퍼', qty:'36톤', sein_price:'$708', winner:'세인 낙찰 $708', winner_price:'$708', result:'won', note:'세인 낙찰 $708'},
+  {date:'2026-06-12', client:'체리부로', item:'메치오닌 3개월', qty:'3개월', sein_price:'3,640원', winner:'세인 낙찰 3,640원', winner_price:'3,640원', result:'won', note:'경쟁: 밀테크 3,660원·에보닉 4,000원'},
+  {date:'2026-06-12', client:'체리부로', item:'트레오닌 2개월', qty:'2개월', sein_price:'1,838원', winner:'SH글로벌 1,820원', winner_price:'1,820원', result:'lost', note:'SH글로벌 1,820원 낙찰. 세인 2위(1,838원)'},
+  {date:'2026-06-12', client:'체리부로', item:'황산염라이신 2개월', qty:'2개월', sein_price:'참여', winner:'아크로·은진·밀테크 3원화', winner_price:'1,080원', result:'lost', note:'아크로·은진·밀테크 컨소시엄 낙찰'},
+  {date:'2026-06-12', client:'우성사료', item:'메치오닌 경쟁 입찰 (아산·논산·경산)', qty:'2개월', sein_price:'$5.0', winner:'CJ 낙찰 (경산) / 가야바이오 (아산·논산)', winner_price:'$5.0', result:'lost', note:'CJ 낙찰(경산). 아산·논산은 가야바이오 확정(7~8월)'},
+  {date:'2026-06-16', client:'우성사료', item:'MDCP·메치오닌·트레오닌·황산라이신 4품목', qty:'복수품목', sein_price:'참여(해우 통해)', winner:'황산라이신-희우코리아 935원 / 트레오닌-해우 1,700원 / 메치오닌-CJ 7,200원 / MDCP-중앙석고 1,580원', winner_price:'황라 935원·트레오 1,700원·메치 7,200원·MDCP 1,580원', result:'lost', note:'4품목 전부 탈락. 가야바이오 이원화 공급'},
+  {date:'2026-06-16', client:'CJ', item:'황산라이신·트레오닌·발린 3분기', qty:'3분기', sein_price:'참여', winner:'황산라이신-이센티 1,045원 / 트레오닌-더키움바이오 1,750원 / 발린-아이넷 2,500원', winner_price:'황라 1,045원·트레오 1,750원·발린 2,500원', result:'lost', note:'황라-이센티 1,045원, 트레오-더키움바이오 1,750원, 발린-아이넷 2,500원'},
+  {date:'2026-06-16', client:'부산바이오', item:'메치오닌 3분기', qty:'3분기', sein_price:'$2.66', winner:'세인 낙찰 $2.66', winner_price:'$2.66', result:'won', note:'경쟁: 에보닉 $2.68·스미토모. 세인 낙찰'},
+  {date:'2026-07-07', client:'안양축협', item:'TCP 1년', qty:'1년', sein_price:'-', winner:'7/7 재입찰 예정', winner_price:'-', result:'lost', note:'예가 문제로 유찰. 진건·중앙석고·세계로 참여. 7/7 재입찰'},
+  {date:'2026-06-23', client:'부경양돈', item:'황산염라이신', qty:'1년 계약', sein_price:'참여', winner:'CSF 낙찰 874원', winner_price:'874원', result:'lost', note:'CSF 874원 낙찰. 참가: 세인·세계로·희우·은진·CSF·ENT'},
+  {date:'2026-06-20', client:'이지홀딩스 (BK&CO)', item:'인산칼슘 오퍼 DCP·MCP', qty:'DCP 500T·MCP 110T', sein_price:'MCP $711·DCP $550', winner:'광동(MCP $707·DCP $560 예상)', winner_price:'MCP $707·DCP $560', result:'lost', note:'광동 낙찰(MCP $707). Xinlin 배제'},
+  {date:'2026-06-16', client:'나람사료', item:'트레오닌·트립토판50%·발린 3분기', qty:'트레오닌 25~27T/월', sein_price:'트레오닌 1,878원', winner:'트레오닌-세인 1,878원 낙찰 / 트립토판-이센티 4,150원 / 발린-더에스앤엘 2,500원', winner_price:'트레오닌 1,878원', result:'won', note:'트레오닌만 낙찰. 트립-이센티 4,150원, 발린-더에스앤엘 2,500원'},
 ];
 
 function renderBids(data){
