@@ -764,6 +764,11 @@ table.tbl tr:hover td{background:#1C2128}
       <div class="card-hd">
         <div class="card-title">📅 방문 캘린더</div>
         <div class="pills" id="cal-pills" style="gap:4px">
+          <button class="pb" onclick="showCal('1',this)" style="font-size:11px;padding:3px 10px">1월</button>
+          <button class="pb" onclick="showCal('2',this)" style="font-size:11px;padding:3px 10px">2월</button>
+          <button class="pb" onclick="showCal('3',this)" style="font-size:11px;padding:3px 10px">3월</button>
+          <button class="pb" onclick="showCal('4',this)" style="font-size:11px;padding:3px 10px">4월</button>
+          <button class="pb" onclick="showCal('5',this)" style="font-size:11px;padding:3px 10px">5월</button>
           <button class="pb" onclick="showCal('6',this)" style="font-size:11px;padding:3px 10px">6월</button>
           <button class="pb" onclick="showCal('7',this)" style="font-size:11px;padding:3px 10px">7월</button>
         </div>
@@ -773,7 +778,138 @@ table.tbl tr:hover td{background:#1C2128}
           <div>월</div><div>화</div><div>수</div><div>목</div><div>금</div>
         </div>
 
-        <!-- 6월 캘린더 -->
+        <!-- 1월 캘린더 (1/1목, 평일기준) -->
+        <div id="cal-1" class="cg" style="gap:5px;display:none;grid-template-columns:repeat(5,1fr)">
+          <div class="cd emp"></div><div class="cd emp"></div><div class="cd"><div class="cdn">01</div><div style="font-size:9px;color:#F85149">신정</div></div>
+          <div class="cd"><div class="cdn">02</div></div>
+          <div class="cd busy"><div class="cdn">02</div><div class="ev dist">우림피드</div><div class="ev dist">대원가축약품</div></div>
+          <div class="cd"><div class="cdn">05</div></div>
+          <div class="cd"><div class="cdn">06</div></div>
+          <div class="cd"><div class="cdn">07</div></div>
+          <div class="cd"><div class="cdn">08</div></div>
+          <div class="cd"><div class="cdn">09</div></div>
+          <div class="cd"><div class="cdn">12</div></div>
+          <div class="cd"><div class="cdn">13</div></div>
+          <div class="cd"><div class="cdn">14</div></div>
+          <div class="cd"><div class="cdn">15</div></div>
+          <div class="cd"><div class="cdn">16</div></div>
+          <div class="cd"><div class="cdn">19</div></div>
+          <div class="cd"><div class="cdn">20</div></div>
+          <div class="cd"><div class="cdn">21</div></div>
+          <div class="cd"><div class="cdn">22</div></div>
+          <div class="cd"><div class="cdn">23</div></div>
+          <div class="cd"><div class="cdn">26</div></div>
+          <div class="cd"><div class="cdn">27</div><div style="font-size:9px;color:#F85149">설연휴</div></div>
+          <div class="cd"><div class="cdn">28</div><div style="font-size:9px;color:#F85149">설날</div></div>
+          <div class="cd"><div class="cdn">29</div><div style="font-size:9px;color:#F85149">설연휴</div></div>
+          <div class="cd busy"><div class="cdn">30</div><div class="ev hosp">마산가축병원</div><div class="ev hosp">사천수산동물병원</div><div class="ev dist">김해축협</div></div>
+        </div>
+
+        <!-- 2월 캘린더 (2/2월 시작) -->
+        <div id="cal-2" class="cg" style="gap:5px;display:none;grid-template-columns:repeat(5,1fr)">
+          <div class="cd busy"><div class="cdn">02</div><div class="ev farm">천년TMF</div><div class="ev farm">대덕농산</div><div class="ev farm">부경양돈</div></div>
+          <div class="cd busy"><div class="cdn">03</div><div class="ev farm">부경양돈</div><div class="ev dist">부산사료</div></div>
+          <div class="cd"><div class="cdn">04</div></div>
+          <div class="cd"><div class="cdn">05</div></div>
+          <div class="cd"><div class="cdn">06</div></div>
+          <div class="cd"><div class="cdn">09</div></div>
+          <div class="cd"><div class="cdn">10</div></div>
+          <div class="cd"><div class="cdn">11</div></div>
+          <div class="cd"><div class="cdn">12</div></div>
+          <div class="cd"><div class="cdn">13</div></div>
+          <div class="cd"><div class="cdn">16</div></div>
+          <div class="cd"><div class="cdn">17</div></div>
+          <div class="cd"><div class="cdn">18</div></div>
+          <div class="cd"><div class="cdn">19</div></div>
+          <div class="cd"><div class="cdn">20</div></div>
+          <div class="cd"><div class="cdn">23</div></div>
+          <div class="cd"><div class="cdn">24</div></div>
+          <div class="cd"><div class="cdn">25</div></div>
+          <div class="cd"><div class="cdn">26</div></div>
+          <div class="cd busy"><div class="cdn">27</div><div class="ev dist">하나가축약품</div><div class="ev dist">대원가축약품</div><div class="ev dist">코리아에프앤에프</div><div class="ev farm">청청농원</div></div>
+          <div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div>
+        </div>
+
+        <!-- 3월 캘린더 (3/2월 시작) -->
+        <div id="cal-3" class="cg" style="gap:5px;display:none;grid-template-columns:repeat(5,1fr)">
+          <div class="cd emp"></div>
+          <div class="cd busy"><div class="cdn">03</div><div class="ev dist">낙농육우협회 밀양</div><div class="ev farm">부경양돈</div><div class="ev dist">부산사료</div></div>
+          <div class="cd"><div class="cdn">04</div></div>
+          <div class="cd"><div class="cdn">05</div></div>
+          <div class="cd busy"><div class="cdn">06</div><div class="ev farm">노엘목장</div><div class="ev dist">한우협회 김해</div><div class="ev farm">합천돼지자가</div></div>
+          <div class="cd busy"><div class="cdn">09</div><div class="ev special">영업회의</div></div>
+          <div class="cd busy"><div class="cdn">10</div><div class="ev dist">합천축협</div><div class="ev dist">김해축협</div><div class="ev dist">오앤티</div><div class="ev dist">대구축협</div></div>
+          <div class="cd busy"><div class="cdn">11</div><div class="ev dist">장유수산</div><div class="ev dist">한우협회 고성</div></div>
+          <div class="cd busy"><div class="cdn">12</div><div class="ev farm">부경양돈</div><div class="ev hosp">KB동물병원</div><div class="ev dist">오앤티</div></div>
+          <div class="cd busy"><div class="cdn">13</div><div class="ev farm">야베스목장</div><div class="ev dist">코리아에프앤에프</div><div class="ev hosp">미소인터내셔널</div></div>
+          <div class="cd busy"><div class="cdn">16</div><div class="ev dist">우림피드</div><div class="ev dist">양산기장TMR</div><div class="ev farm">노엘목장</div><div class="ev farm">부경양돈</div></div>
+          <div class="cd busy"><div class="cdn">17</div><div class="ev dist">대구축협</div><div class="ev farm">부경양돈</div><div class="ev dist">우일가축약품</div></div>
+          <div class="cd busy"><div class="cdn">18</div><div class="ev hosp">한성동물병원</div><div class="ev dist">그레니에</div></div>
+          <div class="cd busy"><div class="cdn">19</div><div class="ev dist">푸른들EM사료</div><div class="ev hosp">거창축협동물병원</div><div class="ev farm">부경양돈</div><div class="ev dist">오앤티</div></div>
+          <div class="cd busy"><div class="cdn">20</div><div class="ev dist">오케이</div><div class="ev dist">코리아에프앤에프</div><div class="ev hosp">거창축협동물병원</div></div>
+          <div class="cd busy"><div class="cdn">23</div><div class="ev special">경영전략회의</div></div>
+          <div class="cd busy"><div class="cdn">24</div><div class="ev farm">송정농장</div><div class="ev farm">우정농장</div><div class="ev dist">오앤티</div><div class="ev farm">시현축산</div></div>
+          <div class="cd busy"><div class="cdn">25</div><div class="ev farm">합천돼지자가</div><div class="ev farm">영광축산</div><div class="ev farm">부경양돈</div><div class="ev dist">오케이</div></div>
+          <div class="cd busy"><div class="cdn">26</div><div class="ev dist">우일가축약품</div><div class="ev hosp">의성축협동물병원</div><div class="ev farm">부경양돈</div></div>
+          <div class="cd busy"><div class="cdn">27</div><div class="ev dist">오케이</div><div class="ev farm">부경양돈</div><div class="ev dist">한우협회 함안</div><div class="ev dist">수협사료</div></div>
+          <div class="cd"><div class="cdn">30</div></div>
+          <div class="cd busy"><div class="cdn">31</div><div class="ev dist">부산사료</div><div class="ev dist">한우협회 의령</div></div>
+          <div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div>
+        </div>
+
+        <!-- 4월 캘린더 (4/1수 시작) -->
+        <div id="cal-4" class="cg" style="gap:5px;display:none;grid-template-columns:repeat(5,1fr)">
+          <div class="cd emp"></div><div class="cd emp"></div>
+          <div class="cd busy"><div class="cdn">01</div><div class="ev dist">부산사료</div><div class="ev dist">한우협회 의령</div></div>
+          <div class="cd busy"><div class="cdn">02</div><div class="ev farm">경주TMF</div><div class="ev dist">경주낙농육우회</div><div class="ev farm">부경양돈</div></div>
+          <div class="cd busy"><div class="cdn">03</div><div class="ev farm">상칠농장</div><div class="ev farm">구인목장</div><div class="ev special">영업부 화상회의</div></div>
+          <div class="cd busy"><div class="cdn">06</div><div class="ev dist">대한가축약품</div><div class="ev dist">김해축협</div><div class="ev farm">삼솔농장</div></div>
+          <div class="cd busy"><div class="cdn">07</div><div class="ev dist">산청조생유TMF</div><div class="ev dist">한우협회 산청</div><div class="ev dist">우일가축약품</div></div>
+          <div class="cd busy"><div class="cdn">08</div><div class="ev dist">장유수산</div><div class="ev hosp">충무수산동물병원</div><div class="ev farm">부경양돈</div></div>
+          <div class="cd busy"><div class="cdn">09</div><div class="ev dist">가림특수사료</div><div class="ev dist">프라임사료</div><div class="ev farm">부경양돈</div><div class="ev dist">오앤티</div></div>
+          <div class="cd busy"><div class="cdn">10</div><div class="ev farm">은진목장</div><div class="ev farm">옹곡목장</div><div class="ev dist">오앤티</div></div>
+          <div class="cd busy"><div class="cdn">13</div><div class="ev farm">부경양돈</div><div class="ev hosp">거창축협동물병원</div></div>
+          <div class="cd busy"><div class="cdn">14</div><div class="ev special">경영전략회의</div><div class="ev special">클로드 교육</div></div>
+          <div class="cd busy"><div class="cdn">15</div><div class="ev hosp">한성동물병원</div><div class="ev dist">고려산업</div><div class="ev dist">오앤티</div><div class="ev dist">코리아에프앤에프</div></div>
+          <div class="cd busy"><div class="cdn">16</div><div class="ev dist">우일가축약품</div></div>
+          <div class="cd busy"><div class="cdn">17</div><div class="ev dist">코리아에프앤에프</div><div class="ev dist">오케이</div><div class="ev farm">부경양돈</div></div>
+          <div class="cd busy"><div class="cdn">20</div><div class="ev farm">노엘목장</div><div class="ev dist">함안낙농영농조합</div><div class="ev dist">오케이</div></div>
+          <div class="cd busy"><div class="cdn">21</div><div class="ev farm">합천돼지자가</div><div class="ev hosp">종합동물약품</div><div class="ev dist">오앤티</div></div>
+          <div class="cd busy"><div class="cdn">22</div><div class="ev dist">부산사료</div><div class="ev dist">의령축협</div><div class="ev farm">태백농산</div></div>
+          <div class="cd busy"><div class="cdn">23</div><div class="ev dist">김해축협</div><div class="ev dist">오케이</div><div class="ev farm">부경양돈</div><div class="ev hosp">통일동물병원</div></div>
+          <div class="cd busy"><div class="cdn">24</div><div class="ev hosp">KB동물병원</div><div class="ev hosp">마산가축병원</div><div class="ev farm">부경양돈</div></div>
+          <div class="cd busy"><div class="cdn">27</div><div class="ev dist">한우협회 함안</div><div class="ev farm">노엘목장</div><div class="ev farm">합천돼지자가</div><div class="ev farm">부경양돈</div></div>
+          <div class="cd busy"><div class="cdn">28</div><div class="ev dist">유안사료</div><div class="ev dist">고려사료</div><div class="ev dist">코리아에프앤에프</div><div class="ev dist">김해축협</div><div class="ev hosp">통일동물병원</div></div>
+          <div class="cd busy"><div class="cdn">29</div><div class="ev dist">제이제이바이오</div><div class="ev dist">태랑사료</div><div class="ev dist">프로팜</div><div class="ev dist">코리아에프앤에프</div></div>
+          <div class="cd"><div class="cdn">30</div></div>
+          <div class="cd emp"></div>
+        </div>
+
+        <!-- 5월 캘린더 (5/4월 시작) -->
+        <div id="cal-5" class="cg" style="gap:5px;display:none;grid-template-columns:repeat(5,1fr)">
+          <div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div>
+          <div class="cd"><div class="cdn">04</div><div style="font-size:9px;color:#F85149">어린이날 대체</div></div>
+          <div class="cd"><div class="cdn">05</div><div style="font-size:9px;color:#F85149">어린이날</div></div>
+          <div class="cd busy"><div class="cdn">06</div><div class="ev dist">한려프리믹스</div><div class="ev farm">경주 김일준</div><div class="ev hosp">통일동물병원</div><div class="ev dist">코리아에프앤에프</div></div>
+          <div class="cd"><div class="cdn">07</div></div>
+          <div class="cd"><div class="cdn">08</div></div>
+          <div class="cd"><div class="cdn">11</div></div>
+          <div class="cd"><div class="cdn">12</div></div>
+          <div class="cd"><div class="cdn">13</div></div>
+          <div class="cd"><div class="cdn">14</div></div>
+          <div class="cd"><div class="cdn">15</div></div>
+          <div class="cd"><div class="cdn">18</div></div>
+          <div class="cd"><div class="cdn">19</div></div>
+          <div class="cd"><div class="cdn">20</div></div>
+          <div class="cd"><div class="cdn">21</div></div>
+          <div class="cd"><div class="cdn">22</div></div>
+          <div class="cd"><div class="cdn">25</div></div>
+          <div class="cd"><div class="cdn">26</div></div>
+          <div class="cd"><div class="cdn">27</div></div>
+          <div class="cd"><div class="cdn">28</div></div>
+          <div class="cd"><div class="cdn">29</div></div>
+          <div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div>
+        </div>
         <div id="cal-6" class="cg" style="gap:5px;display:none;grid-template-columns:repeat(5,1fr)">
           <div class="cd busy"><div class="cdn">01</div><div class="ev farm">야베스목장</div><div class="ev farm">노엘목장</div><div class="ev dist">코리아F&F</div></div>
           <div class="cd busy"><div class="cdn">02</div><div class="ev farm">부경양돈</div><div class="ev farm">삼솔농장</div><div class="ev dist">오케이</div></div>
