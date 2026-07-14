@@ -745,6 +745,11 @@ table.tbl tr:hover td{background:#1C2128}
       <button class="pb" onclick="filtM('2026-05',this)">5월</button>
       <button class="pb" onclick="filtM('2026-06',this)">6월</button>
       <button class="pb" onclick="filtM('2026-07',this)">7월</button>
+      <button class="pb" onclick="filtM('2026-08',this)">8월</button>
+      <button class="pb" onclick="filtM('2026-09',this)">9월</button>
+      <button class="pb" onclick="filtM('2026-10',this)">10월</button>
+      <button class="pb" onclick="filtM('2026-11',this)">11월</button>
+      <button class="pb" onclick="filtM('2026-12',this)">12월</button>
     </div>
   </div>
 
@@ -771,6 +776,11 @@ table.tbl tr:hover td{background:#1C2128}
           <button class="pb" onclick="showCal('5',this)" style="font-size:11px;padding:3px 10px">5월</button>
           <button class="pb" onclick="showCal('6',this)" style="font-size:11px;padding:3px 10px">6월</button>
           <button class="pb" onclick="showCal('7',this)" style="font-size:11px;padding:3px 10px">7월</button>
+          <button class="pb" onclick="showCal('8',this)" style="font-size:11px;padding:3px 10px">8월</button>
+          <button class="pb" onclick="showCal('9',this)" style="font-size:11px;padding:3px 10px">9월</button>
+          <button class="pb" onclick="showCal('10',this)" style="font-size:11px;padding:3px 10px">10월</button>
+          <button class="pb" onclick="showCal('11',this)" style="font-size:11px;padding:3px 10px">11월</button>
+          <button class="pb" onclick="showCal('12',this)" style="font-size:11px;padding:3px 10px">12월</button>
         </div>
       </div>
       <div class="cw" style="padding:0 8px 12px">
@@ -778,192 +788,7 @@ table.tbl tr:hover td{background:#1C2128}
           <div>월</div><div>화</div><div>수</div><div>목</div><div>금</div>
         </div>
 
-        <!-- 1월 캘린더 (1/1목, 평일기준) -->
-        <div id="cal-1" class="cg" style="gap:5px;display:none;grid-template-columns:repeat(5,1fr)">
-          <div class="cd emp"></div><div class="cd emp"></div><div class="cd"><div class="cdn">01</div><div style="font-size:9px;color:#F85149">신정</div></div>
-          <div class="cd"><div class="cdn">02</div></div>
-          <div class="cd busy"><div class="cdn">02</div><div class="ev dist">우림피드</div><div class="ev dist">대원가축약품</div></div>
-          <div class="cd"><div class="cdn">05</div></div>
-          <div class="cd"><div class="cdn">06</div></div>
-          <div class="cd"><div class="cdn">07</div></div>
-          <div class="cd"><div class="cdn">08</div></div>
-          <div class="cd"><div class="cdn">09</div></div>
-          <div class="cd"><div class="cdn">12</div></div>
-          <div class="cd"><div class="cdn">13</div></div>
-          <div class="cd"><div class="cdn">14</div></div>
-          <div class="cd"><div class="cdn">15</div></div>
-          <div class="cd"><div class="cdn">16</div></div>
-          <div class="cd"><div class="cdn">19</div></div>
-          <div class="cd"><div class="cdn">20</div></div>
-          <div class="cd"><div class="cdn">21</div></div>
-          <div class="cd"><div class="cdn">22</div></div>
-          <div class="cd"><div class="cdn">23</div></div>
-          <div class="cd"><div class="cdn">26</div></div>
-          <div class="cd"><div class="cdn">27</div><div style="font-size:9px;color:#F85149">설연휴</div></div>
-          <div class="cd"><div class="cdn">28</div><div style="font-size:9px;color:#F85149">설날</div></div>
-          <div class="cd"><div class="cdn">29</div><div style="font-size:9px;color:#F85149">설연휴</div></div>
-          <div class="cd busy"><div class="cdn">30</div><div class="ev hosp">마산가축병원</div><div class="ev hosp">사천수산동물병원</div><div class="ev dist">김해축협</div></div>
-        </div>
-
-        <!-- 2월 캘린더 (2/2월 시작) -->
-        <div id="cal-2" class="cg" style="gap:5px;display:none;grid-template-columns:repeat(5,1fr)">
-          <div class="cd busy"><div class="cdn">02</div><div class="ev farm">천년TMF</div><div class="ev farm">대덕농산</div><div class="ev farm">부경양돈</div></div>
-          <div class="cd busy"><div class="cdn">03</div><div class="ev farm">부경양돈</div><div class="ev dist">부산사료</div></div>
-          <div class="cd"><div class="cdn">04</div></div>
-          <div class="cd"><div class="cdn">05</div></div>
-          <div class="cd"><div class="cdn">06</div></div>
-          <div class="cd"><div class="cdn">09</div></div>
-          <div class="cd"><div class="cdn">10</div></div>
-          <div class="cd"><div class="cdn">11</div></div>
-          <div class="cd"><div class="cdn">12</div></div>
-          <div class="cd"><div class="cdn">13</div></div>
-          <div class="cd"><div class="cdn">16</div></div>
-          <div class="cd"><div class="cdn">17</div></div>
-          <div class="cd"><div class="cdn">18</div></div>
-          <div class="cd"><div class="cdn">19</div></div>
-          <div class="cd"><div class="cdn">20</div></div>
-          <div class="cd"><div class="cdn">23</div></div>
-          <div class="cd"><div class="cdn">24</div></div>
-          <div class="cd"><div class="cdn">25</div></div>
-          <div class="cd"><div class="cdn">26</div></div>
-          <div class="cd busy"><div class="cdn">27</div><div class="ev dist">하나가축약품</div><div class="ev dist">대원가축약품</div><div class="ev dist">코리아에프앤에프</div><div class="ev farm">청청농원</div></div>
-          <div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div>
-        </div>
-
-        <!-- 3월 캘린더 (3/2월 시작) -->
-        <div id="cal-3" class="cg" style="gap:5px;display:none;grid-template-columns:repeat(5,1fr)">
-          <div class="cd emp"></div>
-          <div class="cd busy"><div class="cdn">03</div><div class="ev dist">낙농육우협회 밀양</div><div class="ev farm">부경양돈</div><div class="ev dist">부산사료</div></div>
-          <div class="cd"><div class="cdn">04</div></div>
-          <div class="cd"><div class="cdn">05</div></div>
-          <div class="cd busy"><div class="cdn">06</div><div class="ev farm">노엘목장</div><div class="ev dist">한우협회 김해</div><div class="ev farm">합천돼지자가</div></div>
-          <div class="cd busy"><div class="cdn">09</div><div class="ev special">영업회의</div></div>
-          <div class="cd busy"><div class="cdn">10</div><div class="ev dist">합천축협</div><div class="ev dist">김해축협</div><div class="ev dist">오앤티</div><div class="ev dist">대구축협</div></div>
-          <div class="cd busy"><div class="cdn">11</div><div class="ev dist">장유수산</div><div class="ev dist">한우협회 고성</div></div>
-          <div class="cd busy"><div class="cdn">12</div><div class="ev farm">부경양돈</div><div class="ev hosp">KB동물병원</div><div class="ev dist">오앤티</div></div>
-          <div class="cd busy"><div class="cdn">13</div><div class="ev farm">야베스목장</div><div class="ev dist">코리아에프앤에프</div><div class="ev hosp">미소인터내셔널</div></div>
-          <div class="cd busy"><div class="cdn">16</div><div class="ev dist">우림피드</div><div class="ev dist">양산기장TMR</div><div class="ev farm">노엘목장</div><div class="ev farm">부경양돈</div></div>
-          <div class="cd busy"><div class="cdn">17</div><div class="ev dist">대구축협</div><div class="ev farm">부경양돈</div><div class="ev dist">우일가축약품</div></div>
-          <div class="cd busy"><div class="cdn">18</div><div class="ev hosp">한성동물병원</div><div class="ev dist">그레니에</div></div>
-          <div class="cd busy"><div class="cdn">19</div><div class="ev dist">푸른들EM사료</div><div class="ev hosp">거창축협동물병원</div><div class="ev farm">부경양돈</div><div class="ev dist">오앤티</div></div>
-          <div class="cd busy"><div class="cdn">20</div><div class="ev dist">오케이</div><div class="ev dist">코리아에프앤에프</div><div class="ev hosp">거창축협동물병원</div></div>
-          <div class="cd busy"><div class="cdn">23</div><div class="ev special">경영전략회의</div></div>
-          <div class="cd busy"><div class="cdn">24</div><div class="ev farm">송정농장</div><div class="ev farm">우정농장</div><div class="ev dist">오앤티</div><div class="ev farm">시현축산</div></div>
-          <div class="cd busy"><div class="cdn">25</div><div class="ev farm">합천돼지자가</div><div class="ev farm">영광축산</div><div class="ev farm">부경양돈</div><div class="ev dist">오케이</div></div>
-          <div class="cd busy"><div class="cdn">26</div><div class="ev dist">우일가축약품</div><div class="ev hosp">의성축협동물병원</div><div class="ev farm">부경양돈</div></div>
-          <div class="cd busy"><div class="cdn">27</div><div class="ev dist">오케이</div><div class="ev farm">부경양돈</div><div class="ev dist">한우협회 함안</div><div class="ev dist">수협사료</div></div>
-          <div class="cd"><div class="cdn">30</div></div>
-          <div class="cd busy"><div class="cdn">31</div><div class="ev dist">부산사료</div><div class="ev dist">한우협회 의령</div></div>
-          <div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div>
-        </div>
-
-        <!-- 4월 캘린더 (4/1수 시작) -->
-        <div id="cal-4" class="cg" style="gap:5px;display:none;grid-template-columns:repeat(5,1fr)">
-          <div class="cd emp"></div><div class="cd emp"></div>
-          <div class="cd busy"><div class="cdn">01</div><div class="ev dist">부산사료</div><div class="ev dist">한우협회 의령</div></div>
-          <div class="cd busy"><div class="cdn">02</div><div class="ev farm">경주TMF</div><div class="ev dist">경주낙농육우회</div><div class="ev farm">부경양돈</div></div>
-          <div class="cd busy"><div class="cdn">03</div><div class="ev farm">상칠농장</div><div class="ev farm">구인목장</div><div class="ev special">영업부 화상회의</div></div>
-          <div class="cd busy"><div class="cdn">06</div><div class="ev dist">대한가축약품</div><div class="ev dist">김해축협</div><div class="ev farm">삼솔농장</div></div>
-          <div class="cd busy"><div class="cdn">07</div><div class="ev dist">산청조생유TMF</div><div class="ev dist">한우협회 산청</div><div class="ev dist">우일가축약품</div></div>
-          <div class="cd busy"><div class="cdn">08</div><div class="ev dist">장유수산</div><div class="ev hosp">충무수산동물병원</div><div class="ev farm">부경양돈</div></div>
-          <div class="cd busy"><div class="cdn">09</div><div class="ev dist">가림특수사료</div><div class="ev dist">프라임사료</div><div class="ev farm">부경양돈</div><div class="ev dist">오앤티</div></div>
-          <div class="cd busy"><div class="cdn">10</div><div class="ev farm">은진목장</div><div class="ev farm">옹곡목장</div><div class="ev dist">오앤티</div></div>
-          <div class="cd busy"><div class="cdn">13</div><div class="ev farm">부경양돈</div><div class="ev hosp">거창축협동물병원</div></div>
-          <div class="cd busy"><div class="cdn">14</div><div class="ev special">경영전략회의</div><div class="ev special">클로드 교육</div></div>
-          <div class="cd busy"><div class="cdn">15</div><div class="ev hosp">한성동물병원</div><div class="ev dist">고려산업</div><div class="ev dist">오앤티</div><div class="ev dist">코리아에프앤에프</div></div>
-          <div class="cd busy"><div class="cdn">16</div><div class="ev dist">우일가축약품</div></div>
-          <div class="cd busy"><div class="cdn">17</div><div class="ev dist">코리아에프앤에프</div><div class="ev dist">오케이</div><div class="ev farm">부경양돈</div></div>
-          <div class="cd busy"><div class="cdn">20</div><div class="ev farm">노엘목장</div><div class="ev dist">함안낙농영농조합</div><div class="ev dist">오케이</div></div>
-          <div class="cd busy"><div class="cdn">21</div><div class="ev farm">합천돼지자가</div><div class="ev hosp">종합동물약품</div><div class="ev dist">오앤티</div></div>
-          <div class="cd busy"><div class="cdn">22</div><div class="ev dist">부산사료</div><div class="ev dist">의령축협</div><div class="ev farm">태백농산</div></div>
-          <div class="cd busy"><div class="cdn">23</div><div class="ev dist">김해축협</div><div class="ev dist">오케이</div><div class="ev farm">부경양돈</div><div class="ev hosp">통일동물병원</div></div>
-          <div class="cd busy"><div class="cdn">24</div><div class="ev hosp">KB동물병원</div><div class="ev hosp">마산가축병원</div><div class="ev farm">부경양돈</div></div>
-          <div class="cd busy"><div class="cdn">27</div><div class="ev dist">한우협회 함안</div><div class="ev farm">노엘목장</div><div class="ev farm">합천돼지자가</div><div class="ev farm">부경양돈</div></div>
-          <div class="cd busy"><div class="cdn">28</div><div class="ev dist">유안사료</div><div class="ev dist">고려사료</div><div class="ev dist">코리아에프앤에프</div><div class="ev dist">김해축협</div><div class="ev hosp">통일동물병원</div></div>
-          <div class="cd busy"><div class="cdn">29</div><div class="ev dist">제이제이바이오</div><div class="ev dist">태랑사료</div><div class="ev dist">프로팜</div><div class="ev dist">코리아에프앤에프</div></div>
-          <div class="cd"><div class="cdn">30</div></div>
-          <div class="cd emp"></div>
-        </div>
-
-        <!-- 5월 캘린더 (5/4월 시작) -->
-        <div id="cal-5" class="cg" style="gap:5px;display:none;grid-template-columns:repeat(5,1fr)">
-          <div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div>
-          <div class="cd"><div class="cdn">04</div><div style="font-size:9px;color:#F85149">어린이날 대체</div></div>
-          <div class="cd"><div class="cdn">05</div><div style="font-size:9px;color:#F85149">어린이날</div></div>
-          <div class="cd busy"><div class="cdn">06</div><div class="ev dist">한려프리믹스</div><div class="ev farm">경주 김일준</div><div class="ev hosp">통일동물병원</div><div class="ev dist">코리아에프앤에프</div></div>
-          <div class="cd busy"><div class="cdn">07</div><div class="ev farm">부경양돈</div><div class="ev dist">네쿰럴EX</div><div class="ev farm">합천돼지자가</div><div class="ev hosp">통일동물병원</div></div>
-          <div class="cd busy"><div class="cdn">08</div><div class="ev dist">오케이</div><div class="ev farm">경주 김일준</div><div class="ev farm">부경양돈</div></div>
-          <div class="cd busy"><div class="cdn">11</div><div class="ev farm">송정농장</div><div class="ev farm">우정농장</div><div class="ev dist">코리아에프앤에프</div><div class="ev farm">부경양돈</div></div>
-          <div class="cd busy"><div class="cdn">12</div><div class="ev dist">한승트레이딩</div><div class="ev farm">부경양돈</div><div class="ev dist">오케이</div><div class="ev farm">영광축산</div></div>
-          <div class="cd busy"><div class="cdn">13</div><div class="ev dist">부산사료</div><div class="ev dist">한우협회 의령</div><div class="ev dist">오케이</div></div>
-          <div class="cd busy"><div class="cdn">14</div><div class="ev farm">부경양돈</div><div class="ev dist">코리아에프앤에프</div></div>
-          <div class="cd"><div class="cdn">15</div></div>
-          <div class="cd"><div class="cdn">18</div><div class="ev special">본사회의</div></div>
-          <div class="cd busy"><div class="cdn">19</div><div class="ev dist">우일축산약품</div><div class="ev farm">부경양돈</div><div class="ev dist">오앤티</div><div class="ev dist">경북수산</div></div>
-          <div class="cd busy"><div class="cdn">20</div><div class="ev dist">우일가축약품</div><div class="ev hosp">통일동물병원</div></div>
-          <div class="cd busy"><div class="cdn">21</div><div class="ev dist">한국수생명연구소</div><div class="ev farm">영광축산</div><div class="ev farm">시현축산</div></div>
-          <div class="cd busy"><div class="cdn">22</div><div class="ev farm">합천돼지자가</div><div class="ev dist">오케이</div><div class="ev dist">경북수산</div><div class="ev farm">부경양돈</div></div>
-          <div class="cd"><div class="cdn">25</div></div>
-          <div class="cd busy"><div class="cdn">26</div><div class="ev dist">부산사료</div><div class="ev dist">의령축협</div><div class="ev dist">경북수산</div><div class="ev farm">영광축산</div></div>
-          <div class="cd busy"><div class="cdn">27</div><div class="ev farm">천년TMF</div><div class="ev farm">대덕농산</div><div class="ev farm">함안농장</div><div class="ev dist">우일가축약품</div></div>
-          <div class="cd busy"><div class="cdn">28</div><div class="ev dist">한우협회 산청</div><div class="ev dist">산청조생유TMF</div><div class="ev dist">코리아에프앤에프</div></div>
-          <div class="cd"><div class="cdn">29</div></div>
-          <div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div>
-        </div>
-        <div id="cal-6" class="cg" style="gap:5px;display:none;grid-template-columns:repeat(5,1fr)">
-          <div class="cd busy"><div class="cdn">01</div><div class="ev farm">야베스목장</div><div class="ev farm">노엘목장</div><div class="ev dist">코리아F&F</div></div>
-          <div class="cd busy"><div class="cdn">02</div><div class="ev farm">부경양돈</div><div class="ev farm">삼솔농장</div><div class="ev dist">오케이</div></div>
-          <div class="cd"><div class="cdn">03</div><div class="ev holiday" style="background:rgba(248,81,73,.2);color:#F85149;border-left:2px solid #F85149">🗳 지방선거</div></div>
-          <div class="cd busy"><div class="cdn">04</div><div class="ev farm">부경양돈</div><div class="ev dist">그레니에</div></div>
-          <div class="cd busy"><div class="cdn">05</div><div class="ev special">뉴트리신 회의</div><div class="ev farm">경주목장</div></div>
-          <div class="cd busy"><div class="cdn">08</div><div class="ev dist">김해축협</div><div class="ev dist">양산기장TMR</div></div>
-          <div class="cd busy"><div class="cdn">09</div><div class="ev farm">합천돼지자가</div><div class="ev dist">합천축협</div></div>
-          <div class="cd busy"><div class="cdn">10</div><div class="ev farm">우정농장</div><div class="ev farm">송정농장</div></div>
-          <div class="cd busy"><div class="cdn">11</div><div class="ev farm">부경양돈</div><div class="ev dist">한우협회 영주</div></div>
-          <div class="cd"><div class="cdn">12</div></div>
-          <div class="cd busy"><div class="cdn">15</div><div class="ev special">경영전략회의</div></div>
-          <div class="cd busy"><div class="cdn">16</div><div class="ev farm">노엘목장</div><div class="ev farm">부경양돈</div></div>
-          <div class="cd busy"><div class="cdn">17</div><div class="ev dist">한우협회 거창</div><div class="ev hosp">지원동물병원</div></div>
-          <div class="cd busy"><div class="cdn">18</div><div class="ev farm">부경양돈</div><div class="ev farm">합천돼지자가</div><div class="ev dist">고려산업</div></div>
-          <div class="cd busy"><div class="cdn">19</div><div class="ev dist">오케이</div><div class="ev dist">오앤티</div><div class="ev dist">우림피드</div></div>
-          <div class="cd busy"><div class="cdn">22</div><div class="ev farm">함양농가</div><div class="ev hosp">통일동물병원</div><div class="ev farm">부경양돈</div></div>
-          <div class="cd busy"><div class="cdn">23</div><div class="ev farm">부경양돈</div><div class="ev dist">김해축협</div><div class="ev dist">오앤티</div></div>
-          <div class="cd busy"><div class="cdn">24</div><div class="ev farm">대덕농산</div><div class="ev farm">천년TMF</div></div>
-          <div class="cd busy"><div class="cdn">25</div><div class="ev dist">한우협회 고성군지부</div><div class="ev dist">한려프리믹스</div><div class="ev dist">코리아에프앤에프</div></div>
-          <div class="cd busy"><div class="cdn">26</div><div class="ev hosp">KB동물병원</div><div class="ev dist">한승트레이딩</div><div class="ev dist">양산기장TMR</div></div>
-          <div class="cd busy"><div class="cdn">29</div><div class="ev dist">대한산란계협회 양산김해</div><div class="ev dist">오앤티</div><div class="ev dist">코리아에프앤에프</div></div>
-          <div class="cd busy"><div class="cdn">30</div><div class="ev dist">한우협회 함안군지부</div><div class="ev farm">노엘목장</div><div class="ev dist">코리아에프앤에프</div><div class="ev farm">시현축산</div></div>
-          <div class="cd emp"></div><div class="cd emp"></div><div class="cd emp"></div>
-        </div>
-
-        <!-- 7월 캘린더 -->
-        <div id="cal-7" class="cg" style="gap:5px;display:none;grid-template-columns:repeat(5,1fr)">
-          <div class="cd emp"></div>
-          <div class="cd emp"></div>
-          <div class="cd busy"><div class="cdn">01</div><div class="ev farm">영광축산</div><div class="ev dist">합천축협</div><div class="ev dist">오앤티</div></div>
-          <div class="cd busy"><div class="cdn">02</div><div class="ev hosp">마산가축동물병원</div><div class="ev hosp">사천수산동물병원</div><div class="ev farm">부경양돈</div></div>
-          <div class="cd busy"><div class="cdn">03</div><div class="ev dist">코리아에프앤에프</div><div class="ev farm">송정농장</div><div class="ev farm">우정농장</div></div>
-          <div class="cd"><div class="cdn">06</div></div>
-          <div class="cd"><div class="cdn">07</div></div>
-          <div class="cd"><div class="cdn">08</div></div>
-          <div class="cd"><div class="cdn">09</div></div>
-          <div class="cd"><div class="cdn">10</div></div>
-          <div class="cd"><div class="cdn">13</div></div>
-          <div class="cd"><div class="cdn">14</div></div>
-          <div class="cd"><div class="cdn">15</div></div>
-          <div class="cd"><div class="cdn">16</div></div>
-          <div class="cd"><div class="cdn">17</div></div>
-          <div class="cd"><div class="cdn">20</div></div>
-          <div class="cd"><div class="cdn">21</div></div>
-          <div class="cd"><div class="cdn">22</div></div>
-          <div class="cd"><div class="cdn">23</div></div>
-          <div class="cd"><div class="cdn">24</div></div>
-          <div class="cd"><div class="cdn">27</div></div>
-          <div class="cd"><div class="cdn">28</div></div>
-          <div class="cd"><div class="cdn">29</div></div>
-          <div class="cd"><div class="cdn">30</div></div>
-          <div class="cd"><div class="cdn">31</div></div>
-        </div>
+        <div id="cal-grid" class="cg" style="gap:5px;display:grid;grid-template-columns:repeat(5,1fr)"></div>
       </div>
     </div>
 
@@ -1673,29 +1498,304 @@ function renderOrders(rows){
   renderOrders(ORDERS.filter(o=>o.d.startsWith(curMonth)));
 })();
 
+// ===== 방문 캘린더 데이터 (Slack 업무보고 기반, 박제영) =====
+const VISITS = [
+  {d:'2026-01-02',c:'우림피드',cat:'dist'},
+  {d:'2026-01-02',c:'대원가축약품',cat:'dist'},
+  {d:'2026-02-02',c:'천년TMF',cat:'farm'},
+  {d:'2026-02-02',c:'대덕농산',cat:'farm'},
+  {d:'2026-02-02',c:'부경양돈',cat:'farm'},
+  {d:'2026-02-03',c:'부경양돈',cat:'farm'},
+  {d:'2026-02-03',c:'부산사료',cat:'dist'},
+  {d:'2026-02-27',c:'하나가축약품',cat:'dist'},
+  {d:'2026-02-27',c:'대원가축약품',cat:'dist'},
+  {d:'2026-02-27',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-02-27',c:'청청농원',cat:'farm'},
+  {d:'2026-03-03',c:'낙농육우협회 밀양',cat:'dist'},
+  {d:'2026-03-03',c:'부경양돈',cat:'farm'},
+  {d:'2026-03-03',c:'부산사료',cat:'dist'},
+  {d:'2026-03-06',c:'노엘목장',cat:'farm'},
+  {d:'2026-03-06',c:'한우협회 김해',cat:'dist'},
+  {d:'2026-03-06',c:'합천돼지자가',cat:'farm'},
+  {d:'2026-03-09',c:'영업회의',cat:'special'},
+  {d:'2026-03-10',c:'합천축협',cat:'dist'},
+  {d:'2026-03-10',c:'김해축협',cat:'dist'},
+  {d:'2026-03-10',c:'오앤티',cat:'dist'},
+  {d:'2026-03-10',c:'대구축협',cat:'dist'},
+  {d:'2026-03-11',c:'장유수산',cat:'dist'},
+  {d:'2026-03-11',c:'한우협회 고성',cat:'dist'},
+  {d:'2026-03-12',c:'부경양돈',cat:'farm'},
+  {d:'2026-03-12',c:'KB동물병원',cat:'hosp'},
+  {d:'2026-03-12',c:'오앤티',cat:'dist'},
+  {d:'2026-03-13',c:'야베스목장',cat:'farm'},
+  {d:'2026-03-13',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-03-13',c:'미소인터내셔널',cat:'hosp'},
+  {d:'2026-03-16',c:'우림피드',cat:'dist'},
+  {d:'2026-03-16',c:'양산기장TMR',cat:'dist'},
+  {d:'2026-03-16',c:'노엘목장',cat:'farm'},
+  {d:'2026-03-16',c:'부경양돈',cat:'farm'},
+  {d:'2026-03-17',c:'대구축협',cat:'dist'},
+  {d:'2026-03-17',c:'부경양돈',cat:'farm'},
+  {d:'2026-03-17',c:'우일가축약품',cat:'dist'},
+  {d:'2026-03-18',c:'한성동물병원',cat:'hosp'},
+  {d:'2026-03-18',c:'그레니에',cat:'dist'},
+  {d:'2026-03-19',c:'푸른들EM사료',cat:'dist'},
+  {d:'2026-03-19',c:'거창축협동물병원',cat:'hosp'},
+  {d:'2026-03-19',c:'부경양돈',cat:'farm'},
+  {d:'2026-03-19',c:'오앤티',cat:'dist'},
+  {d:'2026-03-20',c:'오케이',cat:'dist'},
+  {d:'2026-03-20',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-03-20',c:'거창축협동물병원',cat:'hosp'},
+  {d:'2026-03-23',c:'경영전략회의',cat:'special'},
+  {d:'2026-03-24',c:'송정농장',cat:'farm'},
+  {d:'2026-03-24',c:'우정농장',cat:'farm'},
+  {d:'2026-03-24',c:'오앤티',cat:'dist'},
+  {d:'2026-03-24',c:'시현축산',cat:'farm'},
+  {d:'2026-03-25',c:'합천돼지자가',cat:'farm'},
+  {d:'2026-03-25',c:'영광축산',cat:'farm'},
+  {d:'2026-03-25',c:'부경양돈',cat:'farm'},
+  {d:'2026-03-25',c:'오케이',cat:'dist'},
+  {d:'2026-03-26',c:'우일가축약품',cat:'dist'},
+  {d:'2026-03-26',c:'의성축협동물병원',cat:'hosp'},
+  {d:'2026-03-26',c:'부경양돈',cat:'farm'},
+  {d:'2026-03-27',c:'오케이',cat:'dist'},
+  {d:'2026-03-27',c:'부경양돈',cat:'farm'},
+  {d:'2026-03-27',c:'한우협회 함안',cat:'dist'},
+  {d:'2026-03-27',c:'수협사료',cat:'dist'},
+  {d:'2026-03-31',c:'부산사료',cat:'dist'},
+  {d:'2026-03-31',c:'한우협회 의령',cat:'dist'},
+  {d:'2026-04-01',c:'부산사료',cat:'dist'},
+  {d:'2026-04-01',c:'한우협회 의령',cat:'dist'},
+  {d:'2026-04-02',c:'경주TMF',cat:'farm'},
+  {d:'2026-04-02',c:'경주낙농육우회',cat:'dist'},
+  {d:'2026-04-02',c:'부경양돈',cat:'farm'},
+  {d:'2026-04-03',c:'상칠농장',cat:'farm'},
+  {d:'2026-04-03',c:'구인목장',cat:'farm'},
+  {d:'2026-04-03',c:'영업부 화상회의',cat:'special'},
+  {d:'2026-04-06',c:'대한가축약품',cat:'dist'},
+  {d:'2026-04-06',c:'김해축협',cat:'dist'},
+  {d:'2026-04-06',c:'삼솔농장',cat:'farm'},
+  {d:'2026-04-07',c:'산청조생유TMF',cat:'dist'},
+  {d:'2026-04-07',c:'한우협회 산청',cat:'dist'},
+  {d:'2026-04-07',c:'우일가축약품',cat:'dist'},
+  {d:'2026-04-08',c:'장유수산',cat:'dist'},
+  {d:'2026-04-08',c:'충무수산동물병원',cat:'hosp'},
+  {d:'2026-04-08',c:'부경양돈',cat:'farm'},
+  {d:'2026-04-09',c:'가림특수사료',cat:'dist'},
+  {d:'2026-04-09',c:'프라임사료',cat:'dist'},
+  {d:'2026-04-09',c:'부경양돈',cat:'farm'},
+  {d:'2026-04-09',c:'오앤티',cat:'dist'},
+  {d:'2026-04-10',c:'은진목장',cat:'farm'},
+  {d:'2026-04-10',c:'옹곡목장',cat:'farm'},
+  {d:'2026-04-10',c:'오앤티',cat:'dist'},
+  {d:'2026-04-13',c:'부경양돈',cat:'farm'},
+  {d:'2026-04-13',c:'거창축협동물병원',cat:'hosp'},
+  {d:'2026-04-14',c:'경영전략회의',cat:'special'},
+  {d:'2026-04-14',c:'클로드 교육',cat:'special'},
+  {d:'2026-04-15',c:'한성동물병원',cat:'hosp'},
+  {d:'2026-04-15',c:'고려산업',cat:'dist'},
+  {d:'2026-04-15',c:'오앤티',cat:'dist'},
+  {d:'2026-04-15',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-04-16',c:'우일가축약품',cat:'dist'},
+  {d:'2026-04-17',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-04-17',c:'오케이',cat:'dist'},
+  {d:'2026-04-17',c:'부경양돈',cat:'farm'},
+  {d:'2026-04-20',c:'노엘목장',cat:'farm'},
+  {d:'2026-04-20',c:'함안낙농영농조합',cat:'dist'},
+  {d:'2026-04-20',c:'오케이',cat:'dist'},
+  {d:'2026-04-21',c:'합천돼지자가',cat:'farm'},
+  {d:'2026-04-21',c:'종합동물약품',cat:'hosp'},
+  {d:'2026-04-21',c:'오앤티',cat:'dist'},
+  {d:'2026-04-22',c:'부산사료',cat:'dist'},
+  {d:'2026-04-22',c:'의령축협',cat:'dist'},
+  {d:'2026-04-22',c:'태백농산',cat:'farm'},
+  {d:'2026-04-23',c:'김해축협',cat:'dist'},
+  {d:'2026-04-23',c:'오케이',cat:'dist'},
+  {d:'2026-04-23',c:'부경양돈',cat:'farm'},
+  {d:'2026-04-23',c:'통일동물병원',cat:'hosp'},
+  {d:'2026-04-24',c:'KB동물병원',cat:'hosp'},
+  {d:'2026-04-24',c:'마산가축병원',cat:'hosp'},
+  {d:'2026-04-24',c:'부경양돈',cat:'farm'},
+  {d:'2026-04-27',c:'한우협회 함안',cat:'dist'},
+  {d:'2026-04-27',c:'노엘목장',cat:'farm'},
+  {d:'2026-04-27',c:'합천돼지자가',cat:'farm'},
+  {d:'2026-04-27',c:'부경양돈',cat:'farm'},
+  {d:'2026-04-28',c:'유안사료',cat:'dist'},
+  {d:'2026-04-28',c:'고려사료',cat:'dist'},
+  {d:'2026-04-28',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-04-28',c:'김해축협',cat:'dist'},
+  {d:'2026-04-28',c:'통일동물병원',cat:'hosp'},
+  {d:'2026-04-29',c:'제이제이바이오',cat:'dist'},
+  {d:'2026-04-29',c:'태랑사료',cat:'dist'},
+  {d:'2026-04-29',c:'프로팜',cat:'dist'},
+  {d:'2026-04-29',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-05-06',c:'한려프리믹스',cat:'dist'},
+  {d:'2026-05-06',c:'경주 김일준',cat:'farm'},
+  {d:'2026-05-06',c:'통일동물병원',cat:'hosp'},
+  {d:'2026-05-06',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-05-07',c:'부경양돈',cat:'farm'},
+  {d:'2026-05-07',c:'네쿰럴EX',cat:'dist'},
+  {d:'2026-05-07',c:'합천돼지자가',cat:'farm'},
+  {d:'2026-05-07',c:'통일동물병원',cat:'hosp'},
+  {d:'2026-05-08',c:'오케이',cat:'dist'},
+  {d:'2026-05-08',c:'경주 김일준',cat:'farm'},
+  {d:'2026-05-08',c:'부경양돈',cat:'farm'},
+  {d:'2026-05-11',c:'송정농장',cat:'farm'},
+  {d:'2026-05-11',c:'우정농장',cat:'farm'},
+  {d:'2026-05-11',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-05-11',c:'부경양돈',cat:'farm'},
+  {d:'2026-05-12',c:'한승트레이딩',cat:'dist'},
+  {d:'2026-05-12',c:'부경양돈',cat:'farm'},
+  {d:'2026-05-12',c:'오케이',cat:'dist'},
+  {d:'2026-05-12',c:'영광축산',cat:'farm'},
+  {d:'2026-05-13',c:'부산사료',cat:'dist'},
+  {d:'2026-05-13',c:'한우협회 의령',cat:'dist'},
+  {d:'2026-05-13',c:'오케이',cat:'dist'},
+  {d:'2026-05-14',c:'부경양돈',cat:'farm'},
+  {d:'2026-05-14',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-05-18',c:'본사회의',cat:'special'},
+  {d:'2026-05-19',c:'우일축산약품',cat:'dist'},
+  {d:'2026-05-19',c:'부경양돈',cat:'farm'},
+  {d:'2026-05-19',c:'오앤티',cat:'dist'},
+  {d:'2026-05-19',c:'경북수산',cat:'dist'},
+  {d:'2026-05-20',c:'우일가축약품',cat:'dist'},
+  {d:'2026-05-20',c:'통일동물병원',cat:'hosp'},
+  {d:'2026-05-21',c:'한국수생명연구소',cat:'dist'},
+  {d:'2026-05-21',c:'영광축산',cat:'farm'},
+  {d:'2026-05-21',c:'시현축산',cat:'farm'},
+  {d:'2026-05-22',c:'합천돼지자가',cat:'farm'},
+  {d:'2026-05-22',c:'오케이',cat:'dist'},
+  {d:'2026-05-22',c:'경북수산',cat:'dist'},
+  {d:'2026-05-22',c:'부경양돈',cat:'farm'},
+  {d:'2026-05-26',c:'부산사료',cat:'dist'},
+  {d:'2026-05-26',c:'의령축협',cat:'dist'},
+  {d:'2026-05-26',c:'경북수산',cat:'dist'},
+  {d:'2026-05-26',c:'영광축산',cat:'farm'},
+  {d:'2026-05-27',c:'천년TMF',cat:'farm'},
+  {d:'2026-05-27',c:'대덕농산',cat:'farm'},
+  {d:'2026-05-27',c:'함안농장',cat:'farm'},
+  {d:'2026-05-27',c:'우일가축약품',cat:'dist'},
+  {d:'2026-05-28',c:'한우협회 산청',cat:'dist'},
+  {d:'2026-05-28',c:'산청조생유TMF',cat:'dist'},
+  {d:'2026-05-28',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-06-01',c:'야베스목장',cat:'farm'},
+  {d:'2026-06-01',c:'노엘목장',cat:'farm'},
+  {d:'2026-06-01',c:'코리아F&F',cat:'dist'},
+  {d:'2026-06-02',c:'부경양돈',cat:'farm'},
+  {d:'2026-06-02',c:'삼솔농장',cat:'farm'},
+  {d:'2026-06-02',c:'오케이',cat:'dist'},
+  {d:'2026-06-04',c:'부경양돈',cat:'farm'},
+  {d:'2026-06-04',c:'그레니에',cat:'dist'},
+  {d:'2026-06-05',c:'뉴트리신 회의',cat:'special'},
+  {d:'2026-06-05',c:'경주목장',cat:'farm'},
+  {d:'2026-06-08',c:'김해축협',cat:'dist'},
+  {d:'2026-06-08',c:'양산기장TMR',cat:'dist'},
+  {d:'2026-06-09',c:'합천돼지자가',cat:'farm'},
+  {d:'2026-06-09',c:'합천축협',cat:'dist'},
+  {d:'2026-06-10',c:'우정농장',cat:'farm'},
+  {d:'2026-06-10',c:'송정농장',cat:'farm'},
+  {d:'2026-06-11',c:'부경양돈',cat:'farm'},
+  {d:'2026-06-11',c:'한우협회 영주',cat:'dist'},
+  {d:'2026-06-15',c:'경영전략회의',cat:'special'},
+  {d:'2026-06-16',c:'노엘목장',cat:'farm'},
+  {d:'2026-06-16',c:'부경양돈',cat:'farm'},
+  {d:'2026-06-17',c:'한우협회 거창',cat:'dist'},
+  {d:'2026-06-17',c:'지원동물병원',cat:'hosp'},
+  {d:'2026-06-18',c:'부경양돈',cat:'farm'},
+  {d:'2026-06-18',c:'합천돼지자가',cat:'farm'},
+  {d:'2026-06-18',c:'고려산업',cat:'dist'},
+  {d:'2026-06-19',c:'오케이',cat:'dist'},
+  {d:'2026-06-19',c:'오앤티',cat:'dist'},
+  {d:'2026-06-19',c:'우림피드',cat:'dist'},
+  {d:'2026-06-22',c:'함양농가',cat:'farm'},
+  {d:'2026-06-22',c:'통일동물병원',cat:'hosp'},
+  {d:'2026-06-22',c:'부경양돈',cat:'farm'},
+  {d:'2026-06-23',c:'부경양돈',cat:'farm'},
+  {d:'2026-06-23',c:'김해축협',cat:'dist'},
+  {d:'2026-06-23',c:'오앤티',cat:'dist'},
+  {d:'2026-06-24',c:'대덕농산',cat:'farm'},
+  {d:'2026-06-24',c:'천년TMF',cat:'farm'},
+  {d:'2026-06-25',c:'한우협회 고성군지부',cat:'dist'},
+  {d:'2026-06-25',c:'한려프리믹스',cat:'dist'},
+  {d:'2026-06-25',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-06-26',c:'KB동물병원',cat:'hosp'},
+  {d:'2026-06-26',c:'한승트레이딩',cat:'dist'},
+  {d:'2026-06-26',c:'양산기장TMR',cat:'dist'},
+  {d:'2026-06-29',c:'대한산란계협회 양산김해',cat:'dist'},
+  {d:'2026-06-29',c:'오앤티',cat:'dist'},
+  {d:'2026-06-29',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-06-30',c:'한우협회 함안군지부',cat:'dist'},
+  {d:'2026-06-30',c:'노엘목장',cat:'farm'},
+  {d:'2026-06-30',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-06-30',c:'시현축산',cat:'farm'},
+  {d:'2026-07-01',c:'영광축산',cat:'farm'},
+  {d:'2026-07-01',c:'합천축협',cat:'dist'},
+  {d:'2026-07-01',c:'오앤티',cat:'dist'},
+  {d:'2026-07-02',c:'마산가축동물병원',cat:'hosp'},
+  {d:'2026-07-02',c:'사천수산동물병원',cat:'hosp'},
+  {d:'2026-07-02',c:'부경양돈',cat:'farm'},
+  {d:'2026-07-03',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-07-03',c:'송정농장',cat:'farm'},
+  {d:'2026-07-03',c:'우정농장',cat:'farm'}
+];
+const HOLIDAYS = [
+  {d:'2026-01-01',label:'신정'},
+  {d:'2026-01-27',label:'설연휴'},
+  {d:'2026-01-28',label:'설날'},
+  {d:'2026-01-29',label:'설연휴'},
+  {d:'2026-05-04',label:'어린이날 대체'},
+  {d:'2026-05-05',label:'어린이날'},
+  {d:'2026-06-03',label:'🗳 지방선거'},
+];
+
+function renderCalendar(month){
+  const year = 2026;
+  const mm = String(month).padStart(2,'0');
+  const lastDay = new Date(year, month, 0).getDate();
+  const todayStr = new Date().toISOString().slice(0,10);
+  const cells = [];
+  for(let day=1; day<=lastDay; day++){
+    const dt = new Date(year, month-1, day);
+    const dow = dt.getDay();
+    if(dow===0 || dow===6) continue;
+    cells.push({day, dow});
+  }
+  let html = '';
+  if(cells.length){
+    const leading = cells[0].dow - 1;
+    for(let i=0;i<leading;i++) html += '<div class="cd emp"></div>';
+    cells.forEach(({day})=>{
+      const dstr = `${year}-${mm}-${String(day).padStart(2,'0')}`;
+      const dayVisits = VISITS.filter(v=>v.d===dstr);
+      const holiday = HOLIDAYS.find(h=>h.d===dstr);
+      const isToday = dstr===todayStr;
+      let cls='cd'; if(dayVisits.length) cls+=' busy'; if(isToday) cls+=' today';
+      let inner = `<div class="cdn">${String(day).padStart(2,'0')}</div>`;
+      if(holiday) inner += `<div style="font-size:9px;color:#F85149">${holiday.label}</div>`;
+      dayVisits.forEach(v=>{ inner += `<div class="ev ${v.cat}">${v.c}</div>`; });
+      html += `<div class="${cls}">${inner}</div>`;
+    });
+    const total = cells.length + leading;
+    const rem = total % 5;
+    if(rem!==0) for(let i=0;i<5-rem;i++) html += '<div class="cd emp"></div>';
+  }
+  const grid = document.getElementById('cal-grid');
+  if(grid) grid.innerHTML = html;
+}
+
 function showCal(month, btn){
   document.querySelectorAll('#cal-pills .pb').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
-  document.querySelectorAll('[id^="cal-"]').forEach(el=>el.style.display='none');
-  const target = document.getElementById('cal-'+month);
-  if(target) target.style.display='grid';
+  renderCalendar(parseInt(month,10));
 }
 // 초기 로드 시 현재 월 캘린더 자동 선택
 document.addEventListener('DOMContentLoaded', function(){
   const now = new Date();
   const m = String(now.getMonth()+1);
-  document.querySelectorAll('[id^="cal-"]').forEach(el=>{ el.style.display='none'; });
   document.querySelectorAll('#cal-pills .pb').forEach(b=>b.classList.remove('on'));
-  const target = document.getElementById('cal-'+m);
-  const btn = document.querySelector('#cal-pills .pb[onclick*="\''+m+'\'"]');
-  if(target){ target.style.display='grid'; }
+  const btn = document.querySelector('#cal-pills .pb[onclick*="\'"+m+"\'"]');
   if(btn){ btn.classList.add('on'); }
-  else {
-    // 현재 월 버튼 없으면 마지막 버튼 선택
-    const btns = document.querySelectorAll('#cal-pills .pb');
-    const last = btns[btns.length-1];
-    if(last){ last.classList.add('on'); const lastM = last.getAttribute('onclick').match(/'(\d+)'/)?.[1]; if(lastM){ const el=document.getElementById('cal-'+lastM); if(el) el.style.display='grid'; } }
-  }
+  renderCalendar(parseInt(m,10));
 });
 
 function filtM(m,btn){
@@ -1706,18 +1806,12 @@ function filtM(m,btn){
   // 방문 캘린더도 같이 전환
   if(m !== 'all'){
     const month = m.split('-')[1].replace(/^0/,''); // '2026-06' → '6'
-    const calTarget = document.getElementById('cal-'+month);
-    if(calTarget){
-      document.querySelectorAll('[id^="cal-"]').forEach(el=>el.style.display='none');
-      document.querySelectorAll('#cal-pills .pb').forEach(b=>b.classList.remove('on'));
-      calTarget.style.display='grid';
-      const calBtn = document.querySelector('#cal-pills .pb[onclick*="\''+month+'\'"]');
-      if(calBtn) calBtn.classList.add('on');
-    }
+    document.querySelectorAll('#cal-pills .pb').forEach(b=>b.classList.remove('on'));
+    const calBtn = document.querySelector('#cal-pills .pb[onclick*="\'"+month+"\'"]');
+    if(calBtn) calBtn.classList.add('on');
+    renderCalendar(parseInt(month,10));
   }
-}
-
-// ===== 입찰결과 데이터 (이재석 부사장 업무보고 기반) =====
+}// ===== 입찰결과 데이터 (이재석 부사장 업무보고 기반) =====
 // ★ 실제 Slack 데이터 only (이재석 부사장 업무보고 #0-02 / 입찰공고 #0-06 기반)
 // 기간: 25년 12월 ~ 26년 6월
 const BID_DATA = [
