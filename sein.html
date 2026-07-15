@@ -1827,7 +1827,7 @@ document.addEventListener('DOMContentLoaded', function(){
   const now = new Date();
   const m = String(now.getMonth()+1);
   document.querySelectorAll('#cal-pills .pb').forEach(b=>b.classList.remove('on'));
-  const btn = document.querySelector('#cal-pills .pb[onclick*="\'"+m+"\'"]');
+  const btn = document.querySelector(`#cal-pills .pb[onclick*="'${m}'"]`);
   if(btn){ btn.classList.add('on'); }
   renderCalendar(parseInt(m,10));
 });
@@ -1841,7 +1841,7 @@ function filtM(m,btn){
   if(m !== 'all'){
     const month = m.split('-')[1].replace(/^0/,''); // '2026-06' → '6'
     document.querySelectorAll('#cal-pills .pb').forEach(b=>b.classList.remove('on'));
-    const calBtn = document.querySelector('#cal-pills .pb[onclick*="\'"+month+"\'"]');
+    const calBtn = document.querySelector(`#cal-pills .pb[onclick*="'${month}'"]`);
     if(calBtn) calBtn.classList.add('on');
     renderCalendar(parseInt(month,10));
   }
@@ -2063,6 +2063,13 @@ function go(id,btn){
       document.querySelectorAll('#mpills .pb').forEach(b=>b.classList.remove('on'));
       const junBtn=document.querySelector('#mpills .pb[onclick*="2026-06"]');
       if(junBtn){junBtn.classList.remove('on');}const allBtn=document.querySelector('#mpills .pb[onclick*="all"]');if(allBtn){allBtn.classList.add('on');}renderOrders(ORDERS);
+    }
+    if(!document.querySelector('#cal-pills .pb.on')){
+      const curMonth=String(new Date().getMonth()+1);
+      document.querySelectorAll('#cal-pills .pb').forEach(b=>b.classList.remove('on'));
+      const calBtn=document.querySelector(`#cal-pills .pb[onclick*="'${curMonth}'"]`);
+      if(calBtn) calBtn.classList.add('on');
+      renderCalendar(parseInt(curMonth,10));
     }
   }
   if(id==='bids'){
