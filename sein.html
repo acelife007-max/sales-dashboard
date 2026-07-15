@@ -1277,6 +1277,19 @@ const CLIENT_DATA = [
     ],
     note:'파인애플분말 정기 발주처. 매월 1~2회 방문.'
   },
+  {
+    name:'태백농산', type:'farm', region:'-',
+    contact:'손태훈 대표',
+    items:['나노비타믹스','초유아이지','이지스타터','설사72'],
+    lastVisit:'2026-07-13', lastOrder:'2026-07-15',
+    orders:[
+      {d:'2026-07-15',item:'나노비타믹스',qty:'2box',price:'10,000원/kg'},
+      {d:'2026-07-15',item:'초유아이지',qty:'1box',price:'8,000원/kg'},
+      {d:'2026-07-15',item:'이지스타터',qty:'30kg(3포)',price:'4,000원/kg'},
+      {d:'2026-07-13',item:'설사72',qty:'30ea(3box)',price:'10,000원/kg'},
+    ],
+    note:'-'
+  },
 ];
 
 (function(){
@@ -1387,6 +1400,9 @@ const CLIENT_DATA = [
 <script>
 const ORDERS=[
   // ===== 7월 =====
+  {d:'2026-07-15',c:'태백농산',item:'나노비타믹스',qty:'2box',price:'10,000원/kg',eta:'7/16(목)',st:'wait'},
+  {d:'2026-07-15',c:'태백농산',item:'초유아이지',qty:'1box',price:'8,000원/kg',eta:'7/16(목)',st:'wait'},
+  {d:'2026-07-15',c:'태백농산',item:'이지스타터',qty:'30kg(3포)',price:'4,000원/kg',eta:'7/16(목)',st:'wait'},
   {d:'2026-07-13',c:'태백농산',item:'설사72',qty:'30ea(3box)',price:'10,000원/kg',eta:'7/15(수)',st:'wait'},
   {d:'2026-07-08',c:'부경양돈',item:'ECM',qty:'4,800kg',price:'-',eta:'7/10(금)',st:'done'},
   {d:'2026-07-08',c:'김일준 대표(경주)',item:'ECM40',qty:'630kg',price:'1,700원/kg',eta:'7/10(금)',st:'done'},
@@ -1750,7 +1766,11 @@ const VISITS = [
   {d:'2026-07-10',c:'낙농육우협회 밀양',cat:'dist'},
   {d:'2026-07-10',c:'한우협회 의령',cat:'dist'},
   {d:'2026-07-10',c:'부산사료',cat:'dist'},
-  {d:'2026-07-10',c:'AI파일수정',cat:'special'}
+  {d:'2026-07-10',c:'AI파일수정',cat:'special'},
+  {d:'2026-07-13',c:'대구축협',cat:'dist'},
+  {d:'2026-07-13',c:'이엘비',cat:'dist'},
+  {d:'2026-07-13',c:'태백농산',cat:'farm'},
+  {d:'2026-07-13',c:'경주농장',cat:'farm'}
 ];
 const HOLIDAYS = [
   {d:'2026-01-01',label:'신정'},
