@@ -768,20 +768,6 @@ table.tbl tr:hover td{background:#1C2128}
     <div class="card" style="height:100%;display:flex;flex-direction:column">
       <div class="card-hd">
         <div class="card-title">📅 방문 캘린더</div>
-        <div class="pills" id="cal-pills" style="gap:4px">
-          <button class="pb" onclick="showCal('1',this)" style="font-size:11px;padding:3px 10px">1월</button>
-          <button class="pb" onclick="showCal('2',this)" style="font-size:11px;padding:3px 10px">2월</button>
-          <button class="pb" onclick="showCal('3',this)" style="font-size:11px;padding:3px 10px">3월</button>
-          <button class="pb" onclick="showCal('4',this)" style="font-size:11px;padding:3px 10px">4월</button>
-          <button class="pb" onclick="showCal('5',this)" style="font-size:11px;padding:3px 10px">5월</button>
-          <button class="pb" onclick="showCal('6',this)" style="font-size:11px;padding:3px 10px">6월</button>
-          <button class="pb" onclick="showCal('7',this)" style="font-size:11px;padding:3px 10px">7월</button>
-          <button class="pb" onclick="showCal('8',this)" style="font-size:11px;padding:3px 10px">8월</button>
-          <button class="pb" onclick="showCal('9',this)" style="font-size:11px;padding:3px 10px">9월</button>
-          <button class="pb" onclick="showCal('10',this)" style="font-size:11px;padding:3px 10px">10월</button>
-          <button class="pb" onclick="showCal('11',this)" style="font-size:11px;padding:3px 10px">11월</button>
-          <button class="pb" onclick="showCal('12',this)" style="font-size:11px;padding:3px 10px">12월</button>
-        </div>
       </div>
       <div class="cw" style="padding:0 8px 12px">
         <div class="cdow" style="display:grid;grid-template-columns:repeat(5,1fr);text-align:center;font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--light);margin-bottom:6px">
@@ -1817,19 +1803,10 @@ function renderCalendar(month){
   if(grid) grid.innerHTML = html;
 }
 
-function showCal(month, btn){
-  document.querySelectorAll('#cal-pills .pb').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  renderCalendar(parseInt(month,10));
-}
 // 초기 로드 시 현재 월 캘린더 자동 선택
 document.addEventListener('DOMContentLoaded', function(){
   const now = new Date();
-  const m = String(now.getMonth()+1);
-  document.querySelectorAll('#cal-pills .pb').forEach(b=>b.classList.remove('on'));
-  const btn = document.querySelector(`#cal-pills .pb[onclick*="'${m}'"]`);
-  if(btn){ btn.classList.add('on'); }
-  renderCalendar(parseInt(m,10));
+  renderCalendar(now.getMonth()+1);
 });
 
 function filtM(m,btn){
@@ -1840,9 +1817,6 @@ function filtM(m,btn){
   // 방문 캘린더도 같이 전환
   if(m !== 'all'){
     const month = m.split('-')[1].replace(/^0/,''); // '2026-06' → '6'
-    document.querySelectorAll('#cal-pills .pb').forEach(b=>b.classList.remove('on'));
-    const calBtn = document.querySelector(`#cal-pills .pb[onclick*="'${month}'"]`);
-    if(calBtn) calBtn.classList.add('on');
     renderCalendar(parseInt(month,10));
   }
 }// ===== 입찰결과 데이터 (이재석 부사장 업무보고 기반) =====
@@ -2063,13 +2037,6 @@ function go(id,btn){
       document.querySelectorAll('#mpills .pb').forEach(b=>b.classList.remove('on'));
       const junBtn=document.querySelector('#mpills .pb[onclick*="2026-06"]');
       if(junBtn){junBtn.classList.remove('on');}const allBtn=document.querySelector('#mpills .pb[onclick*="all"]');if(allBtn){allBtn.classList.add('on');}renderOrders(ORDERS);
-    }
-    if(!document.querySelector('#cal-pills .pb.on')){
-      const curMonth=String(new Date().getMonth()+1);
-      document.querySelectorAll('#cal-pills .pb').forEach(b=>b.classList.remove('on'));
-      const calBtn=document.querySelector(`#cal-pills .pb[onclick*="'${curMonth}'"]`);
-      if(calBtn) calBtn.classList.add('on');
-      renderCalendar(parseInt(curMonth,10));
     }
   }
   if(id==='bids'){
