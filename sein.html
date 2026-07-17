@@ -908,7 +908,7 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-07-16 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-07-17 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'1,065',unit:'$/톤 · CHANHEN',color:'blue',badge:'▲ +$375 급등',trend:'up'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'1,053',unit:'$/톤 · CHANHEN',color:'blue',badge:'▲ 계약예정',trend:'up'},
@@ -1874,6 +1874,7 @@ const BID_DATA = [
   {date:'2026-07-09', client:'이지홀딩스 (BK&CO)', item:'인산칼슘 오퍼 (MDCP·DCP)', qty:'-', sein_price:'참여', winner:'MDCP-광동 낙찰 예상 / DCP-세인 Pass', winner_price:'MDCP $1,010', result:'lost', note:'광동 MDCP $1,010 예상. DCP는 세인이 Pass'},
   {date:'2026-07-10', client:'다원케미칼', item:'VE(비타민E) 20톤 오퍼', qty:'20톤', sein_price:'$10.00/kg', winner:'중국 경쟁사 낙찰', winner_price:'$9대/kg', result:'lost', note:'중국 경쟁사 $9 미만 낙찰'},
   {date:'2026-07-13', client:'TS사료', item:'황산염라이신', qty:'-', sein_price:'990원', winner:'CSF 낙찰 900원대', winner_price:'900원대', result:'lost', note:'세인 2위(990원)'},
+  {date:'2026-07-16', client:'농협사료', item:'팔미트산', qty:'월11.6톤 6개월', sein_price:'2,670원', winner:'세인 낙찰 2,670원', winner_price:'2,670원', result:'won', note:'이앤티·은진바이오 참여'},
 ];
 
 function renderBids(data){
@@ -2129,6 +2130,7 @@ const NEWS_DATA = [
   {id:110,lang:'ko',cat:'amino',src:'한국경제',date:'2026-07-15',title:'CJ제일제당 주가 가른 바이오사업…7월 中라이신 반덤핑 관세 확정 앞둬',desc:'美·브라질의 중국산 라이신 반덤핑 관세가 7월 중 확정될 전망이며 사료용 아미노산 판가 반등 가능성도 부각되며 하반기 바이오부문 실적 회복 기대. 하나증권 등 주요 증권사 목표주가 30만~37만원으로 상향 조정.',url:'https://www.hankyung.com/article/202607156280i'},
   {id:111,lang:'ko',cat:'policy',src:'축산신문',date:'2026-07-15',title:'오염 사료도 방역 사각지대…가축전염병예방법 개정안 발의',desc:'서삼석 의원, 사료 등 오염 우려 물품에 방역관리 근거를 신설하는 개정안 대표발의. 올해 ASF 역학조사에서 돼지 혈장단백질 등 오염된 사료원료가 주요 발생원인으로 지목되면서 가축방역관에 사료제조시설 검사·시료채취 권한 부여.',url:'https://www.chuksannews.co.kr/news/article.html?no=272595'},
   {id:112,lang:'ko',cat:'policy',src:'파이낸셜뉴스',date:'2026-07-16',title:'美·이란 휴전 파기…호르무즈 재봉쇄에 브렌트유 $87 돌파',desc:'휴전이 깨지며 세계 원유 20%가 통과하는 호르무즈 해협이 사실상 재봉쇄, 브렌트유가 이번주 10% 넘게 급등해 배럴당 $87선을 넘어섰다. IEA 비상비축유 약 75% 이미 소진, 우크라이나의 러시아 정유시설 공격 여파로 유럽 경유 선물도 주간 14% 급등해 사료 원료 등 수입 원자재 원가 상승 압박이 가중될 전망.',url:'https://www.fnnews.com/news/202607161013182823'},
+  {id:113,lang:'ko',cat:'feed',src:'파이낸셜뉴스',date:'2026-07-17',title:'호르무즈 재봉쇄 장기화…국내 물가 재차 압박 우려',desc:'미국의 대이란 해상봉쇄 재개로 중동 긴장이 다시 고조되며 국제유가 상승이 이미 3%대로 오른 국내 물가를 추가 자극할 우려. 한국은 작년 원유 수입의 61%·나프타 수입의 54%를 호르무즈 해협에 의존해 사료 등 수입 원자재의 원가·운임·보험료 부담이 함께 확대될 전망.',url:'https://www.fnnews.com/news/202607171434409708'},
 ];
 
 let _newsCat = 'all';
