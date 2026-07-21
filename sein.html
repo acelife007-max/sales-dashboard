@@ -908,7 +908,7 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-07-20 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-07-21 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'1,065',unit:'$/톤 · CHANHEN',color:'blue',badge:'▲ +$375 급등',trend:'up'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'1,053',unit:'$/톤 · CHANHEN',color:'blue',badge:'▲ 계약예정',trend:'up'},
@@ -1201,8 +1201,9 @@ const CLIENT_DATA = [
     name:'부경양돈', type:'farm', region:'경남',
     contact:'김덕민 계장',
     items:['ECM','코코시스'],
-    lastVisit:'2026-07-08', lastOrder:'2026-07-02',
+    lastVisit:'2026-07-08', lastOrder:'2026-07-21',
     orders:[
+      {d:'2026-07-21',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-07-02',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-06-23',item:'코코시스',qty:'1,600kg',price:'-'},
       {d:'2026-06-18',item:'ECM',qty:'4,800kg',price:'-'},
@@ -1286,12 +1287,24 @@ const CLIENT_DATA = [
     name:'태백농산', type:'farm', region:'-',
     contact:'손태훈 대표',
     items:['나노비타믹스','초유아이지','이지스타터','설사72'],
-    lastVisit:'2026-07-15', lastOrder:'2026-07-15',
+    lastVisit:'2026-07-15', lastOrder:'2026-07-21',
     orders:[
+      {d:'2026-07-21',item:'초유아이지',qty:'3box',price:'8,000원/kg'},
       {d:'2026-07-15',item:'나노비타믹스',qty:'2box',price:'10,000원/kg'},
       {d:'2026-07-15',item:'초유아이지',qty:'1box',price:'8,000원/kg'},
       {d:'2026-07-15',item:'이지스타터',qty:'30kg(3포)',price:'4,000원/kg'},
       {d:'2026-07-13',item:'설사72',qty:'30ea(3box)',price:'10,000원/kg'},
+    ],
+    note:'-'
+  },
+  {
+    name:'송우열 대표', type:'farm', region:'-',
+    contact:'-',
+    items:['이지스타터'],
+    lastVisit:'2026-07-21', lastOrder:'2026-07-21',
+    orders:[
+      {d:'2026-07-21',item:'이지스타터',qty:'30kg',price:'4,000원/kg'},
+      {d:'2026-05-27',item:'이지스타터',qty:'30kg',price:'4,000원/kg'},
     ],
     note:'-'
   },
@@ -1405,6 +1418,9 @@ const CLIENT_DATA = [
 <script>
 const ORDERS=[
   // ===== 7월 =====
+  {d:'2026-07-21',c:'태백농산',item:'초유아이지',qty:'3box',price:'8,000원/kg',eta:'7/22(수)',st:'wait'},
+  {d:'2026-07-21',c:'송우열 대표',item:'이지스타터',qty:'30kg',price:'4,000원/kg',eta:'7/22(수)',st:'wait'},
+  {d:'2026-07-21',c:'부경양돈',item:'ECM',qty:'4,800kg',price:'-',eta:'7/23(목)',st:'wait'},
   {d:'2026-07-15',c:'태백농산',item:'나노비타믹스',qty:'2box',price:'10,000원/kg',eta:'7/16(목)',st:'wait'},
   {d:'2026-07-15',c:'태백농산',item:'초유아이지',qty:'1box',price:'8,000원/kg',eta:'7/16(목)',st:'wait'},
   {d:'2026-07-15',c:'태백농산',item:'이지스타터',qty:'30kg(3포)',price:'4,000원/kg',eta:'7/16(목)',st:'wait'},
@@ -1777,7 +1793,9 @@ const VISITS = [
   {d:'2026-07-13',c:'태백농산',cat:'farm'},
   {d:'2026-07-13',c:'경주농장',cat:'farm'},
   {d:'2026-07-15',c:'태백농산',cat:'farm'},
-  {d:'2026-07-15',c:'의령축협',cat:'dist'}
+  {d:'2026-07-15',c:'의령축협',cat:'dist'},
+  {d:'2026-07-16',c:'거창축협 동물병원',cat:'hosp'},
+  {d:'2026-07-16',c:'통일동물병원',cat:'hosp'}
 ];
 const HOLIDAYS = [
   {d:'2026-01-01',label:'신정'},
