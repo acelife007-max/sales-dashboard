@@ -1207,7 +1207,7 @@ const CLIENT_DATA = [
     name:'부경양돈', type:'farm', region:'경남',
     contact:'김덕민 계장',
     items:['ECM','코코시스'],
-    lastVisit:'2026-07-28', lastOrder:'2026-08-05',
+    lastVisit:'2026-08-05', lastOrder:'2026-08-05',
     orders:[
       {d:'2026-08-05',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-07-24',item:'ECM',qty:'4,800kg',price:'-'},
@@ -1259,7 +1259,7 @@ const CLIENT_DATA = [
     name:'합천돼지자가', type:'farm', region:'경남',
     contact:'-',
     items:['DCP','염화콜린'],
-    lastVisit:'2026-06-18', lastOrder:'2026-04-27',
+    lastVisit:'2026-08-05', lastOrder:'2026-04-27',
     orders:[
       {d:'2026-04-27',item:'DCP',qty:'27,000kg',price:'-'},
       {d:'2026-03-25',item:'염화콜린',qty:'2,000kg',price:'-'},
@@ -1311,8 +1311,9 @@ const CLIENT_DATA = [
     name:'송우열 대표', type:'farm', region:'-',
     contact:'-',
     items:['이지스타터'],
-    lastVisit:'2026-07-21', lastOrder:'2026-07-21',
+    lastVisit:'2026-07-21', lastOrder:'2026-08-06',
     orders:[
+      {d:'2026-08-06',item:'이지스타터',qty:'30kg',price:'4,000원/kg'},
       {d:'2026-07-21',item:'이지스타터',qty:'30kg',price:'4,000원/kg'},
       {d:'2026-05-27',item:'이지스타터',qty:'30kg',price:'4,000원/kg'},
     ],
@@ -1470,6 +1471,7 @@ const CLIENT_DATA = [
 <script>
 const ORDERS=[
   // ===== 8월 =====
+  {d:'2026-08-06',c:'송우열 대표',item:'이지스타터',qty:'30kg',price:'4,000원/kg',eta:'8/7(금)',st:'wait'},
   {d:'2026-08-05',c:'부경양돈',item:'ECM',qty:'4,800kg',price:'-',eta:'8/7(금)',st:'wait'},
   {d:'2026-08-04',c:'대일알앤에프',item:'대두박',qty:'2,000kg',price:'730원',eta:'8/6(목)',st:'wait'},
   {d:'2026-07-31',c:'오케이',item:'MDCP',qty:'25,000kg',price:'1,700원',eta:'8/5(수)',st:'wait'},
@@ -1891,7 +1893,10 @@ const VISITS = [
   {d:'2026-08-03',c:'대일알앤에프',cat:'dist'},
   {d:'2026-08-04',c:'대일알앤에프',cat:'dist'},
   {d:'2026-08-04',c:'부산사료',cat:'dist'},
-  {d:'2026-08-04',c:'한우협회 의령군 지부',cat:'dist'}
+  {d:'2026-08-04',c:'한우협회 의령군 지부',cat:'dist'},
+  {d:'2026-08-05',c:'종합동물약품',cat:'dist'},
+  {d:'2026-08-05',c:'합천돼지자가',cat:'farm'},
+  {d:'2026-08-05',c:'부경양돈',cat:'farm'}
 ];
 const HOLIDAYS = [
   {d:'2026-01-01',label:'신정'},
@@ -2292,6 +2297,7 @@ const NEWS_DATA = [
   {id:152,lang:'ko',cat:'policy',src:'아시아경제',date:'2026-08-05',title:'원·달러 환율 8.0원 내린 1,424.5원 마감',desc:'5일 서울외환시장에서 원·달러 환율이 전 거래일比 8.0원 내린 1,424.5원 마감. 7월 한달간 141.2원(8.1%) 급락했으며 수출기업 달러 매도 확대·외국인 순매도 둔화·거시경제 지표 호조가 겹친 결과로, 수입 사료원료 조달비용 부담 완화 기대.',url:'https://view.asiae.co.kr/article/2026080515585803162'},
   {id:153,lang:'ko',cat:'feed',src:'파이낸셜뉴스',date:'2026-08-05',title:'브렌트유 5%대 급락 80달러선 붕괴…베선트 "호르무즈 곧 재개방"',desc:'美 베선트 재무장관이 CNBC 인터뷰에서 이란과 호르무즈 해협 재개방 합의가 임박했다고 밝히며 브렌트유 10월물이 전장比 5.26%(4.41달러) 급락한 배럴당 79.36달러에 거래, 한 달 만에 80달러선 아래로 내려앉아 사료 등 수입 원자재 원가 부담 완화 기대.',url:'https://www.fnnews.com/news/202608050435316783'},
   {id:154,lang:'ko',cat:'vitamin',src:'라이브뉴스',date:'2026-08-04',title:'농협사료, 폭염 대응 특별지원반 가동…비타민C·E 강화 보강사료 공급',desc:'농협사료가 8월 한 달간 전국 특별지원반을 운영해 폭염 취약농가에 방역차·안개분무기로 축사 온도를 낮추고, 비타민C·E·프로바이오틱스·수용성 비타민 복합체를 첨가한 보강사료를 지속 공급해 고온 스트레스에 따른 가축 면역력·생산성 저하를 최소화할 계획.',url:'https://www.livesnews.com/news/article.html?no=63175'},
+  {id:155,lang:'ko',cat:'feed',src:'부산일보',date:'2026-08-06',title:'폭염 가축 폐사 68만8천마리…온열질환 사망 5명',desc:'농식품부에 따르면 폭염으로 폐사 신고된 가축이 68만8천마리로 집계돼 8월3일 49만3,497마리 대비 이틀 만에 약 19만5천마리 늘었다. 농촌지역 온열질환자는 361명, 이 중 5명이 숨졌다. 지자체·농협 등이 687억원 규모의 냉방장비·고온스트레스 완화제 등 예방물품을 지원하고 "찾아가는 살수 지원"을 확대하기로 했다.',url:'https://www.busan.com/view/busan/view.php?code=2026080614220803019'},
 ];
 
 let _newsCat = 'all';
