@@ -908,7 +908,7 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-08-09 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-08-11 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'1,065',unit:'$/톤 · CHANHEN',color:'blue',badge:'▲ +$375 급등',trend:'up'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'1,050',unit:'$/톤 · CHANHEN(200톤,ETA 8/12)',color:'blue',badge:'▲ $995→$1,050',trend:'up'},
@@ -1363,8 +1363,9 @@ const CLIENT_DATA = [
     name:'대일알앤에프', type:'dist', region:'-',
     contact:'박지후 부장',
     items:['대두박'],
-    lastVisit:'2026-08-03', lastOrder:'2026-08-04',
+    lastVisit:'2026-08-06', lastOrder:'2026-08-11',
     orders:[
+      {d:'2026-08-11',item:'대두박',qty:'2,000kg',price:'820원'},
       {d:'2026-08-04',item:'대두박',qty:'2,000kg',price:'730원'},
     ],
     note:'-'
@@ -1491,6 +1492,7 @@ const CLIENT_DATA = [
 <script>
 const ORDERS=[
   // ===== 8월 =====
+  {d:'2026-08-11',c:'대일알앤에프',item:'대두박',qty:'2,000kg',price:'820원',eta:'8/13(목)',st:'wait'},
   {d:'2026-08-07',c:'영광축산',item:'나노비타믹스E',qty:'1박스',price:'10,000원/kg',eta:'8/8(토)',st:'wait'},
   {d:'2026-08-07',c:'영광축산',item:'장프로',qty:'1박스',price:'25,000원/kg',eta:'8/8(토)',st:'wait'},
   {d:'2026-08-06',c:'송우열 대표',item:'이지스타터',qty:'30kg',price:'4,000원/kg',eta:'8/7(금)',st:'wait'},
