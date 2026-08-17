@@ -908,7 +908,7 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-08-16 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-08-17 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'1,065',unit:'$/톤 · CHANHEN',color:'blue',badge:'▲ +$375 급등',trend:'up'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'1,050',unit:'$/톤 · CHANHEN(200톤,ETA 8/12)',color:'blue',badge:'▲ $995→$1,050',trend:'up'},
@@ -2050,6 +2050,7 @@ const BID_DATA = [
   // ── 2026년 8월 ──
   {date:'2026-08-12', client:'농협사료', item:'트레오닌 6개월', qty:'월46.4톤 6개월·6개업체 참여', sein_price:'1,431원', winner:'CSF 낙찰 1,349원', winner_price:'1,349원', result:'lost', note:'희우 1,430원·세인 1,431원(3위)·이앤티·세계로·아이넷 순'},
   {date:'2026-08-12', client:'다원케미칼', item:'비타민 오퍼(VE·BIOTIN)', qty:'VE 40톤·BIOTIN 10톤', sein_price:'-', winner:'세인 2품목 낙찰(VE·BIOTIN)', winner_price:'-', result:'won', note:'8/3 예고된 입찰건 결과. VE 40톤·BIOTIN 10톤 세인 낙찰'},
+  {date:'2026-08-14', client:'우성사료', item:'MDCP·메치오닌 입찰(3개월)', qty:'MDCP 월105톤·메치오닌 월70톤', sein_price:'참여', winner:'MDCP-해우 낙찰 1,436원 / 메치오닌-해우 낙찰 5,800원', winner_price:'MDCP 1,436원·메치오닌 5,800원', result:'lost', note:'해우 2품목 낙찰. 세인 탈락. 11월까지 공급 확정'},
 ];
 
 function renderBids(data){
