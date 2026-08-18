@@ -908,7 +908,7 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-08-17 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-08-18 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'1,065',unit:'$/톤 · CHANHEN',color:'blue',badge:'▲ +$375 급등',trend:'up'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'1,050',unit:'$/톤 · CHANHEN(200톤,ETA 8/12)',color:'blue',badge:'▲ $995→$1,050',trend:'up'},
@@ -1216,8 +1216,9 @@ const CLIENT_DATA = [
     name:'부경양돈', type:'farm', region:'경남',
     contact:'김덕민 계장',
     items:['ECM','코코시스'],
-    lastVisit:'2026-08-13', lastOrder:'2026-08-14',
+    lastVisit:'2026-08-14', lastOrder:'2026-08-18',
     orders:[
+      {d:'2026-08-18',item:'코코시스',qty:'1,600kg',price:'-'},
       {d:'2026-08-14',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-08-13',item:'코코시스',qty:'1,600kg',price:'-'},
       {d:'2026-08-05',item:'ECM',qty:'4,800kg',price:'-'},
@@ -1227,7 +1228,6 @@ const CLIENT_DATA = [
       {d:'2026-06-23',item:'코코시스',qty:'1,600kg',price:'-'},
       {d:'2026-06-18',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-06-02',item:'ECM',qty:'4,000kg',price:'1,250원/kg'},
-      {d:'2026-04-23',item:'ECM',qty:'4,000kg',price:'-'},
     ],
     note:'황산염라이신 입찰 중 (CSF 874원 낙찰, 세인 탈락). 메치오닌 3분기 견적 7,900원 전달.'
   },
@@ -1504,6 +1504,7 @@ const CLIENT_DATA = [
 <script>
 const ORDERS=[
   // ===== 8월 =====
+  {d:'2026-08-18',c:'부경양돈',item:'코코시스',qty:'1,600kg',price:'-',eta:'8/20(목)',st:'wait'},
   {d:'2026-08-14',c:'부경양돈',item:'ECM',qty:'4,800kg',price:'-',eta:'8/19(수)',st:'wait'},
   {d:'2026-08-14',c:'우일축산약품(장안농장)',item:'나노비타믹스',qty:'60kg',price:'8,000원/kg',eta:'8/15(금)',st:'wait'},
   {d:'2026-08-13',c:'부경양돈',item:'코코시스',qty:'1,600kg',price:'-',eta:'8/14(금)',st:'wait'},
@@ -1942,7 +1943,10 @@ const VISITS = [
   {d:'2026-08-06',c:'대덕농산',cat:'farm'},
   {d:'2026-08-13',c:'채혈워크샵',cat:'special'},
   {d:'2026-08-13',c:'이엘비',cat:'dist'},
-  {d:'2026-08-13',c:'부경양돈',cat:'farm'}
+  {d:'2026-08-13',c:'부경양돈',cat:'farm'},
+  {d:'2026-08-14',c:'우일축산약품',cat:'dist'},
+  {d:'2026-08-14',c:'부경양돈',cat:'farm'},
+  {d:'2026-08-14',c:'고려산업',cat:'dist'}
 ];
 const HOLIDAYS = [
   {d:'2026-01-01',label:'신정'},
