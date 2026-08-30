@@ -908,7 +908,7 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-08-29 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-08-30 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'1,010',unit:'$/톤 · CHANHEN',color:'blue',badge:'▼ $1,065→$1,010',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'1,050',unit:'$/톤 · CHANHEN(200톤,ETA 8/12)',color:'blue',badge:'▲ $995→$1,050',trend:'up'},
@@ -2015,7 +2015,11 @@ const VISITS = [
   {d:'2026-08-25',c:'부경양돈',cat:'farm'},
   {d:'2026-08-26',c:'코리아에프앤에프',cat:'dist'},
   {d:'2026-08-26',c:'송정농장',cat:'farm'},
-  {d:'2026-08-26',c:'지원동물병원',cat:'hosp'}
+  {d:'2026-08-26',c:'지원동물병원',cat:'hosp'},
+  {d:'2026-08-27',c:'삼솔농장',cat:'farm'},
+  {d:'2026-08-27',c:'오앤티',cat:'dist'},
+  {d:'2026-08-27',c:'에이스파마텍',cat:'dist'},
+  {d:'2026-08-27',c:'경북수산',cat:'dist'}
 ];
 const HOLIDAYS = [
   {d:'2026-01-01',label:'신정'},
@@ -2124,6 +2128,8 @@ const BID_DATA = [
   {date:'2026-08-12', client:'농협사료', item:'트레오닌 6개월', qty:'월46.4톤 6개월·6개업체 참여', sein_price:'1,431원', winner:'CSF 낙찰 1,349원', winner_price:'1,349원', result:'lost', note:'희우 1,430원·세인 1,431원(3위)·이앤티·세계로·아이넷 순'},
   {date:'2026-08-12', client:'다원케미칼', item:'비타민 오퍼(VE·BIOTIN)', qty:'VE 40톤·BIOTIN 10톤', sein_price:'-', winner:'세인 2품목 낙찰(VE·BIOTIN)', winner_price:'-', result:'won', note:'8/3 예고된 입찰건 결과. VE 40톤·BIOTIN 10톤 세인 낙찰'},
   {date:'2026-08-14', client:'우성사료', item:'MDCP·메치오닌 입찰(3개월)', qty:'MDCP 월105톤·메치오닌 월70톤', sein_price:'참여', winner:'MDCP-해우 낙찰 1,436원 / 메치오닌-해우 낙찰 5,800원', winner_price:'MDCP 1,436원·메치오닌 5,800원', result:'lost', note:'해우 2품목 낙찰. 세인 탈락. 11월까지 공급 확정'},
+  {date:'2026-08-27', client:'디허스코리아', item:'아미노산 4분기 입찰(황산염라이신·트레오닌)', qty:'4품목 중 2품목 결과', sein_price:'참여', winner:'황산염라이신-이앤티 낙찰 900원(은진 910원) / 트레오닌-이앤티 낙찰 1,400원', winner_price:'황라 900원·트레오닌 1,400원', result:'lost', note:'세인 4품목 입찰 참여, 2품목만 결과 확인(나머지 2품목 미정)'},
+  {date:'2026-08-28', client:'이지홀딩스 (BK&CO)', item:'인산칼슘 오퍼(DCP·MCP) 10·11월분', qty:'DCP 1,000톤·MCP 980톤', sein_price:'DCP $775·MCP $898', winner:'MCP-운천화 $860 낙찰 / DCP-유찰(가격 폭락)', winner_price:'MCP $860', result:'lost', note:'세인 DCP $775·MCP $898 참여. DCP는 가격 폭락으로 유찰, 일부 MCP로 전환'},
 ];
 
 function renderBids(data){
