@@ -908,7 +908,7 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-09-01 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-09-02 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'1,010',unit:'$/톤 · CHANHEN',color:'blue',badge:'▼ $1,065→$1,010',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'1,050',unit:'$/톤 · CHANHEN(200톤,ETA 8/12)',color:'blue',badge:'▲ $995→$1,050',trend:'up'},
@@ -1219,8 +1219,9 @@ const CLIENT_DATA = [
     name:'부경양돈', type:'farm', region:'경남',
     contact:'김덕민 계장',
     items:['ECM','코코시스'],
-    lastVisit:'2026-08-25', lastOrder:'2026-08-25',
+    lastVisit:'2026-08-25', lastOrder:'2026-09-02',
     orders:[
+      {d:'2026-09-02',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-08-25',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-08-18',item:'코코시스',qty:'1,600kg',price:'-'},
       {d:'2026-08-14',item:'ECM',qty:'4,800kg',price:'-'},
@@ -1230,7 +1231,6 @@ const CLIENT_DATA = [
       {d:'2026-07-21',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-07-02',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-06-23',item:'코코시스',qty:'1,600kg',price:'-'},
-      {d:'2026-06-18',item:'ECM',qty:'4,800kg',price:'-'},
     ],
     note:'황산염라이신 입찰 중 (CSF 874원 낙찰, 세인 탈락). 메치오닌 3분기 견적 7,900원 전달.'
   },
@@ -1436,8 +1436,9 @@ const CLIENT_DATA = [
     name:'경북수산', type:'dist', region:'-',
     contact:'-',
     items:['비타민E'],
-    lastVisit:'2026-08-27', lastOrder:'2026-09-01',
+    lastVisit:'2026-09-01', lastOrder:'2026-09-02',
     orders:[
+      {d:'2026-09-02',item:'비타민E',qty:'25kg',price:'18,000원/kg'},
       {d:'2026-09-01',item:'비타민E',qty:'25kg',price:'18,000원/kg'},
     ],
     note:'-'
@@ -1552,6 +1553,8 @@ const CLIENT_DATA = [
 <script>
 const ORDERS=[
   // ===== 9월 =====
+  {d:'2026-09-02',c:'부경양돈',item:'ECM',qty:'4,800kg',price:'-',eta:'9/4(금)',st:'wait'},
+  {d:'2026-09-02',c:'경북수산',item:'비타민E',qty:'25kg',price:'18,000원/kg',eta:'9/4(금)',st:'wait'},
   {d:'2026-09-01',c:'우일축산약품(장안농장)',item:'나노비타믹스',qty:'60kg',price:'8,000원/kg',eta:'9/2(수)',st:'wait'},
   {d:'2026-09-01',c:'경북수산',item:'비타민E',qty:'25kg',price:'18,000원/kg',eta:'9/2(수)',st:'wait'},
   // ===== 8월 =====
@@ -2036,7 +2039,11 @@ const VISITS = [
   {d:'2026-08-27',c:'경북수산',cat:'dist'},
   {d:'2026-08-31',c:'코리아에프앤에프',cat:'dist'},
   {d:'2026-08-31',c:'청도축협',cat:'dist'},
-  {d:'2026-08-31',c:'청도축협 동물병원',cat:'hosp'}
+  {d:'2026-08-31',c:'청도축협 동물병원',cat:'hosp'},
+  {d:'2026-09-01',c:'한려프리믹스',cat:'dist'},
+  {d:'2026-09-01',c:'양산기장TMR',cat:'dist'},
+  {d:'2026-09-01',c:'우일가축약품',cat:'dist'},
+  {d:'2026-09-01',c:'경북수산',cat:'dist'}
 ];
 const HOLIDAYS = [
   {d:'2026-01-01',label:'신정'},
@@ -2147,6 +2154,9 @@ const BID_DATA = [
   {date:'2026-08-14', client:'우성사료', item:'MDCP·메치오닌 입찰(3개월)', qty:'MDCP 월105톤·메치오닌 월70톤', sein_price:'참여', winner:'MDCP-해우 낙찰 1,436원 / 메치오닌-해우 낙찰 5,800원', winner_price:'MDCP 1,436원·메치오닌 5,800원', result:'lost', note:'해우 2품목 낙찰. 세인 탈락. 11월까지 공급 확정'},
   {date:'2026-08-27', client:'디허스코리아', item:'아미노산 4분기 입찰(황산염라이신·트레오닌)', qty:'4품목 중 2품목 결과', sein_price:'참여', winner:'황산염라이신-이앤티 낙찰 900원(은진 910원) / 트레오닌-이앤티 낙찰 1,400원', winner_price:'황라 900원·트레오닌 1,400원', result:'lost', note:'세인 4품목 입찰 참여, 2품목만 결과 확인(나머지 2품목 미정)'},
   {date:'2026-08-28', client:'이지홀딩스 (BK&CO)', item:'인산칼슘 오퍼(DCP·MCP) 10·11월분', qty:'DCP 1,000톤·MCP 980톤', sein_price:'DCP $775·MCP $898', winner:'MCP-운천화 $860 낙찰 / DCP-유찰(가격 폭락)', winner_price:'MCP $860', result:'lost', note:'세인 DCP $775·MCP $898 참여. DCP는 가격 폭락으로 유찰, 일부 MCP로 전환'},
+
+  // ── 2026년 9월 ──
+  {date:'2026-09-01', client:'한국썸벹', item:'비타민 오퍼(BIOTIN·VB6·VE·VAD3)', qty:'BIOTIN 3MT·VB6 1MT', sein_price:'참여', winner:'BIOTIN·VB6-세인 낙찰 / VE-바스프 $8.7 낙찰 / VAD3-아디세오 $19 낙찰', winner_price:'BIOTIN·VB6 세인 낙찰', result:'won', note:'세인 BIOTIN·VB6 낙찰. VE·VAD3는 타사 낙찰'},
 ];
 
 function renderBids(data){
@@ -2496,6 +2506,7 @@ const NEWS_DATA = [
   {id:204,lang:'ko',cat:'policy',src:'머니투데이',date:'2026-09-01',title:'추석 민생대책, 축산물 출하 1.3배 확대·최대 40% 할인',desc:'정부가 1일 국무회의에서 추석 민생안정대책을 발표, 소·돼지·닭고기 도축·출하물량을 평시대비 1.3배 확대(소·돼지 9만톤, 닭고기 1.7만톤). 3~23일 대형·중소형 마트에서 국산 농축산물 최대 40% 할인(한우 최대 50%, 한돈 20% 내외). 한우 도축물량은 사육마릿수 감소 영향으로 평년대비 약 5.9% 줄어들 전망이다.',url:'https://www.mt.co.kr/economy/2026/09/01/2026083115465980186'},
   {id:205,lang:'ko',cat:'feed',src:'머니투데이',date:'2026-09-01',title:'美·이란 충돌 한달만에 재점화…브렌트유 $94.52 급등',desc:'美군이 8월30일 호르무즈 해협 인근 이란 라라크섬의 기뢰 로켓 발사대 2곳을 타격하자 이란이 요르단·UAE 내 미군기지를 미사일·드론으로 보복공격, 한 달 만에 양국 무력충돌이 재개됐다. 브렌트유는 9월1일 전일比 4.5% 급등한 배럴당 $94.52에 거래를 마쳐 사료 등 수입 원자재 원가 상승 압박이 재확대될 전망.',url:'https://www.mt.co.kr/world/2026/09/01/2026090105050977994'},
   {id:206,lang:'ko',cat:'policy',src:'머니투데이',date:'2026-09-01',title:'원·달러 환율 1,370.4원 마감…13개월래 최저 근방서 소폭 반등',desc:'1일 원·달러 환율이 전일比 1.8원 오른 1,370.4원에 마감. 전날(8/31) 13개월만의 최저치(1,368.6원)를 기록한 이후 소폭 반등했으나 여전히 낮은 수준을 유지해 수입 사료원료 조달비용 부담 완화 흐름이 이어지고 있다.',url:'https://www.mt.co.kr/economy/2026/09/01/2026090115354040115'},
+  {id:207,lang:'ko',cat:'policy',src:'머니투데이',date:'2026-09-02',title:'8월 축산물 물가 상승률 1.5%로 둔화…한우는 강세',desc:'8월 축산물 소비자물가 상승률이 6월 6.2%·7월 4.4%에서 1.5%로 둔화됐다. 계란은 산지가격이 생산량 회복으로 하락 전환했으나 한우 1등급은 100g당 10,221원으로 전년比 7.1% 올라 강세를 유지했다. 사육마릿수·도축가능물량 감소에 미국 등 수출국 생산량 감소, 고환율까지 겹친 영향으로 풀이된다.',url:'https://www.mt.co.kr/economy/2026/09/02/2026090209434356986'},
 ];
 
 let _newsCat = 'all';
