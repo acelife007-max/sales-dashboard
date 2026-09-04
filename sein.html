@@ -908,12 +908,12 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-09-03 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-09-04 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'1,010',unit:'$/톤 · CHANHEN',color:'blue',badge:'▼ $1,065→$1,010',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'1,050',unit:'$/톤 · CHANHEN(200톤,ETA 8/12)',color:'blue',badge:'▲ $995→$1,050',trend:'up'},
     {cat:'인산칼슘',person:'김선이',name:'MDCP',price:'825',unit:'$/톤 · CHANHEN',color:'cyan',badge:'▼ $900→$825',trend:'dn'},
-    {cat:'인산칼슘',person:'김선이',name:'TCP 참고',price:'628',unit:'$/톤 · hengchang 네고',color:'muted',badge:'▼ $650→$628',trend:'dn'},
+    {cat:'인산칼슘',person:'김선이',name:'TCP 참고',price:'620',unit:'$/톤 · SUNCHEM hengchang 견적',color:'muted',badge:'▼ $628→$620',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'DCP 참고',price:'795',unit:'$/톤 · Xinlin CIF부산(그래뉼)',color:'muted',badge:'▲ $535→$795',trend:'up'},
     {cat:'아미노산/보호지방',person:'왕려원',name:'발린 (Valine)',price:'1,365',unit:'$/톤 · Meihua 통관완료',color:'red',badge:'▼ $1,445→$1,365',trend:'dn'},
     {cat:'아미노산/보호지방',person:'왕려원',name:'메가풋 지대',price:'1,142',unit:'$/톤 · Green nature',color:'amber',badge:'▲ LC개설',trend:'up'},
@@ -931,6 +931,7 @@ table.tbl tr:hover td{background:#1C2128}
     {cat:'비타민',person:'성유진',name:'VC97%',price:'3.2',unit:'$/kg · 비타민시황(10MT)',color:'purple',badge:'▲ $3.1→$3.2',trend:'up'},
   ];
   const PRICE_HISTORY = [
+    {item:'TCP 참고 (SUNCHEM hengchang)',prev:'$628/톤',latest:'$620/톤',trend:'dn',label:'▼ $628→$620'},
     {item:'발린 (Valine, Meihua)',prev:'$1,445/톤',latest:'$1,365/톤',trend:'dn',label:'▼ $1,445→$1,365'},
     {item:'MDCP (CHANHEN)',prev:'$900/톤(ALCHEM)',latest:'$825/톤',trend:'dn',label:'▼ $900→$825'},
     {item:'MCP 소포장 (CHANHEN)',prev:'$1,065/톤',latest:'$1,010/톤',trend:'dn',label:'▼ $1,065→$1,010'},
@@ -1266,7 +1267,7 @@ const CLIENT_DATA = [
     name:'코리아에프앤에프', type:'dist', region:'경남',
     contact:'구본석 차장',
     items:['대두박','MCP 소포장'],
-    lastVisit:'2026-09-02', lastOrder:'2026-09-03',
+    lastVisit:'2026-09-03', lastOrder:'2026-09-03',
     orders:[
       {d:'2026-09-03',item:'대두박',qty:'25,000kg',price:'700원'},
       {d:'2026-08-26',item:'MCP 소포장',qty:'1,000kg',price:'1,900원'},
@@ -2050,6 +2051,9 @@ const VISITS = [
   {d:'2026-09-02',c:'코리아에프앤에프',cat:'dist'},
   {d:'2026-09-02',c:'경북수산',cat:'dist'},
   {d:'2026-09-02',c:'부경양돈',cat:'farm'},
+  {d:'2026-09-03',c:'서라벌 목우회',cat:'dist'},
+  {d:'2026-09-03',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-09-03',c:'지정낙우회',cat:'dist'},
 ];
 const HOLIDAYS = [
   {d:'2026-01-01',label:'신정'},
@@ -2163,6 +2167,7 @@ const BID_DATA = [
 
   // ── 2026년 9월 ──
   {date:'2026-09-01', client:'한국썸벹', item:'비타민 오퍼(BIOTIN·VB6·VE·VAD3)', qty:'BIOTIN 3MT·VB6 1MT', sein_price:'참여', winner:'BIOTIN·VB6-세인 낙찰 / VE-바스프 $8.7 낙찰 / VAD3-아디세오 $19 낙찰', winner_price:'BIOTIN·VB6 세인 낙찰', result:'won', note:'세인 BIOTIN·VB6 낙찰. VE·VAD3는 타사 낙찰'},
+  {date:'2026-09-03', client:'부산바이오', item:'4분기 비타민 오퍼(VAD3·VB6·바이오틴·VE)', qty:'4품목', sein_price:'VE $9.5', winner:'VAD3·VB6·바이오틴-세인 낙찰 / VE-베이샤 $8.7 낙찰', winner_price:'VE $8.7', result:'won', note:'세인 VAD3·VB6·바이오틴 3품목 낙찰. VE는 베이샤 $8.7 낙찰(세인 $9.5)'},
 ];
 
 function renderBids(data){
@@ -2517,6 +2522,8 @@ const NEWS_DATA = [
   {id:209,lang:'ko',cat:'policy',src:'축산신문',date:'2026-09-01',title:'농특위, 사료비 절감·가축분뇨 등 축산 제도개선 착수',desc:'농어업·농어촌특별위원회 김호 위원장, 취임 1주년 기자간담회에서 사료비 절감과 가축분뇨 처리, 동물복지 등 축산분야 전반에 걸친 제도개선 방안을 논의 중이라고 밝혀. 사료안정화기금 신설 등 방안도 검토 대상에 포함.',url:'https://www.chuksannews.co.kr/news/article.html?no=273364'},
   {id:210,lang:'ko',cat:'policy',src:'머니투데이',date:'2026-09-03',title:'원·달러 환율 1,359.3원 마감…14개월만에 1,350원대 진입',desc:'3일 원·달러 환율이 전일比 9.4원 내린 1,359.3원에 마감, 작년 7월 이후 약 14개월 만에 1,350원대로 내려섰다. 수출기업의 상시 달러매도 물량에 BOJ 금리인상 기대에 따른 엔화 강세, 美 8월 ADP 민간고용 부진(3.8만명, 예상 4.7만명 하회)에 따른 달러 약세까지 겹치며 수입 사료원료 조달비용 부담 완화 기대가 커지고 있다.',url:'https://www.mt.co.kr/economy/2026/09/03/2026090315353672880'},
   {id:211,lang:'ko',cat:'feed',src:'이투데이',date:'2026-09-03',title:'국제유가 혼조 마감…브렌트 $95.52·WTI $91.30',desc:'3일(현지시간) 브렌트유는 전일比 0.12%(0.11달러) 내린 배럴당 $95.52, WTI는 0.32%(0.29달러) 오른 $91.30에 마감. 美·이란 군사긴장 고조로 중동 공급차질 우려가 지속됐으나 푸틴 러시아 대통령의 우크라이나 평화협상 가능성 시사로 상승폭이 제한되며 사료 등 수입 원자재 원가 상승 압박이 다소 진정되는 모습.',url:'https://www.etoday.co.kr/news/view/2621756'},
+  {id:212,lang:'ko',cat:'policy',src:'머니투데이',date:'2026-09-04',title:'원·달러 환율 1,350.4원…14개월만에 1340원대 진입',desc:'4일 오후 3시30분 기준 원·달러 환율이 전일比 8.9원 내린 1,350.4원을 기록, 장중 한때 1340원대까지 진입해 작년 7월 이후 약 14개월 만에 최저권을 나타냈다. 美 금리인상 기대 약화와 엔화 강세, 수출업체 달러 매도가 겹치며 하락세가 이어져 수입 사료원료 조달비용 부담 완화 흐름이 계속되고 있다.',url:'https://www.mt.co.kr/economy/2026/09/04/2026090415342187051'},
+  {id:213,lang:'ko',cat:'feed',src:'이투데이',date:'2026-09-04',title:'국제유가 중동 공급차질 우려에 상승…브렌트 $96.28',desc:'4일(현지시간) WTI는 전일比 0.20%(0.18달러) 오른 배럴당 $91.48, 브렌트유는 0.80%(0.76달러) 오른 $96.28에 마감. 美·이란 군사충돌 재개로 중동 원유 공급차질 우려가 재확대되며 주간기준 브렌트 약 8%·WTI 약 10% 상승해 7월 중순 이후 최대 주간 상승폭을 기록, 사료 등 수입 원자재 원가 상승압박이 커지고 있다.',url:'https://www.etoday.co.kr/news/view/2622169'},
 ];
 
 let _newsCat = 'all';
