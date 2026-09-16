@@ -908,10 +908,10 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-09-13 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-09-16 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'1,010',unit:'$/톤 · CHANHEN',color:'blue',badge:'▼ $1,065→$1,010',trend:'dn'},
-    {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'1,050',unit:'$/톤 · CHANHEN(200톤,ETA 8/12)',color:'blue',badge:'▲ $995→$1,050',trend:'up'},
+    {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'840',unit:'$/톤 · CHANHEN(300톤,계약확정)',color:'blue',badge:'▼ $1,050→$840',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'MDCP',price:'825',unit:'$/톤 · CHANHEN',color:'cyan',badge:'▼ $900→$825',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'TCP 참고',price:'620',unit:'$/톤 · SUNCHEM hengchang 견적',color:'muted',badge:'▼ $628→$620',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'DCP 참고',price:'795',unit:'$/톤 · Xinlin CIF부산(그래뉼)',color:'muted',badge:'▲ $535→$795',trend:'up'},
@@ -931,6 +931,7 @@ table.tbl tr:hover td{background:#1C2128}
     {cat:'비타민',person:'성유진',name:'VC97%',price:'3.2',unit:'$/kg · 비타민시황(10MT)',color:'purple',badge:'▲ $3.1→$3.2',trend:'up'},
   ];
   const PRICE_HISTORY = [
+    {item:'MCP 톤백과립 (CHANHEN)',prev:'$1,050/톤',latest:'$840/톤',trend:'dn',label:'▼ $1,050→$840'},
     {item:'TCP 참고 (SUNCHEM hengchang)',prev:'$628/톤',latest:'$620/톤',trend:'dn',label:'▼ $628→$620'},
     {item:'발린 (Valine, Meihua)',prev:'$1,445/톤',latest:'$1,365/톤',trend:'dn',label:'▼ $1,445→$1,365'},
     {item:'MDCP (CHANHEN)',prev:'$900/톤(ALCHEM)',latest:'$825/톤',trend:'dn',label:'▼ $900→$825'},
@@ -1220,8 +1221,9 @@ const CLIENT_DATA = [
     name:'부경양돈', type:'farm', region:'경남',
     contact:'김덕민 계장',
     items:['ECM','코코시스'],
-    lastVisit:'2026-08-25', lastOrder:'2026-09-02',
+    lastVisit:'2026-09-15', lastOrder:'2026-09-15',
     orders:[
+      {d:'2026-09-15',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-09-02',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-08-25',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-08-18',item:'코코시스',qty:'1,600kg',price:'-'},
@@ -1231,7 +1233,6 @@ const CLIENT_DATA = [
       {d:'2026-07-24',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-07-21',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-07-02',item:'ECM',qty:'4,800kg',price:'-'},
-      {d:'2026-06-23',item:'코코시스',qty:'1,600kg',price:'-'},
     ],
     note:'황산염라이신 입찰 중 (CSF 874원 낙찰, 세인 탈락). 메치오닌 3분기 견적 7,900원 전달.'
   },
@@ -1251,8 +1252,9 @@ const CLIENT_DATA = [
     name:'오앤티', type:'dist', region:'경남',
     contact:'공제우 부장',
     items:['염산염라이신','메치오닌'],
-    lastVisit:'2026-09-10', lastOrder:'2026-05-19',
+    lastVisit:'2026-09-15', lastOrder:'2026-09-16',
     orders:[
+      {d:'2026-09-16',item:'염산염라이신',qty:'7,000kg',price:'1,500원'},
       {d:'2026-05-19',item:'염산염라이신',qty:'8,000kg',price:'1,800원/kg'},
       {d:'2026-04-16',item:'염산염라이신',qty:'10,000kg',price:'1,600원/kg'},
       {d:'2026-04-16',item:'메치오닌',qty:'3,000kg',price:'6,000원/kg'},
@@ -1267,8 +1269,9 @@ const CLIENT_DATA = [
     name:'코리아에프앤에프', type:'dist', region:'경남',
     contact:'구본석 차장',
     items:['대두박','MCP 소포장'],
-    lastVisit:'2026-09-04', lastOrder:'2026-09-07',
+    lastVisit:'2026-09-15', lastOrder:'2026-09-15',
     orders:[
+      {d:'2026-09-15',item:'대두박',qty:'25,000kg',price:'-'},
       {d:'2026-09-07',item:'대두박',qty:'25,000kg',price:'700원'},
       {d:'2026-09-03',item:'대두박',qty:'25,000kg',price:'700원'},
       {d:'2026-08-26',item:'MCP 소포장',qty:'1,000kg',price:'1,900원'},
@@ -1278,7 +1281,6 @@ const CLIENT_DATA = [
       {d:'2026-06-05',item:'대두박',qty:'25,000kg',price:'680원/kg'},
       {d:'2026-05-28',item:'대두박',qty:'25,000kg',price:'665원/kg'},
       {d:'2026-05-21',item:'대두박',qty:'25,000kg',price:'665원/kg'},
-      {d:'2026-05-11',item:'MCP 소포장',qty:'1,000kg',price:'1,720원/kg'},
     ],
     note:'대두박 매월 25톤 정기 발주처. 인산칼슘 시황 관심. 7월 단가 MCP 1,790원 적용 중.'
   },
@@ -1352,8 +1354,9 @@ const CLIENT_DATA = [
     name:'구교환 대표', type:'farm', region:'-',
     contact:'-',
     items:['설사72'],
-    lastVisit:'2026-08-03', lastOrder:'2026-07-24',
+    lastVisit:'2026-09-15', lastOrder:'2026-09-15',
     orders:[
+      {d:'2026-09-15',item:'설사72',qty:'2box',price:'10,000원/kg'},
       {d:'2026-07-24',item:'설사72',qty:'2box',price:'10,000원/kg'},
     ],
     note:'-'
@@ -1440,8 +1443,9 @@ const CLIENT_DATA = [
     name:'경북수산', type:'dist', region:'-',
     contact:'-',
     items:['비타민E'],
-    lastVisit:'2026-09-01', lastOrder:'2026-09-02',
+    lastVisit:'2026-09-15', lastOrder:'2026-09-15',
     orders:[
+      {d:'2026-09-15',item:'비타민E',qty:'1포',price:'18,000원/kg'},
       {d:'2026-09-02',item:'비타민E',qty:'25kg',price:'18,000원/kg'},
       {d:'2026-09-01',item:'비타민E',qty:'25kg',price:'18,000원/kg'},
     ],
@@ -1587,6 +1591,11 @@ const CLIENT_DATA = [
 <script>
 const ORDERS=[
   // ===== 9월 =====
+  {d:'2026-09-16',c:'오앤티',item:'염산염라이신',qty:'7,000kg',price:'1,500원',eta:'9/22(화)',st:'wait'},
+  {d:'2026-09-15',c:'코리아에프앤에프',item:'대두박',qty:'25,000kg',price:'-',eta:'9/18(금)',st:'wait'},
+  {d:'2026-09-15',c:'구교환 대표',item:'설사72',qty:'2box',price:'10,000원/kg',eta:'9/16(수)',st:'wait'},
+  {d:'2026-09-15',c:'부경양돈',item:'ECM',qty:'4,800kg',price:'-',eta:'9/17(목)',st:'wait'},
+  {d:'2026-09-15',c:'경북수산',item:'비타민E',qty:'1포',price:'18,000원/kg',eta:'9/16(수)',st:'wait'},
   {d:'2026-09-10',c:'이한섭 대표',item:'이지스타터',qty:'3포',price:'4,000원/kg',eta:'9/11(금)',st:'wait'},
   {d:'2026-09-09',c:'시현축산',item:'비테인',qty:'1,000kg',price:'무상제공',eta:'9/10(목)',st:'wait'},
   {d:'2026-09-09',c:'시현축산',item:'황산염라이신',qty:'1,000kg',price:'1,200원',eta:'9/10(목)',st:'wait'},
@@ -2113,6 +2122,15 @@ const VISITS = [
   {d:'2026-09-10',c:'뉴욕드아쿠아',cat:'dist'},
   {d:'2026-09-10',c:'이한섭 대표',cat:'farm'},
   {d:'2026-09-10',c:'백제약품',cat:'dist'},
+  {d:'2026-09-14',c:'사료BU 영업회의',cat:'special'},
+  {d:'2026-09-14',c:'뉴트리신 회의',cat:'special'},
+  {d:'2026-09-14',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-09-15',c:'오앤티',cat:'dist'},
+  {d:'2026-09-15',c:'부경양돈',cat:'farm'},
+  {d:'2026-09-15',c:'합천돼지자가',cat:'farm'},
+  {d:'2026-09-15',c:'경북수산',cat:'dist'},
+  {d:'2026-09-15',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-09-15',c:'구교환 대표',cat:'farm'},
 ];
 const HOLIDAYS = [
   {d:'2026-01-01',label:'신정'},
@@ -2231,6 +2249,7 @@ const BID_DATA = [
   {date:'2026-09-09', client:'부산바이오', item:'4분기 메치오닌 입찰(액상)', qty:'-', sein_price:'-', winner:'엘에스씨(HEBANG) 낙찰', winner_price:'-', result:'lost', note:'세인(피드바이오텍/NHU) 2위, 아디코(아디세오) 3위'},
   {date:'2026-09-09', client:'농협사료', item:'TCP 입찰', qty:'6개월·5개업체 참여', sein_price:'-', winner:'세계로케미칼 낙찰 888원', winner_price:'888원', result:'lost', note:'5개업체 경쟁, 세계로케미칼 888원 낙찰'},
   {date:'2026-09-14', client:'나람사료', item:'아미노산 4품목(황산염라이신·트레오닌·트립토판·발린) 4분기', qty:'4분기', sein_price:'발린 2,350원 참여', winner:'황산염라이신-해우 낙찰 907원 / 트레오닌-한울 낙찰 1,490원 / 트립토판-이앤티 낙찰 / 발린-더에스앤엘 낙찰', winner_price:'황라 907원·트레오닌 1,490원', result:'lost', note:'세인 발린 2,350원 참여, 4품목 전부 탈락(해우·한울·이앤티·더에스앤엘 낙찰)'},
+  {date:'2026-09-16', client:'에이티면역', item:'아미노산 4분기 입찰(염산염라이신·발린·트레오닌·황산염라이신)', qty:'4분기', sein_price:'-', winner:'염산염라이신·발린·트레오닌-아이넷피드 낙찰 / 황산염라이신-은진바이오 890원 낙찰', winner_price:'황산염라이신 890원', result:'lost', note:'세인 참여여부 불명확. 메치오닌은 CJ 5,600원·세인 4,640원 품질검토 후 낙찰업체 미정(별도 확인 필요)'},
 ];
 
 function renderBids(data){
@@ -2614,6 +2633,8 @@ const NEWS_DATA = [
   {id:238,lang:'ko',cat:'policy',src:'에너지경제',date:'2026-09-14',title:'정부, 원유 수급 긴급 점검…사우디 송유관 피격에 우회항로 대응',desc:'산업통상부가 호르무즈·홍해 긴장 고조와 사우디 동서송유관 피격에 따라 원유 수급상황 긴급 점검회의를 열었다. 9~10월 도입 물량은 전년대비 90% 이상 확보해 단기 영향은 제한적이나 수에즈운하 등 우회항로 전환을 지원할 방침이다.',url:'https://www.energy-news.co.kr/news/articleView.html?idxno=228139'},
   {id:239,lang:'ko',cat:'feed',src:'파이낸셜뉴스',date:'2026-09-15',title:'사우디 송유관 정지 여파 지속…브렌트유 105달러대 마감',desc:'11일 드론 공격으로 가동 중단된 사우디 동서송유관(호르무즈 우회, 최대 하루 700만배럴) 여파로 15일 브렌트유 11월물이 전일比 1.02% 오른 $105.68, WTI 10월물도 1.34% 오른 $101.39에 마감. 장중 한때 5%까지 급등했으나 트럼프 대통령의 이란측 협상 의지 발언에 상승폭이 줄어들며 사료 등 수입 원자재 원가 상승압박이 이어지고 있다.',url:'https://www.fnnews.com/news/202609150542046062'},
   {id:240,lang:'ko',cat:'policy',src:'머니투데이',date:'2026-09-15',title:'원·달러 환율 1,359.4원…중동발 유가급등에 12.1원 반등',desc:'15일 원·달러 환율이 전 거래일 주간종가比 12.1원 오른 1,359.4원에 마감. 국제유가 상승에 따른 인플레이션 우려로 美 10년물 국채금리가 5%를 넘어서고 Fed 금리인상 경계감까지 확대되며 달러 강세가 나타나, 수입 사료원료 조달비용 부담 확대 우려가 커지고 있다.',url:'https://www.mt.co.kr/economy/2026/09/15/2026091515343525913'},
+  {id:241,lang:'ko',cat:'policy',src:'머니투데이',date:'2026-09-16',title:'원·달러 환율 1,368.6원 마감…2주만에 1360원대 재진입',desc:'16일 원·달러 환율이 전일 종가比 9.2원(0.67%) 오른 1,368.6원에 마감, 지난 2일(1,368.7원) 이후 2주 만에 1360원대로 올라섰다. 美 국채금리 5%대 재진입과 국제유가 강세에 따른 달러 강세, 외국인 증시 매도세와 은행권 달러 매수세 확대가 겹치며 수입 사료원료 조달비용 부담 확대 우려가 다시 커지고 있다.',url:'https://www.mt.co.kr/economy/2026/09/16/2026091615364097346'},
+  {id:242,lang:'ko',cat:'feed',src:'아이뉴스24',date:'2026-09-16',title:'사우디 우회공급 소식에 브렌트유 2.69%↓ 105.83달러',desc:'16일(현지시간) 브렌트유 11월물이 전장比 2.69% 내린 배럴당 105.83달러에 마감했다. 11일 드론 공격으로 가동 중단된 사우디 송유관 여파로 한때 109달러 육박까지 치솟았으나, 아람코가 오만 소하르항 해상 환적 등 대체 공급로를 아시아 고객사에 제안하며 시장 불안이 다소 진정됐다.',url:'https://m.inews24.com/v/2006494'},
 ];
 
 let _newsCat = 'all';
