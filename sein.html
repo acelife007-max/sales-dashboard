@@ -908,13 +908,13 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-09-21 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-09-22 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'1,010',unit:'$/톤 · CHANHEN',color:'blue',badge:'▼ $1,065→$1,010',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'840',unit:'$/톤 · CHANHEN(300톤,계약확정)',color:'blue',badge:'▼ $1,050→$840',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'MDCP',price:'825',unit:'$/톤 · CHANHEN',color:'cyan',badge:'▼ $900→$825',trend:'dn'},
-    {cat:'인산칼슘',person:'김선이',name:'TCP 참고',price:'620',unit:'$/톤 · SUNCHEM hengchang 견적',color:'muted',badge:'▼ $628→$620',trend:'dn'},
-    {cat:'인산칼슘',person:'김선이',name:'DCP 참고',price:'795',unit:'$/톤 · Xinlin CIF부산(그래뉼)',color:'muted',badge:'▲ $535→$795',trend:'up'},
+    {cat:'인산칼슘',person:'김선이',name:'TCP 참고',price:'630',unit:'$/톤 · SUNCHEM hengchang 견적',color:'muted',badge:'▲ $620→$630',trend:'up'},
+    {cat:'인산칼슘',person:'김선이',name:'DCP 참고',price:'715',unit:'$/톤 · Xinlin CIF부산(그래뉼)',color:'muted',badge:'▼ $795→$715',trend:'dn'},
     {cat:'아미노산/보호지방',person:'왕려원',name:'발린 (Valine)',price:'1,365',unit:'$/톤 · Meihua 통관완료',color:'red',badge:'▼ $1,445→$1,365',trend:'dn'},
     {cat:'아미노산/보호지방',person:'왕려원',name:'메가풋 지대',price:'1,142',unit:'$/톤 · Green nature',color:'amber',badge:'▲ LC개설',trend:'up'},
     {cat:'아미노산/보호지방',person:'왕려원',name:'라이신황산염 톤백',price:'570',unit:'$/톤 · UNION',color:'blue',badge:'▲ $550→$570',trend:'up'},
@@ -931,6 +931,8 @@ table.tbl tr:hover td{background:#1C2128}
     {cat:'비타민',person:'성유진',name:'VC97%',price:'3.2',unit:'$/kg · 비타민시황(10MT)',color:'purple',badge:'▲ $3.1→$3.2',trend:'up'},
   ];
   const PRICE_HISTORY = [
+    {item:'DCP 참고 (Xinlin)',prev:'$795/톤',latest:'$715/톤',trend:'dn',label:'▼ $795→$715'},
+    {item:'TCP 참고 (hengchang)',prev:'$620/톤',latest:'$630/톤',trend:'up',label:'▲ $620→$630'},
     {item:'MCP 톤백과립 (CHANHEN)',prev:'$1,050/톤',latest:'$840/톤',trend:'dn',label:'▼ $1,050→$840'},
     {item:'TCP 참고 (SUNCHEM hengchang)',prev:'$628/톤',latest:'$620/톤',trend:'dn',label:'▼ $628→$620'},
     {item:'발린 (Valine, Meihua)',prev:'$1,445/톤',latest:'$1,365/톤',trend:'dn',label:'▼ $1,445→$1,365'},
@@ -1221,7 +1223,7 @@ const CLIENT_DATA = [
     name:'부경양돈', type:'farm', region:'경남',
     contact:'김덕민 계장',
     items:['ECM','코코시스'],
-    lastVisit:'2026-09-17', lastOrder:'2026-09-15',
+    lastVisit:'2026-09-21', lastOrder:'2026-09-15',
     orders:[
       {d:'2026-09-15',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-09-02',item:'ECM',qty:'4,800kg',price:'-'},
@@ -1288,7 +1290,7 @@ const CLIENT_DATA = [
     name:'합천돼지자가', type:'farm', region:'경남',
     contact:'-',
     items:['DCP','염화콜린'],
-    lastVisit:'2026-08-05', lastOrder:'2026-04-27',
+    lastVisit:'2026-09-21', lastOrder:'2026-04-27',
     orders:[
       {d:'2026-04-27',item:'DCP',qty:'27,000kg',price:'-'},
       {d:'2026-03-25',item:'염화콜린',qty:'2,000kg',price:'-'},
@@ -1401,7 +1403,7 @@ const CLIENT_DATA = [
     name:'영광축산', type:'farm', region:'-',
     contact:'-',
     items:['나노비타믹스E','장프로'],
-    lastVisit:'2026-07-01', lastOrder:'2026-08-07',
+    lastVisit:'2026-09-21', lastOrder:'2026-08-07',
     orders:[
       {d:'2026-08-07',item:'나노비타믹스E',qty:'1박스',price:'10,000원/kg'},
       {d:'2026-08-07',item:'장프로',qty:'1박스',price:'25,000원/kg'},
@@ -1485,7 +1487,7 @@ const CLIENT_DATA = [
     name:'부산사료', type:'dist', region:'-',
     contact:'-',
     items:['하이풋','하이핏'],
-    lastVisit:'2026-09-08', lastOrder:'2026-09-21',
+    lastVisit:'2026-09-21', lastOrder:'2026-09-21',
     orders:[
       {d:'2026-09-21',item:'하이핏',qty:'2,000kg',price:'2,500원/kg'},
       {d:'2026-05-26',item:'하이풋',qty:'4,000kg',price:'2,500원/kg'},
@@ -1499,7 +1501,7 @@ const CLIENT_DATA = [
     name:'장유수산', type:'dist', region:'-',
     contact:'이무열 대표',
     items:['비타민C 35%·비타민E 50%','비타민35%'],
-    lastVisit:'2026-09-18', lastOrder:'2026-09-21',
+    lastVisit:'2026-09-21', lastOrder:'2026-09-21',
     orders:[
       {d:'2026-09-21',item:'비타민35%',qty:'1,000kg',price:'4,000원'},
       {d:'2026-01-13',item:'비타민C 35%·비타민E 50%',qty:'비타C 1,000kg·비타E 500kg',price:'비타C 3,300원·비타E 13,000원/kg'},
@@ -2180,6 +2182,12 @@ const VISITS = [
   {d:'2026-09-18',c:'장유수산',cat:'dist'},
   {d:'2026-09-18',c:'오케이',cat:'dist'},
   {d:'2026-09-18',c:'통일동물병원',cat:'hosp'},
+  {d:'2026-09-21',c:'합천돼지자가',cat:'farm'},
+  {d:'2026-09-21',c:'영광축산',cat:'farm'},
+  {d:'2026-09-21',c:'만포축산',cat:'farm'},
+  {d:'2026-09-21',c:'장유수산',cat:'dist'},
+  {d:'2026-09-21',c:'부산사료',cat:'dist'},
+  {d:'2026-09-21',c:'부경양돈',cat:'farm'},
 ];
 const HOLIDAYS = [
   {d:'2026-01-01',label:'신정'},
@@ -2300,6 +2308,8 @@ const BID_DATA = [
   {date:'2026-09-14', client:'나람사료', item:'아미노산 4품목(황산염라이신·트레오닌·트립토판·발린) 4분기', qty:'4분기', sein_price:'발린 2,350원 참여', winner:'황산염라이신-해우 낙찰 907원 / 트레오닌-한울 낙찰 1,490원 / 트립토판-이앤티 낙찰 / 발린-더에스앤엘 낙찰', winner_price:'황라 907원·트레오닌 1,490원', result:'lost', note:'세인 발린 2,350원 참여, 4품목 전부 탈락(해우·한울·이앤티·더에스앤엘 낙찰)'},
   {date:'2026-09-16', client:'에이티면역', item:'아미노산 4분기 입찰(염산염라이신·발린·트레오닌·황산염라이신)', qty:'4분기', sein_price:'-', winner:'염산염라이신·발린·트레오닌-아이넷피드 낙찰 / 황산염라이신-은진바이오 890원 낙찰', winner_price:'황산염라이신 890원', result:'lost', note:'세인 참여여부 불명확. 메치오닌은 CJ 5,600원·세인 4,640원 품질검토 후 낙찰업체 미정(별도 확인 필요)'},
   {date:'2026-09-21', client:'체리부로', item:'아미노산 등 원료 4분기 입찰(메치오닌·황산염라이신·트레오닌·트립토판10%·DDGS)', qty:'복수품목(3개월)', sein_price:'메치오닌 4,440원', winner:'메치오닌-세인 낙찰 4,440원(2위 매트리얼 4,470원) / 황산염라이신-아크로·이앤티 이원화 970원 / 트레오닌-더키움바이오 낙찰 / 트립토판10%-아크로 낙찰 / DDGS-아크로 낙찰 418원', winner_price:'메치오닌 4,440원', result:'won', note:'메치오닌만 세인 낙찰. 나머지 4품목은 아크로·이앤티·더키움바이오 낙찰'},
+  {date:'2026-09-22', client:'우성사료(경산공장)', item:'황산염라이신 4분기', qty:'-', sein_price:'-', winner:'해우 낙찰 898원', winner_price:'898원', result:'lost', note:'해우(경쟁사) 낙찰 정보 공유. 세인 참여여부 불명확'},
+  {date:'2026-09-22', client:'한국썸벹', item:'비타민 오퍼(VB6·Biotin)', qty:'VB6 8T·Biotin 20T', sein_price:'VB6 $12·Biotin $3.2', winner:'세인 낙찰(6개월 장기계약)', winner_price:'VB6 $12·Biotin $3.2', result:'won', note:'VAD3 유럽산 일부구매·VE Pass(하락세)'},
 ];
 
 function renderBids(data){
