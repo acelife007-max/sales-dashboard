@@ -908,7 +908,7 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-09-27 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-09-28 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'1,010',unit:'$/톤 · CHANHEN',color:'blue',badge:'▼ $1,065→$1,010',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'840',unit:'$/톤 · CHANHEN(300톤,계약확정)',color:'blue',badge:'▼ $1,050→$840',trend:'dn'},
@@ -1223,8 +1223,9 @@ const CLIENT_DATA = [
     name:'부경양돈', type:'farm', region:'경남',
     contact:'김덕민 계장',
     items:['ECM','코코시스'],
-    lastVisit:'2026-09-21', lastOrder:'2026-09-15',
+    lastVisit:'2026-09-22', lastOrder:'2026-09-28',
     orders:[
+      {d:'2026-09-28',item:'ECM',qty:'6,000kg',price:'-'},
       {d:'2026-09-15',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-09-02',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-08-25',item:'ECM',qty:'4,800kg',price:'-'},
@@ -1234,7 +1235,6 @@ const CLIENT_DATA = [
       {d:'2026-08-05',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-07-24',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-07-21',item:'ECM',qty:'4,800kg',price:'-'},
-      {d:'2026-07-02',item:'ECM',qty:'4,800kg',price:'-'},
     ],
     note:'황산염라이신 입찰 중 (CSF 874원 낙찰, 세인 탈락). 메치오닌 3분기 견적 7,900원 전달.'
   },
@@ -1271,7 +1271,7 @@ const CLIENT_DATA = [
     name:'코리아에프앤에프', type:'dist', region:'경남',
     contact:'구본석 차장',
     items:['대두박','MCP 소포장'],
-    lastVisit:'2026-09-17', lastOrder:'2026-09-23',
+    lastVisit:'2026-09-23', lastOrder:'2026-09-23',
     orders:[
       {d:'2026-09-23',item:'MCP 소포장',qty:'1,000kg',price:'1,780원'},
       {d:'2026-09-17',item:'대두박',qty:'25,000kg',price:'-'},
@@ -1500,7 +1500,7 @@ const CLIENT_DATA = [
     name:'장유수산', type:'dist', region:'-',
     contact:'이무열 대표',
     items:['비타민C 35%·비타민E 50%','비타민35%'],
-    lastVisit:'2026-09-21', lastOrder:'2026-09-21',
+    lastVisit:'2026-09-23', lastOrder:'2026-09-21',
     orders:[
       {d:'2026-09-21',item:'비타민35%',qty:'1,000kg',price:'4,000원'},
       {d:'2026-01-13',item:'비타민C 35%·비타민E 50%',qty:'비타C 1,000kg·비타E 500kg',price:'비타C 3,300원·비타E 13,000원/kg'},
@@ -1627,6 +1627,7 @@ const CLIENT_DATA = [
 <script>
 const ORDERS=[
   // ===== 9월 =====
+  {d:'2026-09-28',c:'부경양돈',item:'ECM',qty:'6,000kg',price:'-',eta:'9/29(화)',st:'wait'},
   {d:'2026-09-23',c:'코리아에프앤에프',item:'MCP 소포장',qty:'1,000kg',price:'1,780원',eta:'10/1(목)',st:'wait'},
   {d:'2026-09-21',c:'부산사료',item:'하이핏',qty:'2,000kg',price:'2,500원/kg',eta:'9/28(월)',st:'wait'},
   {d:'2026-09-21',c:'장유수산',item:'비타민35%',qty:'1,000kg',price:'4,000원',eta:'9/22(화)',st:'wait'},
@@ -2188,6 +2189,10 @@ const VISITS = [
   {d:'2026-09-21',c:'장유수산',cat:'dist'},
   {d:'2026-09-21',c:'부산사료',cat:'dist'},
   {d:'2026-09-21',c:'부경양돈',cat:'farm'},
+  {d:'2026-09-22',c:'부경양돈',cat:'farm'},
+  {d:'2026-09-23',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-09-23',c:'장유수산',cat:'dist'},
+  {d:'2026-09-23',c:'고려산업',cat:'dist'},
 ];
 const HOLIDAYS = [
   {d:'2026-01-01',label:'신정'},
