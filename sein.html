@@ -908,7 +908,7 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-10-11 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-10-12 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'1,010',unit:'$/톤 · CHANHEN',color:'blue',badge:'▼ $1,065→$1,010',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'840',unit:'$/톤 · CHANHEN(300톤,계약확정)',color:'blue',badge:'▼ $1,050→$840',trend:'dn'},
@@ -1257,8 +1257,9 @@ const CLIENT_DATA = [
     name:'오앤티', type:'dist', region:'경남',
     contact:'공제우 부장',
     items:['염산염라이신','메치오닌'],
-    lastVisit:'2026-09-16', lastOrder:'2026-09-16',
+    lastVisit:'2026-09-16', lastOrder:'2026-10-12',
     orders:[
+      {d:'2026-10-12',item:'염산염라이신',qty:'4,000kg',price:'1,500원'},
       {d:'2026-09-16',item:'염산염라이신',qty:'7,000kg',price:'1,500원'},
       {d:'2026-05-19',item:'염산염라이신',qty:'8,000kg',price:'1,800원/kg'},
       {d:'2026-04-16',item:'염산염라이신',qty:'10,000kg',price:'1,600원/kg'},
@@ -1274,8 +1275,9 @@ const CLIENT_DATA = [
     name:'코리아에프앤에프', type:'dist', region:'경남',
     contact:'구본석 차장',
     items:['대두박','MCP 소포장'],
-    lastVisit:'2026-10-02', lastOrder:'2026-10-06',
+    lastVisit:'2026-10-06', lastOrder:'2026-10-12',
     orders:[
+      {d:'2026-10-12',item:'대두박',qty:'25,000kg',price:'-'},
       {d:'2026-10-06',item:'대두박',qty:'25,000kg',price:'-'},
       {d:'2026-10-01',item:'대두박',qty:'25,000kg',price:'710원'},
       {d:'2026-09-29',item:'대두박',qty:'25,000kg',price:'710원'},
@@ -1285,7 +1287,6 @@ const CLIENT_DATA = [
       {d:'2026-09-07',item:'대두박',qty:'25,000kg',price:'700원'},
       {d:'2026-09-03',item:'대두박',qty:'25,000kg',price:'700원'},
       {d:'2026-08-26',item:'MCP 소포장',qty:'1,000kg',price:'1,900원'},
-      {d:'2026-08-19',item:'대두박',qty:'25,000kg',price:'700원'},
     ],
     note:'대두박 매월 25톤 정기 발주처. 인산칼슘 시황 관심. 7월 단가 MCP 1,790원 적용 중.'
   },
@@ -1631,6 +1632,8 @@ const CLIENT_DATA = [
 <script>
 const ORDERS=[
   // ===== 10월 =====
+  {d:'2026-10-12',c:'코리아에프앤에프',item:'대두박',qty:'25,000kg',price:'-',eta:'10/16(금)',st:'wait'},
+  {d:'2026-10-12',c:'오앤티',item:'염산염라이신',qty:'4,000kg',price:'1,500원',eta:'10/14(수)',st:'wait'},
   {d:'2026-10-06',c:'코리아에프앤에프',item:'대두박',qty:'25,000kg',price:'-',eta:'10/13(화)',st:'wait'},
   {d:'2026-10-01',c:'코리아에프앤에프',item:'대두박',qty:'25,000kg',price:'710원',eta:'10/7(수)',st:'wait'},
   // ===== 9월 =====
@@ -2226,6 +2229,15 @@ const VISITS = [
   {d:'2026-10-02',c:'의성축협 동물병원',cat:'hosp'},
   {d:'2026-10-02',c:'한성동물병원',cat:'hosp'},
   {d:'2026-10-02',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-10-06',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-10-06',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-10-06',c:'사천축협동물병원',cat:'hosp'},
+  {d:'2026-10-06',c:'사천축협 경제사업부',cat:'dist'},
+  {d:'2026-10-07',c:'결산회의',cat:'special'},
+  {d:'2026-10-07',c:'영업회의',cat:'special'},
+  {d:'2026-10-08',c:'임신톡 사업부 진행회의',cat:'special'},
+  {d:'2026-10-08',c:'임신톡 영업활동 관련 공유',cat:'special'},
+  {d:'2026-10-08',c:'부경양돈',cat:'farm'},
 ];
 const HOLIDAYS = [
   {d:'2026-01-01',label:'신정'},
