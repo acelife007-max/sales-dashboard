@@ -908,7 +908,7 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-10-20 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-10-21 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'1,010',unit:'$/톤 · CHANHEN',color:'blue',badge:'▼ $1,065→$1,010',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'840',unit:'$/톤 · CHANHEN(300톤,계약확정)',color:'blue',badge:'▼ $1,050→$840',trend:'dn'},
@@ -2290,6 +2290,17 @@ const VISITS = [
   {d:'2026-10-16',c:'디에스바이오',cat:'dist'},
   {d:'2026-10-16',c:'밀양축협 동물병원',cat:'hosp'},
   {d:'2026-10-16',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-10-19',c:'영업회의',cat:'special'},
+  {d:'2026-10-19',c:'사료BU회의',cat:'special'},
+  {d:'2026-10-19',c:'축종별 직원 발표',cat:'special'},
+  {d:'2026-10-20',c:'밀양축협 동물병원',cat:'hosp'},
+  {d:'2026-10-20',c:'밀양 농업기술센터',cat:'dist'},
+  {d:'2026-10-20',c:'한우협회 밀양시 지부',cat:'dist'},
+  {d:'2026-10-20',c:'양돈협회 밀양시 지부',cat:'dist'},
+  {d:'2026-10-20',c:'이엘비에스',cat:'dist'},
+  {d:'2026-10-20',c:'고려산업',cat:'dist'},
+  {d:'2026-10-20',c:'한우협회 함안군 지부',cat:'dist'},
+  {d:'2026-10-20',c:'차량 수리',cat:'special'},
 ];
 const HOLIDAYS = [
   {d:'2026-01-01',label:'신정'},
@@ -2412,6 +2423,9 @@ const BID_DATA = [
   {date:'2026-09-21', client:'체리부로', item:'아미노산 등 원료 4분기 입찰(메치오닌·황산염라이신·트레오닌·트립토판10%·DDGS)', qty:'복수품목(3개월)', sein_price:'메치오닌 4,440원', winner:'메치오닌-세인 낙찰 4,440원(2위 매트리얼 4,470원) / 황산염라이신-아크로·이앤티 이원화 970원 / 트레오닌-더키움바이오 낙찰 / 트립토판10%-아크로 낙찰 / DDGS-아크로 낙찰 418원', winner_price:'메치오닌 4,440원', result:'won', note:'메치오닌만 세인 낙찰. 나머지 4품목은 아크로·이앤티·더키움바이오 낙찰'},
   {date:'2026-09-22', client:'우성사료(경산공장)', item:'황산염라이신 4분기', qty:'-', sein_price:'-', winner:'해우 낙찰 898원', winner_price:'898원', result:'lost', note:'해우(경쟁사) 낙찰 정보 공유. 세인 참여여부 불명확'},
   {date:'2026-09-22', client:'한국썸벹', item:'비타민 오퍼(VB6·Biotin)', qty:'VB6 8T·Biotin 20T', sein_price:'VB6 $12·Biotin $3.2', winner:'세인 낙찰(6개월 장기계약)', winner_price:'VB6 $12·Biotin $3.2', result:'won', note:'VAD3 유럽산 일부구매·VE Pass(하락세)'},
+
+  // ── 2026년 10월 ──
+  {date:'2026-10-21', client:'한국썸벹', item:'코팅VC 97% 오퍼', qty:'10톤', sein_price:'$3.2', winner:'미공개업체 $2.8미만 낙찰', winner_price:'$2.8미만', result:'lost', note:'세인 $3.2 참여, 낙찰업체명 미확인(낙찰가 $2.8미만만 공유됨)'},
 ];
 
 function renderBids(data){
