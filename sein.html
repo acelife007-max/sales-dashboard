@@ -1453,8 +1453,9 @@ const CLIENT_DATA = [
     name:'경북수산', type:'dist', region:'-',
     contact:'-',
     items:['비타민E'],
-    lastVisit:'2026-10-15', lastOrder:'2026-10-15',
+    lastVisit:'2026-10-15', lastOrder:'2026-10-22',
     orders:[
+      {d:'2026-10-22',item:'비타민E',qty:'1포',price:'18,000원/kg'},
       {d:'2026-10-15',item:'비타민E',qty:'3포',price:'18,000원/kg'},
       {d:'2026-09-15',item:'비타민E',qty:'1포',price:'18,000원/kg'},
       {d:'2026-09-02',item:'비타민E',qty:'25kg',price:'18,000원/kg'},
@@ -1658,6 +1659,7 @@ const CLIENT_DATA = [
 <script>
 const ORDERS=[
   // ===== 10월 =====
+  {d:'2026-10-22',c:'경북수산',item:'비타민E',qty:'1포',price:'18,000원/kg',eta:'10/23(금)',st:'wait'},
   {d:'2026-10-20',c:'이엘비에스',item:'MCP 소포장',qty:'1,000kg',price:'1,780원',eta:'10/22(목)',st:'wait'},
   {d:'2026-10-20',c:'이엘비에스',item:'트레오닌',qty:'50kg',price:'2,100원',eta:'10/21(수)',st:'wait'},
   {d:'2026-10-20',c:'송우열 대표',item:'이지스타터',qty:'50kg',price:'4,000원/kg',eta:'10/21(수)',st:'wait'},
