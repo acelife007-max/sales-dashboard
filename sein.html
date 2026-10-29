@@ -908,7 +908,7 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-10-29 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-10-30 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'830',unit:'$/톤 · CHANHEN(160톤,LC개설)',color:'blue',badge:'▼ $1,010→$830',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'815',unit:'$/톤 · CHANHEN(400톤,LC개설)',color:'blue',badge:'▼ $840→$815',trend:'dn'},
@@ -1414,9 +1414,11 @@ const CLIENT_DATA = [
   {
     name:'영광축산', type:'farm', region:'-',
     contact:'-',
-    items:['나노비타믹스E','장프로'],
-    lastVisit:'2026-09-29', lastOrder:'2026-08-07',
+    items:['나노비타믹스E','장프로','비타민E'],
+    lastVisit:'2026-10-29', lastOrder:'2026-10-29',
     orders:[
+      {d:'2026-10-29',item:'나노비타믹스E',qty:'20kg',price:'-'},
+      {d:'2026-10-29',item:'비타민E',qty:'25kg',price:'18,000원/kg'},
       {d:'2026-08-07',item:'나노비타믹스E',qty:'1박스',price:'10,000원/kg'},
       {d:'2026-08-07',item:'장프로',qty:'1박스',price:'25,000원/kg'},
       {d:'2026-05-26',item:'장프로',qty:'25kg',price:'샘플'},
@@ -1663,6 +1665,8 @@ const CLIENT_DATA = [
 <script>
 const ORDERS=[
   // ===== 10월 =====
+  {d:'2026-10-29',c:'영광축산',item:'나노비타믹스E',qty:'20kg',price:'-',eta:'10/30(금)',st:'wait'},
+  {d:'2026-10-29',c:'영광축산',item:'비타민E',qty:'25kg',price:'18,000원/kg',eta:'10/30(금)',st:'wait'},
   {d:'2026-10-28',c:'코리아에프앤에프',item:'MCP 소포장',qty:'1,000kg',price:'1,680원',eta:'11/3(화)',st:'wait'},
   {d:'2026-10-27',c:'오앤티',item:'메치오닌',qty:'12,000kg',price:'4,700원/kg',eta:'11/4(수)',st:'wait'},
   {d:'2026-10-26',c:'코리아에프앤에프',item:'대두박',qty:'25,000kg',price:'-',eta:'10/28(수)',st:'wait'},
@@ -2330,6 +2334,10 @@ const VISITS = [
   {d:'2026-10-26',c:'수가축약품',cat:'dist'},
   {d:'2026-10-26',c:'코리아에프앤에프',cat:'dist'},
   {d:'2026-10-26',c:'이엘비',cat:'dist'},
+  {d:'2026-10-28',c:'경주농업기술센터',cat:'dist'},
+  {d:'2026-10-28',c:'경주축협 동물병원',cat:'hosp'},
+  {d:'2026-10-28',c:'코리아에프앤에프',cat:'dist'},
+  {d:'2026-10-28',c:'백제약품',cat:'dist'},
 ];
 const HOLIDAYS = [
   {d:'2026-01-01',label:'신정'},
@@ -2456,6 +2464,7 @@ const BID_DATA = [
   // ── 2026년 10월 ──
   {date:'2026-10-21', client:'한국썸벹', item:'코팅VC 97% 오퍼', qty:'10톤', sein_price:'$3.2', winner:'미공개업체 $2.8미만 낙찰', winner_price:'$2.8미만', result:'lost', note:'세인 $3.2 참여, 낙찰업체명 미확인(낙찰가 $2.8미만만 공유됨)'},
   {date:'2026-10-22', client:'부산바이오', item:'4분기 2차 비타민 오퍼(VB6·Biotin·VE·VAD3)', qty:'VB6 5T·Biotin 5T(재입찰)', sein_price:'-', winner:'VB6-세인 낙찰(5T 확정) / VE-중국산 $5초 낙찰 / VAD3-중국산 $15초 낙찰 / Biotin-재입찰 진행중(미정)', winner_price:'VB6 세인 확정', result:'won', note:'VB6만 세인 확정 낙찰. VE·VAD3는 중국산 낙찰. Biotin은 재입찰 2차 진행중(미정)'},
+  {date:'2026-10-28', client:'한국썸벹', item:'비타민 오퍼(VE·VB6·Biotin)', qty:'VE 10T·VB6 1T·Biotin 3T', sein_price:'참여', winner:'세인 3품목 낙찰', winner_price:'—', result:'won', note:'VE·VB6·Biotin 전품목 세인 낙찰'},
 ];
 
 function renderBids(data){
@@ -2918,6 +2927,7 @@ const NEWS_DATA = [
   {id:317,lang:'ko',cat:'policy',src:'국민일보',date:'2026-10-25',title:'석유 최고가격제 7개월째…재정부담·출구전략 과제로',desc:'두바이유가 22일 배럴당 115.40달러까지 오르며 정부가 제시한 해제 조건(유가 90달러 이하 안정화 등)이 여전히 충족되지 않아 최고가격제가 장기화하고 있다. 정부는 정유사 손실보전용 예비비 4조2000억원에 이어 내년도 예산에 1조4497억원을 추가 배정, 수입 원자재 전반의 비용 부담 완화 여부가 주목된다.',url:'https://www.kmib.co.kr/article/20261025501706'},
   {id:318,lang:'ko',cat:'policy',src:'뉴스1',date:'2026-10-26',title:'원·달러 환율 1,323.1원 마감…연저점 또 경신',desc:'26일 원·달러 환율이 전일比 1.5원 내린 1,323.1원에 마감, 기존 연저점(1,324.2원)을 다시 갈아치웠다. 한국투자증권은 4분기 평균환율 전망치를 1,350원에서 1,320원으로 하향했고 연말 1,250원대 진입 가능성도 제기돼 수입 사료원료 조달비용 부담이 더욱 완화될 전망이다.',url:'https://www.news1.kr/finance/market-exr/6332205'},
   {id:319,lang:'ko',cat:'feed',src:'헤럴드경제',date:'2026-10-26',title:'중동 긴장완화 기대에 국제유가 하락…WTI 1.46%↓',desc:'26일(현지시간) 12월물 브렌트유가 전장比 0.78% 내린 배럴당 115.81달러, WTI는 1.46% 내린 101.76달러로 마감했다. 사우디·파키스탄·튀르키예 고위당국자의 이란 방문으로 중동 긴장완화 기대가 반영됐으나, 후티 반군 공격 지속과 美 전략비축유 44년래 최저치로 하락폭은 제한됐다.',url:'https://biz.heraldcorp.com/article/10915456'},
+  {id:320,lang:'ko',cat:'amino',src:'뉴데일리경제',date:'2026-10-28',title:'中 덤핑공세에도 대상 라이신 3년만에 회복세',desc:'관세청 집계 기준 1~9월 라이신 수출량 10만126톤으로 전년比 44.7% 증가, 평균 수출단가는 톤당 1,254달러로 12.7% 하락. 중국 98.5% 라이신 판매가도 kg당 7.20위안으로 전년比 약 21%↓. EU의 중국산 반덤핑 관세(최대 58.2%)와 대두박가 회복이 수요 변수.',url:'https://biz.newdaily.co.kr/site/data/html/2026/10/28/2026102800111.html'},
 ];
 
 let _newsCat = 'all';
