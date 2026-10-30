@@ -908,7 +908,7 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-10-30 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-10-31 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'830',unit:'$/톤 · CHANHEN(160톤,LC개설)',color:'blue',badge:'▼ $1,010→$830',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'815',unit:'$/톤 · CHANHEN(400톤,LC개설)',color:'blue',badge:'▼ $840→$815',trend:'dn'},
@@ -1261,8 +1261,9 @@ const CLIENT_DATA = [
     name:'오앤티', type:'dist', region:'경남',
     contact:'공제우 부장',
     items:['염산염라이신','메치오닌'],
-    lastVisit:'2026-10-21', lastOrder:'2026-10-27',
+    lastVisit:'2026-10-21', lastOrder:'2026-10-30',
     orders:[
+      {d:'2026-10-30',item:'염산염라이신',qty:'7,000kg',price:'1,500원'},
       {d:'2026-10-27',item:'메치오닌',qty:'12,000kg',price:'4,700원/kg'},
       {d:'2026-10-12',item:'염산염라이신',qty:'4,000kg',price:'1,500원'},
       {d:'2026-09-16',item:'염산염라이신',qty:'7,000kg',price:'1,500원'},
@@ -1272,7 +1273,6 @@ const CLIENT_DATA = [
       {d:'2026-03-12',item:'염산염라이신',qty:'3,000kg',price:'1,450원/kg'},
       {d:'2026-03-06',item:'염산염라이신',qty:'12,000kg',price:'1,450원/kg'},
       {d:'2026-01-29',item:'염산염라이신',qty:'7,000kg',price:'-'},
-      {d:'2026-01-09',item:'염산염라이신',qty:'4,000kg',price:'1,450원/kg'},
     ],
     note:'7월 염산염라이신 1,650원, 메치오닌 7,700원 단가 전달 완료.'
   },
@@ -1280,8 +1280,10 @@ const CLIENT_DATA = [
     name:'코리아에프앤에프', type:'dist', region:'경남',
     contact:'구본석 차장',
     items:['대두박','MCP 소포장'],
-    lastVisit:'2026-10-26', lastOrder:'2026-10-28',
+    lastVisit:'2026-10-26', lastOrder:'2026-10-30',
     orders:[
+      {d:'2026-10-30',item:'대두박',qty:'25,000kg',price:'700원'},
+      {d:'2026-10-30',item:'대두박',qty:'25,000kg',price:'700원'},
       {d:'2026-10-28',item:'MCP 소포장',qty:'1,000kg',price:'1,680원'},
       {d:'2026-10-26',item:'대두박',qty:'25,000kg',price:'-'},
       {d:'2026-10-15',item:'대두박',qty:'25,000kg',price:'-'},
@@ -1290,8 +1292,6 @@ const CLIENT_DATA = [
       {d:'2026-10-01',item:'대두박',qty:'25,000kg',price:'710원'},
       {d:'2026-09-29',item:'대두박',qty:'25,000kg',price:'710원'},
       {d:'2026-09-23',item:'MCP 소포장',qty:'1,000kg',price:'1,780원'},
-      {d:'2026-09-17',item:'대두박',qty:'25,000kg',price:'-'},
-      {d:'2026-09-15',item:'대두박',qty:'25,000kg',price:'-'},
     ],
     note:'대두박 매월 25톤 정기 발주처. 인산칼슘 시황 관심. 7월 단가 MCP 1,790원 적용 중.'
   },
@@ -1665,6 +1665,9 @@ const CLIENT_DATA = [
 <script>
 const ORDERS=[
   // ===== 10월 =====
+  {d:'2026-10-30',c:'오앤티',item:'염산염라이신',qty:'7,000kg',price:'1,500원',eta:'11/4(수)',st:'wait'},
+  {d:'2026-10-30',c:'코리아에프앤에프',item:'대두박',qty:'25,000kg',price:'700원',eta:'11/3(화)',st:'wait'},
+  {d:'2026-10-30',c:'코리아에프앤에프',item:'대두박',qty:'25,000kg',price:'700원',eta:'11/5(목)',st:'wait'},
   {d:'2026-10-29',c:'영광축산',item:'나노비타믹스E',qty:'20kg',price:'-',eta:'10/30(금)',st:'wait'},
   {d:'2026-10-29',c:'영광축산',item:'비타민E',qty:'25kg',price:'18,000원/kg',eta:'10/30(금)',st:'wait'},
   {d:'2026-10-28',c:'코리아에프앤에프',item:'MCP 소포장',qty:'1,000kg',price:'1,680원',eta:'11/3(화)',st:'wait'},
