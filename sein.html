@@ -1472,9 +1472,10 @@ const CLIENT_DATA = [
   {
     name:'한성동물병원', type:'hosp', region:'-',
     contact:'이현정 원장',
-    items:['나노비타밍스E'],
-    lastVisit:'2026-09-07', lastOrder:'2026-09-08',
+    items:['나노비타밍스E','이지스타터'],
+    lastVisit:'2026-09-07', lastOrder:'2026-11-03',
     orders:[
+      {d:'2026-11-03',item:'이지스타터',qty:'100kg',price:'-'},
       {d:'2026-09-08',item:'나노비타밍스E',qty:'40kg',price:'8,000원/kg'},
     ],
     note:'-'
@@ -1552,6 +1553,16 @@ const CLIENT_DATA = [
     orders:[
       {d:'2026-10-20',item:'MCP 소포장',qty:'1,000kg',price:'1,780원'},
       {d:'2026-10-20',item:'트레오닌',qty:'50kg',price:'2,100원'},
+    ],
+    note:'-'
+  },
+  {
+    name:'김일준 대표(경주)', type:'farm', region:'-',
+    contact:'-',
+    items:['ECM40'],
+    lastVisit:'2026-11-03', lastOrder:'2026-11-03',
+    orders:[
+      {d:'2026-11-03',item:'ECM40',qty:'670kg',price:'1,700원/kg'},
     ],
     note:'-'
   },
@@ -1664,6 +1675,9 @@ const CLIENT_DATA = [
 
 <script>
 const ORDERS=[
+  // ===== 11월 =====
+  {d:'2026-11-03',c:'김일준 대표(경주)',item:'ECM40',qty:'670kg',price:'1,700원/kg',eta:'11/5(목)',st:'wait'},
+  {d:'2026-11-03',c:'한성동물병원',item:'이지스타터',qty:'100kg',price:'-',eta:'11/4(수)',st:'wait'},
   // ===== 10월 =====
   {d:'2026-10-30',c:'오앤티',item:'염산염라이신',qty:'7,000kg',price:'1,500원',eta:'11/4(수)',st:'wait'},
   {d:'2026-10-30',c:'코리아에프앤에프',item:'대두박',qty:'25,000kg',price:'700원',eta:'11/3(화)',st:'wait'},
