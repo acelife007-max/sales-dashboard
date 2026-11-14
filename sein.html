@@ -908,7 +908,7 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-11-14 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-11-15 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'830',unit:'$/톤 · CHANHEN(160톤,LC개설)',color:'blue',badge:'▼ $1,010→$830',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'815',unit:'$/톤 · CHANHEN(400톤,LC개설)',color:'blue',badge:'▼ $840→$815',trend:'dn'},
@@ -2542,6 +2542,9 @@ const BID_DATA = [
   {date:'2026-10-21', client:'한국썸벹', item:'코팅VC 97% 오퍼', qty:'10톤', sein_price:'$3.2', winner:'미공개업체 $2.8미만 낙찰', winner_price:'$2.8미만', result:'lost', note:'세인 $3.2 참여, 낙찰업체명 미확인(낙찰가 $2.8미만만 공유됨)'},
   {date:'2026-10-22', client:'부산바이오', item:'4분기 2차 비타민 오퍼(VB6·Biotin·VE·VAD3)', qty:'VB6 5T·Biotin 5T(재입찰)', sein_price:'-', winner:'VB6-세인 낙찰(5T 확정) / VE-중국산 $5초 낙찰 / VAD3-중국산 $15초 낙찰 / Biotin-재입찰 진행중(미정)', winner_price:'VB6 세인 확정', result:'won', note:'VB6만 세인 확정 낙찰. VE·VAD3는 중국산 낙찰. Biotin은 재입찰 2차 진행중(미정)'},
   {date:'2026-10-28', client:'한국썸벹', item:'비타민 오퍼(VE·VB6·Biotin)', qty:'VE 10T·VB6 1T·Biotin 3T', sein_price:'참여', winner:'세인 3품목 낙찰', winner_price:'—', result:'won', note:'VE·VB6·Biotin 전품목 세인 낙찰'},
+
+  // ── 2026년 11월 ──
+  {date:'2026-11-13', client:'농협사료', item:'칼슘염보호지방', qty:'1년', sein_price:'-', winner:'세인 낙찰', winner_price:'-', result:'won', note:'이앤티·은진·올솔프로·뉴브리드 등 5개업체 참여'},
 ];
 
 function renderBids(data){
