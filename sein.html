@@ -908,7 +908,7 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-11-18 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-11-19 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'830',unit:'$/톤 · CHANHEN(160톤,LC개설)',color:'blue',badge:'▼ $1,010→$830',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'815',unit:'$/톤 · CHANHEN(400톤,LC개설)',color:'blue',badge:'▼ $840→$815',trend:'dn'},
@@ -1240,7 +1240,7 @@ const CLIENT_DATA = [
     name:'부경양돈', type:'farm', region:'경남',
     contact:'김덕민 계장',
     items:['ECM','코코시스'],
-    lastVisit:'2026-11-11', lastOrder:'2026-11-13',
+    lastVisit:'2026-11-17', lastOrder:'2026-11-13',
     orders:[
       {d:'2026-11-13',item:'ECM',qty:'4,800kg',price:'-'},
       {d:'2026-09-28',item:'ECM',qty:'6,000kg',price:'-'},
@@ -1292,7 +1292,7 @@ const CLIENT_DATA = [
     name:'코리아에프앤에프', type:'dist', region:'경남',
     contact:'구본석 차장',
     items:['대두박','MCP 소포장','염화콜린'],
-    lastVisit:'2026-11-16', lastOrder:'2026-11-17',
+    lastVisit:'2026-11-17', lastOrder:'2026-11-17',
     orders:[
       {d:'2026-11-17',item:'염화콜린',qty:'1,000kg',price:'1,800원'},
       {d:'2026-11-16',item:'대두박',qty:'25,000kg',price:'700원'},
@@ -1899,6 +1899,9 @@ function renderOrders(rows){
 
 // ===== 방문 캘린더 데이터 (Slack 업무보고 기반, 박제영) =====
 const VISITS = [
+  {d:'2026-11-17',c:'부경양돈',cat:'farm'},
+  {d:'2026-11-17',c:'김해축협',cat:'dist'},
+  {d:'2026-11-17',c:'코리아에프앤에프',cat:'dist'},
   {d:'2026-11-04',c:'부산사료',cat:'dist'},
   {d:'2026-11-04',c:'송정농장',cat:'farm'},
   {d:'2026-11-05',c:'한우협회 경주시지부',cat:'dist'},
@@ -2562,6 +2565,7 @@ const BID_DATA = [
 
   // ── 2026년 11월 ──
   {date:'2026-11-13', client:'농협사료', item:'칼슘염보호지방', qty:'1년', sein_price:'-', winner:'세인 낙찰', winner_price:'-', result:'won', note:'이앤티·은진·올솔프로·뉴브리드 등 5개업체 참여'},
+  {date:'2026-11-18', client:'이지홀딩스 (BK&CO)', item:'인산칼슘 오퍼(DCP·MCP과립·MCP분말)', qty:'DCP 500T·MCP 574T', sein_price:'-', winner:'DCP-광동 낙찰($740예상) / MCP과립-THE(운천화) 낙찰($780예상)', winner_price:'DCP $740·MCP과립 $780', result:'lost', note:'MCP분말은 단가 문제로 세인 Pass, 운천화도 불참'},
 ];
 
 function renderBids(data){
@@ -3052,6 +3056,7 @@ const NEWS_DATA = [
   {id:345,lang:'ko',cat:'feed',src:'이투데이',date:'2026-11-13',title:'국제유가 혼조 마감…브렌트 95.84달러·WTI 88.56달러, IEA 4분기 공급과잉 전망',desc:'13일(현지시간) 브렌트유 1월물은 전장比 0.02% 오른 배럴당 95.84달러, WTI 12월물은 0.20% 내린 88.56달러로 혼조 마감했다. IEA가 월간 보고서에서 이란전 발발 이후 처음으로 4분기 공급과잉을 전망하고 美 원유재고 증가가 겹쳤으나, 호르무즈 해협 불안이 하락폭을 제한해 수입 사료원료 운임·원가 변동성이 이어질 전망이다.',url:'https://www.etoday.co.kr/news/view/2648132'},
   {id:346,lang:'ko',cat:'amino',src:'CJ제일제당 뉴스룸',date:'2026-11-13',title:'CJ제일제당, 유로티어 2026서 사료배합 분석 플랫폼 "뉴트리솔루션" 첫 공개',desc:'11월 10~13일 독일 하노버 축산박람회 유로티어 2026에서 35년간 축적한 사료용 아미노산 데이터를 활용한 사료배합 분석 플랫폼을 처음 선보였다. 라이신·메치오닌·트레오닌·트립토판 등을 아우르는 아미노산 브랜드 "베스트아미노"를 앞세워 원료·첨가제별 영양가·수익성·탄소배출을 함께 분석해 최적 배합을 추천하며, 기술 컨설팅 서비스로 육성해 동물영양사업의 신성장동력으로 삼을 계획이다.',url:'https://cjnews.cj.net/?p=82274'},
   {id:347,lang:'ko',cat:'amino',src:'토요경제',date:'2026-11-06',title:'대상, 국산 라이신 브라질 첫 수출…초도 20톤, 2027년 1,200톤 계획',desc:'6일 군산항에서 선적식을 열고 사료용 라이신 약 20톤을 브라질에 처음 수출했다. 농식품부가 브라질 농축산부와의 제조시설·제품 등록을 직접 지원해 10월 최종 승인을 이끌어냈으며, 대상은 2027년 약 1,200톤(200만 달러) 규모로 수출을 확대할 계획이다.',url:'https://sateconomy.co.kr/news/view/1065579463798334'},
+  {id:348,lang:'ko',cat:'policy',src:'파이낸셜뉴스',date:'2026-11-18',title:'원·달러 환율 1,333.0원 마감…5.2원 하락',desc:'18일 원·달러 환율이 전일比 5.2원 내린 1,333.0원(오후 3시30분 기준)에 마감했다. 반도체 수출 호조에 따른 수출기업의 달러 매도(네고) 물량이 우위를 보이며 이달 평균 환율은 2년1개월만에 최저 수준을 기록, 수입 사료원료 조달비용 부담이 소폭 완화될 전망이다.',url:'https://www.fnnews.com/news/202611181530444651'},
 ];
 
 let _newsCat = 'all';
