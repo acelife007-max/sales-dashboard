@@ -1324,8 +1324,9 @@ const CLIENT_DATA = [
     name:'오케이', type:'dist', region:'경남',
     contact:'류하나 부장',
     items:['MDCP'],
-    lastVisit:'2026-09-18', lastOrder:'2026-07-31',
+    lastVisit:'2026-11-20', lastOrder:'2026-11-23',
     orders:[
+      {d:'2026-11-23',item:'MDCP',qty:'27,000kg',price:'1,500원'},
       {d:'2026-07-31',item:'MDCP',qty:'25,000kg',price:'1,700원'},
       {d:'2026-05-08',item:'MDCP',qty:'27,000kg',price:'1,470원/kg'},
       {d:'2026-02-11',item:'MDCP',qty:'27,000kg',price:'-'},
@@ -1692,6 +1693,7 @@ const CLIENT_DATA = [
 <script>
 const ORDERS=[
   // ===== 11월 =====
+  {d:'2026-11-23',c:'오케이',item:'MDCP',qty:'27,000kg',price:'1,500원',eta:'11/24(화)',st:'wait'},
   {d:'2026-11-20',c:'미소인터내셔널',item:'비타민D3',qty:'100kg',price:'38,000원/kg',eta:'11/23(월)',st:'wait'},
   {d:'2026-11-17',c:'코리아에프앤에프',item:'염화콜린',qty:'1,000kg',price:'1,800원',eta:'11/18(수)',st:'wait'},
   {d:'2026-11-16',c:'경북수산',item:'비타민97%',qty:'1포',price:'6,300원/kg',eta:'11/18(수)',st:'wait'},
@@ -2441,6 +2443,12 @@ const VISITS = [
   {d:'2026-11-18',c:'사천수산 동물병원',cat:'hosp'},
   {d:'2026-11-18',c:'부경양돈',cat:'farm'},
   {d:'2026-11-18',c:'김해축협',cat:'dist'},
+  {d:'2026-11-19',c:'사료BU 회의',cat:'special'},
+  {d:'2026-11-19',c:'영업회의',cat:'special'},
+  {d:'2026-11-19',c:'업무발표',cat:'special'},
+  {d:'2026-11-20',c:'오케이',cat:'dist'},
+  {d:'2026-11-20',c:'미소인터내셔널',cat:'dist'},
+  {d:'2026-11-20',c:'세걔로케미칼',cat:'dist'},
 ];
 const HOLIDAYS = [
   {d:'2026-01-01',label:'신정'},
