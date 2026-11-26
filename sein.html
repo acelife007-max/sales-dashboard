@@ -908,7 +908,7 @@ table.tbl tr:hover td{background:#1C2128}
   </div>
   <script>
   // ===== 가격탭 데이터 (Slack 업무보고 기반: 김선이=인산칼슘, 왕려원=아미노산/보호지방, 성유진=비타민) =====
-  // PRICE_LAST_CHECKED: 2026-11-26 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
+  // PRICE_LAST_CHECKED: 2026-11-27 (자동 동기화 루틴이 매일 갱신 - 이 날짜 이후 업무보고만 확인)
   const PRICE_DATA = [
     {cat:'인산칼슘',person:'김선이',name:'MCP 소포장',price:'830',unit:'$/톤 · CHANHEN(160톤,LC개설)',color:'blue',badge:'▼ $1,010→$830',trend:'dn'},
     {cat:'인산칼슘',person:'김선이',name:'MCP 톤백과립',price:'815',unit:'$/톤 · CHANHEN(400톤,LC개설)',color:'blue',badge:'▼ $840→$815',trend:'dn'},
@@ -1566,9 +1566,10 @@ const CLIENT_DATA = [
   {
     name:'이엘비에스', type:'dist', region:'-',
     contact:'-',
-    items:['MCP 소포장','트레오닌'],
-    lastVisit:'2026-10-20', lastOrder:'2026-10-20',
+    items:['MCP 소포장','트레오닌','ECM'],
+    lastVisit:'2026-10-20', lastOrder:'2026-11-26',
     orders:[
+      {d:'2026-11-26',item:'ECM',qty:'1,000kg',price:'1,500원'},
       {d:'2026-10-20',item:'MCP 소포장',qty:'1,000kg',price:'1,780원'},
       {d:'2026-10-20',item:'트레오닌',qty:'50kg',price:'2,100원'},
     ],
@@ -1694,6 +1695,7 @@ const CLIENT_DATA = [
 <script>
 const ORDERS=[
   // ===== 11월 =====
+  {d:'2026-11-26',c:'이엘비에스',item:'ECM',qty:'1,000kg',price:'1,500원',eta:'11/27(금)',st:'wait'},
   {d:'2026-11-24',c:'송우열 대표',item:'나노비타민스',qty:'1box',price:'10,000원/kg',eta:'11/25(수)',st:'wait'},
   {d:'2026-11-23',c:'오케이',item:'MDCP',qty:'27,000kg',price:'1,500원',eta:'11/24(화)',st:'wait'},
   {d:'2026-11-20',c:'미소인터내셔널',item:'비타민D3',qty:'100kg',price:'38,000원/kg',eta:'11/23(월)',st:'wait'},
@@ -2455,6 +2457,13 @@ const VISITS = [
   {d:'2026-11-23',c:'김해축협 동물병원',cat:'hosp'},
   {d:'2026-11-23',c:'오앤티',cat:'dist'},
   {d:'2026-11-23',c:'오케이',cat:'dist'},
+  {d:'2026-11-24',c:'한우협회 함안군지부',cat:'dist'},
+  {d:'2026-11-24',c:'함안군 지부 회원',cat:'dist'},
+  {d:'2026-11-24',c:'진주축협 동물병원',cat:'hosp'},
+  {d:'2026-11-24',c:'부경양돈',cat:'farm'},
+  {d:'2026-11-25',c:'한우협회 고성군지부',cat:'dist'},
+  {d:'2026-11-25',c:'한우협회 함안군지부',cat:'dist'},
+  {d:'2026-11-25',c:'오앤티',cat:'dist'},
 ];
 const HOLIDAYS = [
   {d:'2026-01-01',label:'신정'},
